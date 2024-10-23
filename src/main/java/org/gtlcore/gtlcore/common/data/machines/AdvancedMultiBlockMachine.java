@@ -7,6 +7,7 @@ import org.gtlcore.gtlcore.client.renderer.machine.EyeOfHarmonyRenderer;
 import org.gtlcore.gtlcore.client.renderer.machine.SpaceElevatorRenderer;
 import org.gtlcore.gtlcore.common.block.GTLFusionCasingBlock;
 import org.gtlcore.gtlcore.common.data.*;
+import org.gtlcore.gtlcore.common.machine.multiblock.SimulationMachine;
 import org.gtlcore.gtlcore.common.machine.multiblock.electric.*;
 import org.gtlcore.gtlcore.common.machine.multiblock.noenergy.HeatExchangerMachine;
 import org.gtlcore.gtlcore.common.machine.multiblock.noenergy.NeutronActivatorMachine;
@@ -59,14 +60,34 @@ import com.hepdd.gtmthings.data.CustomMachines;
 
 import java.util.*;
 
+import static com.gregtechceu.gtceu.api.GTValues.IV;
 import static com.gregtechceu.gtceu.api.pattern.Predicates.*;
 import static com.gregtechceu.gtceu.api.pattern.util.RelativeDirection.*;
+import static com.gregtechceu.gtceu.common.data.GTRecipeTypes.DUMMY_RECIPES;
 import static com.gregtechceu.gtceu.common.registry.GTRegistration.REGISTRATE;
 
 @SuppressWarnings("unused")
 public class AdvancedMultiBlockMachine {
 
     public static void init() {}
+
+    public final static MultiblockMachineDefinition SIMULATION_MACHINE = REGISTRATE
+            .multiblock("simulation_machine", SimulationMachine::new)
+            .langValue("Simulation Machine")
+            .rotationState(RotationState.ALL)
+            .recipeType(DUMMY_RECIPES)
+            .appearanceBlock(() -> Blocks.STONE)
+            .tooltips(Component.translatable("gtceu.machine.simulation_machine.tooltip.0"))
+            .pattern(definition -> FactoryBlockPattern.start()
+                    .aisle("c", "a")
+                    .where("c", controller(blocks(definition.get())))
+                    .where("a", Predicates.blocks(Blocks.STONE))
+                    .build())
+            .workableCasingRenderer(new ResourceLocation("minecraft", "block/stone"),
+                    GTCEu.id("block/multiblock/gcym/large_chemical_bath"))
+            .compassSections(GTCompassSections.TIER[IV])
+            .compassNodeSelf()
+            .register();
 
     public final static MultiblockMachineDefinition GREENHOUSE = REGISTRATE.multiblock("greenhouse", GreenhouseMachine::new)
             .rotationState(RotationState.NON_Y_AXIS)

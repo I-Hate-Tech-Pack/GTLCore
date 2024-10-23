@@ -1,5 +1,6 @@
 package org.gtlcore.gtlcore.data.recipe;
 
+import org.gtlcore.gtlcore.common.data.machines.AdvancedMultiBlockMachine;
 import org.gtlcore.gtlcore.common.recipe.condition.GravityCondition;
 import org.gtlcore.gtlcore.config.ConfigHolder;
 
@@ -39,6 +40,9 @@ public class Misc {
                     .duration(200)
                     .save(provider);
         }
+
+        VanillaRecipeHelper.addShapelessRecipe(provider, "simulation_machine",
+                AdvancedMultiBlockMachine.SIMULATION_MACHINE.asStack(), "A", Blocks.STONE);
 
         WOOD_DISTILLATION_RECIPES.recipeBuilder("wood_distillation_recipes")
                 .inputItems(ItemTags.LOGS, 16)
