@@ -1,7 +1,5 @@
 package org.gtlcore.gtlcore.mixin.gtm;
 
-import org.gtlcore.gtlcore.GTLCore;
-
 import com.gregtechceu.gtceu.api.capability.recipe.*;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableComputationContainer;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
@@ -22,14 +20,13 @@ public abstract class CWURecipeCapabilityMixin extends RecipeCapability<Integer>
     }
 
     @Override
-    public int getMaxParallelRatio(IRecipeCapabilityHolder holder, GTRecipe recipe, int parallelAmount) {
+    public int getMaxParallelRatio(IRecipeCapabilityHolder holder, GTRecipe recipe, int maxParallel) {
         long maxCWU = 0;
         List<IRecipeHandler<?>> recipeHandlerList = Objects
                 .requireNonNullElseGet(holder.getCapabilitiesProxy().get(IO.IN, CWURecipeCapability.CAP), Collections::<IRecipeHandler<?>>emptyList)
                 .stream()
                 .filter(handler -> !handler.isProxy()).toList();
         for (IRecipeHandler<?> container : recipeHandlerList) {
-            GTLCore.LOGGER.info("container class is {}", container.getClass());
             if (container instanceof NotifiableComputationContainer nc) {
                 maxCWU += nc.requestCWUt(Integer.MAX_VALUE, true);
             }
@@ -38,6 +35,6 @@ public abstract class CWURecipeCapabilityMixin extends RecipeCapability<Integer>
         if (recipeCWU == 0) {
             return Integer.MAX_VALUE;
         }
-        return Math.abs(Ints.saturatedCast(maxCWU / recipeCWU));
+        return Math.min(maxParallel, Math.abs(Ints.saturatedCast(maxCWU / recipeCWU)));
     }
 }
