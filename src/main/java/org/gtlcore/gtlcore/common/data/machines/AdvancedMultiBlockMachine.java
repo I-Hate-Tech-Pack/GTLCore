@@ -452,7 +452,7 @@ public class AdvancedMultiBlockMachine {
         return true;
     }
 
-    public final static MultiblockMachineDefinition BLOCK_CONVERSION_ROOM = REGISTRATE.multiblock("block_conversion_room", WorkableElectricMultiblockMachine::new)
+    public final static MultiblockMachineDefinition BLOCK_CONVERSION_ROOM = REGISTRATE.multiblock("block_conversion_room", holder -> new BlockConversionRoomMachine(holder, false))
             .rotationState(RotationState.NONE)
             .allowExtendedFacing(false)
             .allowFlip(false)
@@ -475,23 +475,17 @@ public class AdvancedMultiBlockMachine {
                     .where("a", Predicates.controller(Predicates.blocks(definition.get())))
                     .where("b", Predicates.blocks(GTLBlocks.ALUMINIUM_BRONZE_CASING.get()).setMinGlobalLimited(120)
                             .or(Predicates.autoAbilities(definition.getRecipeTypes()))
+                            .or(Predicates.blocks(GTLMachines.BLOCK_BUS.getBlock()).setMaxGlobalLimited(1))
                             .or(Predicates.abilities(PartAbility.MAINTENANCE).setExactLimit(1)))
                     .where("c", Predicates.blocks(Registries.getBlock("kubejs:shining_obsidian")))
                     .where("d", Predicates.blocks(GTBlocks.CASING_TEMPERED_GLASS.get())
                             .or(Predicates.blocks(Blocks.IRON_DOOR).setMaxGlobalLimited(4)))
                     .where(" ", Predicates.any())
                     .build())
-            .onWorking(machine -> blockConversionRoom(poses1, machine, 4))
-            .onWaiting(machine -> machine.getRecipeLogic().interruptRecipe())
-            .additionalDisplay((controller, components) -> {
-                if (controller.isFormed() && controller instanceof WorkableElectricMultiblockMachine workableElectricMultiblockMachine) {
-                    components.add(Component.literal("每次转化数量：" + (workableElectricMultiblockMachine.getTier() * 4 - 7)));
-                }
-            })
             .workableCasingRenderer(GTLCore.id("block/casings/aluminium_bronze_casing"), GTCEu.id("block/multiblock/cleanroom"))
             .register();
 
-    public final static MultiblockMachineDefinition LARGE_BLOCK_CONVERSION_ROOM = REGISTRATE.multiblock("large_block_conversion_room", WorkableElectricMultiblockMachine::new)
+    public final static MultiblockMachineDefinition LARGE_BLOCK_CONVERSION_ROOM = REGISTRATE.multiblock("large_block_conversion_room", (holder) -> new BlockConversionRoomMachine(holder, true))
             .rotationState(RotationState.NONE)
             .allowExtendedFacing(false)
             .allowFlip(false)
@@ -518,19 +512,13 @@ public class AdvancedMultiBlockMachine {
                     .where("a", Predicates.controller(Predicates.blocks(definition.get())))
                     .where("b", Predicates.blocks(GTLBlocks.ALUMINIUM_BRONZE_CASING.get()).setMinGlobalLimited(240)
                             .or(Predicates.autoAbilities(definition.getRecipeTypes()))
+                            .or(Predicates.blocks(GTLMachines.BLOCK_BUS.getBlock()).setMaxGlobalLimited(1))
                             .or(Predicates.abilities(PartAbility.MAINTENANCE).setExactLimit(1)))
                     .where("c", Predicates.blocks(Registries.getBlock("kubejs:shining_obsidian")))
                     .where("d", Predicates.blocks(GTBlocks.CASING_TEMPERED_GLASS.get())
                             .or(Predicates.blocks(Blocks.IRON_DOOR).setMaxGlobalLimited(4)))
                     .where(" ", Predicates.any())
                     .build())
-            .onWorking(machine -> blockConversionRoom(poses2, machine, 64))
-            .onWaiting(machine -> machine.getRecipeLogic().interruptRecipe())
-            .additionalDisplay((controller, components) -> {
-                if (controller.isFormed() && controller instanceof WorkableElectricMultiblockMachine workableElectricMultiblockMachine) {
-                    components.add(Component.literal("每次转化数量：" + (workableElectricMultiblockMachine.getTier() * 64 - 7)));
-                }
-            })
             .workableCasingRenderer(GTLCore.id("block/casings/aluminium_bronze_casing"), GTCEu.id("block/multiblock/cleanroom"))
             .register();
 
