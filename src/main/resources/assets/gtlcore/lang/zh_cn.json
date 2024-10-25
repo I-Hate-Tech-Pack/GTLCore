@@ -106,6 +106,7 @@
     "item.gtlcore.cell_component_64m": "64M 存储组件",
     "item.gtlcore.cfg_copy": "配置复制工具",
     "item.gtlcore.contaminated_petri_dish": "污染的培养皿",
+    "item.gtlcore.conversion_simulate_card": "转换模拟卡",
     "item.gtlcore.cupriavidus_petri_dish": "钩虫贪铜菌培养皿",
     "item.gtlcore.debug_pattern_test": "配方样板调试工具",
     "item.gtlcore.debug_structure_writer": "多方块结构导出工具",
@@ -147,10 +148,14 @@
     "item.gtlcore.shewanella_petri_dish": "希瓦氏菌培养皿",
     "item.gtlcore.sterilized_petri_dish": "无菌培养皿",
     "item.gtlcore.streptococcus_petri_dish": "酿脓链球菌培养皿",
+    "item.gtlcore.structure_detect": "结构检测工具",
     "item.gtlcore.super_portable_fluid_storage_cell": "超级便携流体存储元件",
     "item.gtlcore.super_portable_item_storage_cell": "超级便携物品存储元件",
     "item.gtlcore.transcendent_max_battery": "超·终极电池",
     "itemGroup.gtlcore.creative_tab": "格雷科技休闲版",
     "structure_writer.export_order": "导出顺序： C:%s  S:%s  A:%s",
-    "structure_writer.structural_scale": "结构规模： X:%s  Y:%s  Z:%s"
+    "structure_writer.structural_scale": "结构规模： X:%s  Y:%s  Z:%s",
+    "structure_detect.error": "在%s处需要:\n",
+    "structure_detect.error.2": "在%s处 ",
+    "structure_detect.tooltip.0": "右键多方快结构主方块即可"
 }

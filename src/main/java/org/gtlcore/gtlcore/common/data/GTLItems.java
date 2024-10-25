@@ -276,6 +276,13 @@ public class GTLItems {
             .model(NonNullBiConsumer.noop())
             .register();
 
+    public static ItemEntry<ComponentItem> STRUCTURE_DETECT = REGISTRATE
+            .item("structure_detect", ComponentItem::create)
+            .properties(stack -> stack.stacksTo(1))
+            .onRegister(attach(StructureDetectBehavior.INSTANCE))
+            .model(NonNullBiConsumer.noop())
+            .register();
+
     private static ItemEntry<Item> register(String id, boolean defaultModel) {
         return defaultModel ? REGISTRATE.item(id, Item::new).register() : REGISTRATE.item(id, Item::new).model(NonNullBiConsumer.noop()).register();
     }
@@ -295,4 +302,5 @@ public class GTLItems {
     public static ItemEntry<Item> STREPTOCOCCUS_PETRI_DISH = register("streptococcus_petri_dish", false);
     public static ItemEntry<Item> CUPRIAVIDUS_PETRI_DISH = register("cupriavidus_petri_dish", false);
     public static ItemEntry<Item> SHEWANELLA_PETRI_DISH = register("shewanella_petri_dish", false);
+    public static ItemEntry<Item> CONVERSION_SIMULATE_CARD = register("conversion_simulate_card", true);
 }

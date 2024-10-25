@@ -136,5 +136,8 @@
   "item.gtlcore.super_portable_fluid_storage_cell": "Super Portable Fluid Storage Cell",
   "item.gtlcore.super_portable_item_storage_cell": "Super Portable Item Storage Cell",
   "item.gtlcore.transcendent_max_battery": "Transcendent Max Battery",
-  "itemGroup.gtlcore.creative_tab": "GTL Core"
+  "itemGroup.gtlcore.creative_tab": "GTL Core",
+  "structure_detect.error": "在%s处需要:\n",
+  "structure_detect.error.2": "在%s处的",
+  "structure_detect.tooltip.0": "右键多方快结构主方块即可"
 }
