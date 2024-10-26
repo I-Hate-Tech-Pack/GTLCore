@@ -1,5 +1,7 @@
 package org.gtlcore.gtlcore.data.recipe;
 
+import org.gtlcore.gtlcore.common.data.GTLItems;
+import org.gtlcore.gtlcore.common.data.machines.AdvancedMultiBlockMachine;
 import org.gtlcore.gtlcore.common.recipe.condition.GravityCondition;
 import org.gtlcore.gtlcore.config.ConfigHolder;
 
@@ -28,6 +30,8 @@ import static org.gtlcore.gtlcore.common.data.machines.MultiBlockMachineB.PRIMIT
 public class Misc {
 
     public static void init(Consumer<FinishedRecipe> provider) {
+        VanillaRecipeHelper.addShapelessRecipe(provider, "structure_detect", GTLItems.STRUCTURE_DETECT.asStack(),
+                "A", Items.PAPER);
         if (ConfigHolder.INSTANCE.enablePrimitiveVoidOre) {
             VanillaRecipeHelper.addShapedRecipe(provider, true, "primitive_void_ore_recipes",
                     PRIMITIVE_VOID_ORE.asStack(), "DCD", "CGC", "DCD",
@@ -39,6 +43,9 @@ public class Misc {
                     .duration(200)
                     .save(provider);
         }
+
+        VanillaRecipeHelper.addShapelessRecipe(provider, "simulation_machine",
+                AdvancedMultiBlockMachine.SIMULATION_MACHINE.asStack(), "A", Blocks.STONE);
 
         WOOD_DISTILLATION_RECIPES.recipeBuilder("wood_distillation_recipes")
                 .inputItems(ItemTags.LOGS, 16)

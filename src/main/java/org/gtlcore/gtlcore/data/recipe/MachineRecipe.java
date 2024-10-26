@@ -5,6 +5,7 @@ import org.gtlcore.gtlcore.common.data.GTLItems;
 import org.gtlcore.gtlcore.common.data.GTLMachines;
 import org.gtlcore.gtlcore.common.data.GTLMaterials;
 import org.gtlcore.gtlcore.common.data.machines.*;
+import org.gtlcore.gtlcore.utils.Registries;
 
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
@@ -21,6 +22,7 @@ import com.gregtechceu.gtceu.data.recipe.VanillaRecipeHelper;
 
 import net.minecraft.data.recipes.FinishedRecipe;
 
+import appeng.core.definitions.AEItems;
 import com.hepdd.gtmthings.GTMThings;
 import com.hepdd.gtmthings.data.CustomItems;
 import com.hepdd.gtmthings.data.WirelessMachines;
@@ -32,8 +34,7 @@ import java.util.function.Consumer;
 
 import static com.gregtechceu.gtceu.api.GTValues.*;
 import static com.gregtechceu.gtceu.api.data.tag.TagPrefix.*;
-import static com.gregtechceu.gtceu.common.data.GTItems.CONVEYOR_MODULE_EV;
-import static com.gregtechceu.gtceu.common.data.GTItems.COVER_ITEM_DETECTOR_ADVANCED;
+import static com.gregtechceu.gtceu.common.data.GTItems.*;
 import static com.gregtechceu.gtceu.common.data.GTMaterials.*;
 import static com.gregtechceu.gtceu.common.data.GTRecipeTypes.ASSEMBLER_RECIPES;
 import static com.gregtechceu.gtceu.data.recipe.CraftingComponent.*;
@@ -81,6 +82,26 @@ public class MachineRecipe {
                 .inputFluids(Polyethylene.getFluid(L))
                 .outputItems(GTLMachines.ROTOR_HATCH)
                 .duration(400).EUt(480).save(provider);
+
+        ASSEMBLER_RECIPES.recipeBuilder("block_bus")
+                .inputItems(CONVEYOR_MODULE_LuV, 2)
+                .inputItems(ROBOT_ARM_LuV, 2)
+                .inputItems(EMITTER_LuV, 2)
+                .inputItems(GTMachines.ITEM_IMPORT_BUS[LuV], 1)
+                .inputItems(ITEM_FILTER)
+                .inputItems(Registries.getBlock("kubejs:essence_block"))
+                .inputFluids(SolderingAlloy.getFluid(L))
+                .outputItems(GTLMachines.BLOCK_BUS)
+                .duration(200).EUt(V[LuV]).save(provider);
+
+        ASSEMBLER_RECIPES.recipeBuilder("conversion_simulate_card")
+                .inputItems(FIELD_GENERATOR_LuV)
+                .inputItems(AEItems.SPEED_CARD, 2)
+                .inputItems(AdvancedMultiBlockMachine.BLOCK_CONVERSION_ROOM, 1)
+                .inputItems(CIRCUIT.getIngredient(LuV), 2)
+                .inputFluids(SolderingAlloy.getFluid(L))
+                .outputItems(GTLItems.CONVERSION_SIMULATE_CARD)
+                .duration(200).EUt(V[LuV]).save(provider);
 
         ASSEMBLER_RECIPES.recipeBuilder("hull_uhv").duration(50).EUt(16)
                 .inputItems(GTBlocks.MACHINE_CASING_UHV)

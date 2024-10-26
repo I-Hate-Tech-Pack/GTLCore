@@ -20,6 +20,7 @@ public class GTLCore {
 
     public static final String MOD_ID = "gtlcore";
     public static final Logger LOGGER = LogManager.getLogger();
+    public static final String VERSION = "1.0.2";
     public static StorageManager STORAGE_INSTANCE = new StorageManager();
 
     public static ResourceLocation id(String name) {

@@ -1,7 +1,10 @@
 package org.gtlcore.gtlcore.common.machine.multiblock.electric;
 
 import org.gtlcore.gtlcore.api.pattern.util.IValueContainer;
+import org.gtlcore.gtlcore.common.data.GTLBlocks;
+import org.gtlcore.gtlcore.common.data.GTLMaterials;
 import org.gtlcore.gtlcore.utils.MachineIO;
+import org.gtlcore.gtlcore.utils.MachineUtil;
 
 import com.gregtechceu.gtceu.api.machine.ConditionalSubscriptionHandler;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
@@ -21,13 +24,13 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 
 import com.mojang.datafixers.util.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Objects;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -47,13 +50,15 @@ public class FissionReactorMachine extends WorkableElectricMultiblockMachine imp
     @Persisted
     private int parallel = 0;
     @Persisted
+    private int recipeHeat = 0;
+    @Persisted
     private int fuel = 0, cooler = 0, heatAdjacent = 1, coolerAdjacent = 0;
 
-    protected ConditionalSubscriptionHandler HeatSubs;
+    protected ConditionalSubscriptionHandler heatSubs;
 
     public FissionReactorMachine(IMachineBlockEntity holder, Object... args) {
         super(holder, args);
-        this.HeatSubs = new ConditionalSubscriptionHandler(this, this::HeatUpdate, this::isFormed);
+        this.heatSubs = new ConditionalSubscriptionHandler(this, this::heatUpdate, this::isFormed);
     }
 
     @Override
@@ -61,7 +66,7 @@ public class FissionReactorMachine extends WorkableElectricMultiblockMachine imp
         return MANAGED_FIELD_HOLDER;
     }
 
-    public static int adjacent(Level level, BlockPos pos, String id) {
+    public static int adjacent(Level level, BlockPos pos, Block block) {
         int a = 0;
         BlockPos[] coordinates = new BlockPos[] { pos.offset(1, 0, 0),
                 pos.offset(-1, 0, 0),
@@ -70,7 +75,7 @@ public class FissionReactorMachine extends WorkableElectricMultiblockMachine imp
                 pos.offset(0, 0, 1),
                 pos.offset(0, 0, -1) };
         for (BlockPos blockPos : coordinates) {
-            if (Objects.equals(level.kjs$getBlock(blockPos).getId(), id)) {
+            if (level.getBlockState(blockPos).getBlock() == block) {
                 a++;
             }
         }
@@ -84,24 +89,17 @@ public class FissionReactorMachine extends WorkableElectricMultiblockMachine imp
         Level level = getLevel();
         int heatA = 0;
         int coolerA = 0;
-        BlockPos[] coordinates = new BlockPos[] { pos.offset(4, 0, 0),
-                pos.offset(-4, 0, 0),
-                pos.offset(0, 0, 4),
-                pos.offset(0, 0, -4) };
-        for (BlockPos blockPos : coordinates) {
-            if (Objects.equals(level.kjs$getBlock(blockPos).getId(), "kubejs:fission_reactor_casing")) {
-                centrePos = blockPos.offset(0, 4, 0);
-                for (int i = -3; i < 4; i++) {
-                    for (int j = 0; j < 8; j++) {
-                        for (int k = -3; k < 4; k++) {
-                            BlockPos assemblyPos = blockPos.offset(i, j, k);
-                            if (Objects.equals(level.kjs$getBlock(assemblyPos).getId(), "gtlcore:fission_fuel_assembly")) {
-                                heatA += adjacent(level, assemblyPos, "gtlcore:fission_fuel_assembly");
-                            }
-                            if (Objects.equals(level.kjs$getBlock(assemblyPos).getId(), "gtlcore:cooler")) {
-                                coolerA += adjacent(level, assemblyPos, "gtlcore:cooler");
-                            }
-                        }
+        final BlockPos blockPos = MachineUtil.getOffsetPos(4, 0, getFrontFacing(), getPos());
+        centrePos = blockPos.offset(0, 4, 0);
+        for (int i = -3; i < 4; i++) {
+            for (int j = 0; j < 8; j++) {
+                for (int k = -3; k < 4; k++) {
+                    BlockPos assemblyPos = blockPos.offset(i, j, k);
+                    if (level != null && level.getBlockState(assemblyPos).getBlock() == GTLBlocks.FISSION_FUEL_ASSEMBLY.get()) {
+                        heatA += adjacent(level, assemblyPos, GTLBlocks.FISSION_FUEL_ASSEMBLY.get());
+                    }
+                    if (level != null && level.getBlockState(assemblyPos).getBlock() == GTLBlocks.COOLER.get()) {
+                        coolerA += adjacent(level, assemblyPos, GTLBlocks.COOLER.get());
                     }
                 }
             }
@@ -118,7 +116,7 @@ public class FissionReactorMachine extends WorkableElectricMultiblockMachine imp
         if (CoolerContainer.getValue() instanceof Integer Cooler) {
             this.cooler = Cooler;
         }
-        HeatSubs.initialize(getLevel());
+        heatSubs.initialize(getLevel());
     }
 
     @Override
@@ -133,65 +131,8 @@ public class FissionReactorMachine extends WorkableElectricMultiblockMachine imp
     @Override
     public void afterWorking() {
         parallel = 0;
-    }
-
-    @Override
-    public void doExplosion(BlockPos pos, float explosionPower) {
-        var machine = this.self();
-        var level = machine.getLevel();
-        level.removeBlock(machine.getPos(), false);
-        level.explode(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
-                explosionPower, Level.ExplosionInteraction.BLOCK);
-    }
-
-    protected void HeatUpdate() {
-        if (getOffsetTimer() % 20 == 0) {
-            if (heat > 1500) {
-                if (damaged > 99) {
-                    doExplosion(centrePos, fuel);
-                } else {
-                    damaged += Math.max(1, heatAdjacent / 6);
-                }
-            }
-            if (!getRecipeLogic().isWorking()) {
-                if (heat > 298) {
-                    heat--;
-                } else if (damaged > 0) {
-                    damaged--;
-                }
-            }
-        }
-    }
-
-    public static GTRecipe recipeModifier(MetaMachine machine, @NotNull GTRecipe recipe) {
-        if (machine instanceof FissionReactorMachine fissionReactorMachine) {
-            Pair<GTRecipe, Integer> result = GTRecipeModifiers.accurateParallel(machine, recipe,
-                    fissionReactorMachine.fuel, false);
-            GTRecipe recipe1 = result.getFirst();
-            fissionReactorMachine.parallel = result.getSecond();
-            return recipe1;
-        }
-        return null;
-    }
-
-    private boolean inputWater(double amount) {
-        boolean value = MachineIO.inputFluid(this, GTMaterials.DistilledWater.getFluid((long) (amount * 800)));
-        double steamMultiplier = heat > 373 ? 160 : 160 / Math.pow(1.4, 373 - heat);
-        if (value) MachineIO.outputFluid(this, GTMaterials.Steam.getFluid((long) (amount * 800 * steamMultiplier)));
-        return value;
-    }
-
-    private boolean inputSodiumPotassium(double amount) {
-        boolean value = MachineIO.inputFluid(this, GTMaterials.SodiumPotassium.getFluid((long) (amount * 20)));
-        if (heat > 825) {
-            if (value) MachineIO.outputFluid(this, GTMaterials.get("supercritical_sodium_potassium").getFluid((long) (amount * 20)));
-        } else if (value) MachineIO.outputFluid(this, GTMaterials.get("hot_sodium_potassium").getFluid((long) (amount * 20)));
-        return value;
-    }
-
-    @Override
-    public int getOutputSignal(@Nullable Direction side) {
-        return 22500 / heat;
+        recipeHeat = 0;
+        super.afterWorking();
     }
 
     @Override
@@ -201,45 +142,105 @@ public class FissionReactorMachine extends WorkableElectricMultiblockMachine imp
     }
 
     @Override
-    public boolean onWorking() {
-        boolean value = super.onWorking();
+    public void doExplosion(BlockPos pos, float explosionPower) {
+        var machine = this.self();
+        var level = machine.getLevel();
+        if (level != null) {
+            level.removeBlock(machine.getPos(), false);
+            level.explode(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
+                    explosionPower, Level.ExplosionInteraction.BLOCK);
+        }
+    }
+
+    private boolean inputWater(long amount) {
+        boolean value = MachineIO.inputFluid(this, GTMaterials.DistilledWater.getFluid(amount * 800));
+        double steamMultiplier = heat > 373 ? 160 : 160 / Math.pow(1.4, 373 - heat);
+        if (value)
+            value = MachineIO.outputFluid(this, GTMaterials.Steam.getFluid((long) (amount * 800 * steamMultiplier)));
+        return value;
+    }
+
+    private boolean inputSodiumPotassium(long amount) {
+        boolean value = MachineIO.inputFluid(this, GTMaterials.SodiumPotassium.getFluid(amount * 20));
+        if (heat > 825) {
+            if (value)
+                value = MachineIO.outputFluid(this, GTLMaterials.SupercriticalSodiumPotassium.getFluid(amount * 20));
+        } else if (value)
+            value = MachineIO.outputFluid(this, GTLMaterials.HotSodiumPotassium.getFluid(amount * 20));
+        return value;
+    }
+
+    protected void heatUpdate() {
         if (getOffsetTimer() % 20 == 0) {
-            GTRecipe recipe = getRecipeLogic().getLastRecipe();
-            int h = recipe.data.getInt("FRheat");
-            double required = (double) (h * parallel * heat) / 1500;
-            double surplus = ((cooler - ((double) coolerAdjacent / 3)) * 8) - required;
-            if (surplus >= 0) {
-                if (inputWater(required)) {
-                    while (surplus >= required && getProgress() < getMaxProgress()) {
-                        if (inputWater(required)) {
-                            surplus = surplus - required;
-                            getRecipeLogic().setProgress(getProgress() + 20);
-                        } else {
-                            break;
-                        }
-                    }
-                    if (heat > 298 && surplus >= required && inputWater(required)) {
-                        heat--;
-                    }
-                    return value;
-                } else if (inputSodiumPotassium(required)) {
-                    while (surplus >= required && getProgress() < getMaxProgress()) {
-                        if (inputSodiumPotassium(required)) {
-                            surplus = surplus - required;
-                            getRecipeLogic().setProgress(getProgress() + 20);
-                        } else {
-                            break;
-                        }
-                    }
-                    if (heat > 298 && surplus >= required && inputSodiumPotassium(required)) {
-                        heat--;
-                    }
-                    return value;
+            if (heat > 1500) {
+                if (damaged > 99) {
+                    doExplosion(centrePos, fuel);
+                } else {
+                    damaged += Math.max(1, heatAdjacent / 6);
                 }
             }
-            heat += h * heatAdjacent;
+            if (getRecipeLogic().isWorking()) {
+                int required = recipeHeat * parallel * heat / 1500;
+                int surplus = ((cooler - (coolerAdjacent / 3)) * 8) - required;
+                boolean isCooler = false;
+                if (surplus >= 0) {
+                    if (inputWater(required)) {
+                        while (surplus >= required && getProgress() < getMaxProgress()) {
+                            if (inputWater(required)) {
+                                surplus = surplus - required;
+                                getRecipeLogic().setProgress(getProgress() + 20);
+                            } else {
+                                break;
+                            }
+                        }
+                        if (heat > 298 && surplus >= required && inputWater(required)) {
+                            heat--;
+                        }
+                        isCooler = true;
+                    } else if (inputSodiumPotassium(required)) {
+                        while (surplus >= required && getProgress() < getMaxProgress()) {
+                            if (inputSodiumPotassium(required)) {
+                                surplus = surplus - required;
+                                getRecipeLogic().setProgress(getProgress() + 20);
+                            } else {
+                                break;
+                            }
+                        }
+                        if (heat > 298 && surplus >= required && inputSodiumPotassium(required)) {
+                            heat--;
+                        }
+                        isCooler = true;
+                    }
+                }
+                if (!isCooler) {
+                    heat += recipeHeat * heatAdjacent;
+                }
+            } else {
+                if (heat > 298) {
+                    heat--;
+                } else if (damaged > 0) {
+                    damaged--;
+                }
+            }
         }
-        return value;
+    }
+
+    @Override
+    public int getOutputSignal(@Nullable Direction side) {
+        return 22500 / heat;
+    }
+
+    @Nullable
+    public static GTRecipe recipeModifier(MetaMachine machine, @NotNull GTRecipe recipe) {
+        if (machine instanceof FissionReactorMachine fissionReactorMachine) {
+            Pair<GTRecipe, Integer> result = GTRecipeModifiers.accurateParallel(machine, recipe,
+                    fissionReactorMachine.fuel, false);
+            GTRecipe recipe1 = result.getFirst();
+            fissionReactorMachine.parallel = result.getSecond();
+            fissionReactorMachine.recipeHeat = recipe1.data.getInt("FRheat");
+            return recipe1;
+        }
+        return null;
     }
 
     @Override

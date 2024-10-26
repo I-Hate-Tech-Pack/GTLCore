@@ -9,7 +9,9 @@ import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
+import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.util.Mth;
 
 import org.jetbrains.annotations.NotNull;
@@ -17,10 +19,19 @@ import org.jetbrains.annotations.NotNull;
 /**
  * @author EasterFG on 2024/10/17
  */
+@MethodsReturnNonnullByDefault
 public class GravityCleaningConfigurationMaintenancePartMachine extends AutoConfigurationMaintenanceHatchPartMachine implements IGravityPartMachine {
 
     @Persisted
     private int gravity = 0;
+
+    protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(
+            GravityCleaningConfigurationMaintenancePartMachine.class, AutoConfigurationMaintenanceHatchPartMachine.MANAGED_FIELD_HOLDER);
+
+    @Override
+    public ManagedFieldHolder getFieldHolder() {
+        return MANAGED_FIELD_HOLDER;
+    }
 
     ICleanroomProvider cleanroomTypes;
 

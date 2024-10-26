@@ -23,6 +23,7 @@ import com.gregtechceu.gtceu.api.machine.multiblock.PartAbility;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
 import com.gregtechceu.gtceu.api.pattern.FactoryBlockPattern;
 import com.gregtechceu.gtceu.client.renderer.machine.MaintenanceHatchPartRenderer;
+import com.gregtechceu.gtceu.client.renderer.machine.OverlayTieredMachineRenderer;
 import com.gregtechceu.gtceu.client.renderer.machine.SimpleGeneratorMachineRenderer;
 import com.gregtechceu.gtceu.client.util.TooltipHelper;
 import com.gregtechceu.gtceu.common.data.GTCompassSections;
@@ -467,5 +468,12 @@ public class GTLMachines {
             .tier(GTValues.EV)
             .rotationState(RotationState.ALL)
             .overlayTieredHullRenderer("rotor_hatch")
+            .register();
+
+    public static final MachineDefinition BLOCK_BUS = REGISTRATE
+            .machine("block_bus", BlockBusPartMachine::new)
+            .tier(GTValues.LuV)
+            .rotationState(RotationState.ALL)
+            .renderer(() -> new OverlayTieredMachineRenderer(GTValues.LuV, GTCEu.id("block/machine/part/item_bus.import")))
             .register();
 }
