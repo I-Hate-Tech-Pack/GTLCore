@@ -54,7 +54,7 @@ public class BlockConversionRoomMachine extends StorageMachine {
         covRecipe.put(ChemicalHelper.getBlock(TagPrefix.block, GTMaterials.Calcium), Blocks.BONE_BLOCK);
         covRecipe.put(Blocks.MOSS_BLOCK, Blocks.SCULK);
         covRecipe.put(Blocks.GRASS_BLOCK, Blocks.MOSS_BLOCK);
-        covRecipe.put(Registries.getBlock("kubejs:infused_obsidian"), Registries.getBlock("draconium_block_charged"));
+        covRecipe.put(Registries.getBlock("kubejs:infused_obsidian"), Registries.getBlock("kubejs:draconium_block_charged"));
     }
 
     private final int am;
