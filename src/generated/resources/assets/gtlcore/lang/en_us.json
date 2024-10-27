@@ -83,6 +83,7 @@
   "block.gtlcore.uiv_hermetic_casing": "Hermetic Casing XI",
   "block.gtlcore.ultimate_stellar_containment_casing": "Ultimate Stellar Containment Casing",
   "block.gtlcore.uxv_hermetic_casing": "Hermetic Casing XII",
+  "config.jade.plugin_gtlcore.wireless_data_hatch_provider": "[GTL] 无线光学",
   "item.gtlcore.bifidobacteriumm_petri_dish": "Bifidobacteriumm Petri Dish",
   "item.gtlcore.brevibacterium_petri_dish": "Brevibacterium Petri Dish",
   "item.gtlcore.cell_component_16m": "Cell Component 16m",

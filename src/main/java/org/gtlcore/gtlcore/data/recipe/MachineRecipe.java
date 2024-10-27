@@ -17,6 +17,7 @@ import com.gregtechceu.gtceu.common.data.GTBlocks;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.common.data.GTMachines;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
+import com.gregtechceu.gtceu.common.data.machines.GTResearchMachines;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
 import com.gregtechceu.gtceu.data.recipe.VanillaRecipeHelper;
 
@@ -93,6 +94,26 @@ public class MachineRecipe {
                 .inputFluids(SolderingAlloy.getFluid(L))
                 .outputItems(GTLMachines.BLOCK_BUS)
                 .duration(200).EUt(V[LuV]).save(provider);
+
+        ASSEMBLER_RECIPES.recipeBuilder("wireless_data_hatch_transmitter")
+                .inputItems(GTResearchMachines.DATA_HATCH_TRANSMITTER)
+                .inputItems(CIRCUIT.getIngredient(LuV), 1)
+                .inputItems(EMITTER_LuV)
+                .inputFluids(SolderingAlloy.getFluid(L * 2))
+                .outputItems(GTLMachines.WIRELESS_DATA_HATCH_TRANSMITTER)
+                .duration(200)
+                .EUt(GTValues.VA[LuV])
+                .save(provider);
+
+        ASSEMBLER_RECIPES.recipeBuilder("wireless_data_hatch_receiver")
+                .inputItems(GTResearchMachines.DATA_HATCH_RECEIVER)
+                .inputItems(CIRCUIT.getIngredient(LuV), 1)
+                .inputItems(EMITTER_LuV)
+                .inputFluids(SolderingAlloy.getFluid(L * 2))
+                .outputItems(GTLMachines.WIRELESS_DATA_HATCH_RECEIVER)
+                .duration(200)
+                .EUt(GTValues.VA[LuV])
+                .save(provider);
 
         ASSEMBLER_RECIPES.recipeBuilder("conversion_simulate_card")
                 .inputItems(FIELD_GENERATOR_LuV)
