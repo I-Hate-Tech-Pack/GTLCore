@@ -1,5 +1,6 @@
-package org.gtlcore.gtlcore.common.machine.trait;
+package org.gtlcore.gtlcore.common.machine.multiblock.part;
 
+import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 import org.gtlcore.gtlcore.api.capability.BindCapability;
 
 import com.gregtechceu.gtceu.api.capability.IDataAccessHatch;
@@ -45,6 +46,14 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
 public class WirelessOpticalDataHatchMachine extends MultiblockPartMachine implements IOpticalDataAccessHatch, IInteractedMachine, BindCapability {
+
+    protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(
+            WirelessOpticalDataHatchMachine.class, MultiblockPartMachine.MANAGED_FIELD_HOLDER);
+
+    @Override
+    public ManagedFieldHolder getFieldHolder() {
+        return MANAGED_FIELD_HOLDER;
+    }
 
     private final boolean transmitter;
 

@@ -2,7 +2,7 @@ package org.gtlcore.gtlcore.integration.jade.provider;
 
 import org.gtlcore.gtlcore.GTLCore;
 import org.gtlcore.gtlcore.api.capability.BindCapability;
-import org.gtlcore.gtlcore.common.machine.trait.WirelessOpticalDataHatchMachine;
+import org.gtlcore.gtlcore.common.machine.multiblock.part.WirelessOpticalDataHatchMachine;
 
 import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
 import com.gregtechceu.gtceu.integration.jade.provider.CapabilityBlockProvider;
