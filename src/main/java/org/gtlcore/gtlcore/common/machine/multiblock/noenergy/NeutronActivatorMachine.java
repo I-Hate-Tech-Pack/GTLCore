@@ -46,15 +46,17 @@ public class NeutronActivatorMachine extends NoEnergyMultiblockMachine {
     public static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(
             NeutronActivatorMachine.class, NoEnergyMultiblockMachine.MANAGED_FIELD_HOLDER);
 
+    @Override
+    public ManagedFieldHolder getFieldHolder() {
+        return MANAGED_FIELD_HOLDER;
+    }
+
     private int height = 0;
 
     @Getter
     @Persisted
     @DescSynced
     private int eV;
-
-    @Persisted
-    protected boolean isWorking;
 
     private static final Item dustBeryllium = ChemicalHelper.get(TagPrefix.dust, GTMaterials.Beryllium).getItem();
     private static final Item dustGraphite = ChemicalHelper.get(TagPrefix.dust, GTMaterials.Graphite).getItem();
@@ -164,7 +166,7 @@ public class NeutronActivatorMachine extends NoEnergyMultiblockMachine {
     }
 
     protected void moderateUpdate() {
-        if (!isWorking && getOffsetTimer() % 20 == 0) {
+        if (getOffsetTimer() % 20 == 0) {
             this.eV = Math.max(eV - 72 * 1000, 0);
         }
         if (this.eV < 0) this.eV = 0;
