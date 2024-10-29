@@ -1,6 +1,5 @@
 package org.gtlcore.gtlcore.common.machine.multiblock.part;
 
-import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 import org.gtlcore.gtlcore.api.capability.BindCapability;
 
 import com.gregtechceu.gtceu.api.capability.IDataAccessHatch;
@@ -16,6 +15,7 @@ import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.common.data.GTItems;
 
 import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
+import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;

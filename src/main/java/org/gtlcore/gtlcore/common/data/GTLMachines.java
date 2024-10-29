@@ -9,8 +9,8 @@ import org.gtlcore.gtlcore.common.machine.generator.LightningRodMachine;
 import org.gtlcore.gtlcore.common.machine.generator.MagicEnergyMachine;
 import org.gtlcore.gtlcore.common.machine.multiblock.electric.CoilWorkableElectricMultipleRecipesMultiblockMachine;
 import org.gtlcore.gtlcore.common.machine.multiblock.part.*;
-import org.gtlcore.gtlcore.common.machine.multiblock.part.maintenance.*;
 import org.gtlcore.gtlcore.common.machine.multiblock.part.WirelessOpticalDataHatchMachine;
+import org.gtlcore.gtlcore.common.machine.multiblock.part.maintenance.*;
 
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTValues;
