@@ -80,8 +80,12 @@ public class StorageMachine extends WorkableElectricMultiblockMachine implements
         machineStorage.storage.setStackInSlot(0, item);
     }
 
+    public boolean isEmpty() {
+        return machineStorage.isEmpty();
+    }
+
     @Override
-    public @NotNull ManagedFieldHolder getFieldHolder() {
+    public ManagedFieldHolder getFieldHolder() {
         return MANAGED_FIELD_HOLDER;
     }
 }
