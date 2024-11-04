@@ -9,6 +9,7 @@ import org.gtlcore.gtlcore.common.machine.generator.LightningRodMachine;
 import org.gtlcore.gtlcore.common.machine.generator.MagicEnergyMachine;
 import org.gtlcore.gtlcore.common.machine.multiblock.electric.CoilWorkableElectricMultipleRecipesMultiblockMachine;
 import org.gtlcore.gtlcore.common.machine.multiblock.part.*;
+import org.gtlcore.gtlcore.common.machine.multiblock.part.WirelessOpticalDataHatchMachine;
 import org.gtlcore.gtlcore.common.machine.multiblock.part.maintenance.*;
 
 import com.gregtechceu.gtceu.GTCEu;
@@ -46,6 +47,7 @@ import com.hepdd.gtmthings.data.WirelessMachines;
 import java.util.List;
 import java.util.function.BiConsumer;
 
+import static com.gregtechceu.gtceu.api.GTValues.LuV;
 import static com.gregtechceu.gtceu.common.registry.GTRegistration.REGISTRATE;
 
 @SuppressWarnings("unused")
@@ -395,6 +397,28 @@ public class GTLMachines {
                 GTL_ADD.accept(stack, tooltips);
             })
             .renderer(() -> new MaintenanceHatchPartRenderer(10, GTCEu.id("block/machine/part/maintenance.cleaning")))
+            .register();
+
+    public static final MachineDefinition WIRELESS_DATA_HATCH_TRANSMITTER = REGISTRATE
+            .machine("wireless_data_transmitter_hatch", (holder) -> new WirelessOpticalDataHatchMachine(holder, true))
+            .rotationState(RotationState.ALL)
+            .compassNodeSelf()
+            .abilities(PartAbility.OPTICAL_DATA_TRANSMISSION)
+            .overlayTieredHullRenderer("optical_data_hatch")
+            .tooltips(Component.translatable("gtceu.machine.wireless_data_transmitter_hatch.tooltip.1"),
+                    Component.translatable("gtceu.machine.wireless_data_transmitter_hatch.tooltip.2"))
+            .tier(LuV)
+            .register();
+
+    public static final MachineDefinition WIRELESS_DATA_HATCH_RECEIVER = REGISTRATE
+            .machine("wireless_data_receiver_hatch", (holder) -> new WirelessOpticalDataHatchMachine(holder, false))
+            .rotationState(RotationState.ALL)
+            .compassNodeSelf()
+            .abilities(PartAbility.OPTICAL_DATA_RECEPTION)
+            .overlayTieredHullRenderer("optical_data_hatch")
+            .tooltips(Component.translatable("gtceu.machine.wireless_data_receiver_hatch.tooltip.1"),
+                    Component.translatable("gtceu.machine.wireless_data_receiver_hatch.tooltip.2"))
+            .tier(LuV)
             .register();
 
     public final static MachineDefinition[] HUGE_FLUID_IMPORT_HATCH = registerHugeFluidHatches("huge_input_hatch", "Huge Input Hatch", "fluid_hatch.import", "fluid_hatch.import", IO.IN, PartAbility.IMPORT_FLUIDS);

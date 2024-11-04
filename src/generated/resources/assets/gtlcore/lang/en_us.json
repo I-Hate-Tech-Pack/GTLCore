@@ -83,6 +83,7 @@
   "block.gtlcore.uiv_hermetic_casing": "Hermetic Casing XI",
   "block.gtlcore.ultimate_stellar_containment_casing": "Ultimate Stellar Containment Casing",
   "block.gtlcore.uxv_hermetic_casing": "Hermetic Casing XII",
+  "config.jade.plugin_gtlcore.wireless_data_hatch_provider": "[GTL] 无线光学",
   "item.gtlcore.bifidobacteriumm_petri_dish": "Bifidobacteriumm Petri Dish",
   "item.gtlcore.brevibacterium_petri_dish": "Brevibacterium Petri Dish",
   "item.gtlcore.cell_component_16m": "Cell Component 16m",
@@ -136,8 +137,12 @@
   "item.gtlcore.super_portable_fluid_storage_cell": "Super Portable Fluid Storage Cell",
   "item.gtlcore.super_portable_item_storage_cell": "Super Portable Item Storage Cell",
   "item.gtlcore.transcendent_max_battery": "Transcendent Max Battery",
-  "itemGroup.gtlcore.creative_tab": "GTL Core",
-  "structure_detect.error": "在%s处需要:\n",
-  "structure_detect.error.2": "在%s处的",
-  "structure_detect.tooltip.0": "右键多方快结构主方块即可"
+  "item.gtlcore.structure_detect.error.0": "在 %s 处需要:",
+  "item.gtlcore.structure_detect.error.1": "在 %s 处的",
+  "item.gtlcore.structure_detect.error.2": "[%s, %s, %s]-(%s)",
+  "item.gtlcore.structure_detect.error.3": "翻转坐标",
+  "item.gtlcore.structure_detect.error.4": "正常坐标",
+  "item.gtlcore.structure_detect.tooltip.0": "潜行右键多方快结构主方块即可",
+  "item.gtlcore.structure_detect.tooltip.1": "检测大型结构时可能会出现卡顿",
+  "itemGroup.gtlcore.creative_tab": "GTL Core"
 }
