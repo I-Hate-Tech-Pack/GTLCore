@@ -84,6 +84,14 @@ public class MachineRecipe {
                 .outputItems(GTLMachines.ROTOR_HATCH)
                 .duration(400).EUt(480).save(provider);
 
+        ASSEMBLER_RECIPES.recipeBuilder("adv")
+                .inputItems(AdvancedMultiBlockMachine.FLUID_DRILLING_RIG[ZPM])
+                .inputItems(CIRCUIT.getIngredient(UEV), 4)
+                .inputItems(CONVEYOR_MODULE_UHV, 4)
+                .inputItems(FLUID_REGULATOR_UHV, 4)
+                .outputItems(AdvancedMultiBlockMachine.ADVANCED_INFINITE_DRILLER)
+                .duration(400).EUt(V[UEV]).save(provider);
+
         ASSEMBLER_RECIPES.recipeBuilder("block_bus")
                 .inputItems(CONVEYOR_MODULE_LuV, 2)
                 .inputItems(ROBOT_ARM_LuV, 2)

@@ -15,3 +15,7 @@
 ### 新增
 - 多方块结构检测工具
 - 方块模拟器支持结构预览
+
+### v1.0.4-<span style="color: red">preview<span>
+### 新增
+- 新增进阶<span style="color: #ff9800">无尽流体钻机</span>
