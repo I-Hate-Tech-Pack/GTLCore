@@ -8,6 +8,7 @@ import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.chemical.material.stack.MaterialStack;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
+import com.gregtechceu.gtceu.api.fluids.store.FluidStorageKeys;
 import com.gregtechceu.gtceu.api.machine.ConditionalSubscriptionHandler;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockDisplayText;
@@ -17,6 +18,7 @@ import com.gregtechceu.gtceu.utils.FormattingUtil;
 
 import com.lowdragmc.lowdraglib.gui.util.ClickData;
 import com.lowdragmc.lowdraglib.gui.widget.ComponentPanelWidget;
+import com.lowdragmc.lowdraglib.side.fluid.FluidStack;
 import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 
@@ -47,6 +49,10 @@ public class AdvancedInfiniteDrillMachine extends StorageMachine {
     protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(
             AdvancedInfiniteDrillMachine.class, StorageMachine.MANAGED_FIELD_HOLDER);
 
+    private static final FluidStack DISTILLED_WATER = GTMaterials.DistilledWater.getFluid(20000);
+    private static final FluidStack OXYGEN = GTMaterials.Oxygen.getFluid(FluidStorageKeys.LIQUID, 20000);
+    private static final FluidStack HELIUM = GTMaterials.Helium.getFluid(FluidStorageKeys.LIQUID, 20000);
+
     protected static final Map<Material, Integer> HEAT_MAP = Map.of(
             GTMaterials.Neutronium, 1,
             GTLMaterials.Vibranium, 2,
@@ -57,15 +63,16 @@ public class AdvancedInfiniteDrillMachine extends StorageMachine {
         return MANAGED_FIELD_HOLDER;
     }
 
-    public static final int NORMAL_HEAT = 300;
-
     public static final int RUNNING_HEAT = 2000;
 
     public static final int MAX_HEAT = 10000;
 
     @Persisted
     @Getter
-    protected int currentHeat = NORMAL_HEAT;
+    protected int currentHeat = 300;
+
+    @Persisted
+    protected boolean fast;
 
     protected ConditionalSubscriptionHandler heatSubs;
 
@@ -80,10 +87,10 @@ public class AdvancedInfiniteDrillMachine extends StorageMachine {
     }
 
     protected void heatUpdate() {
-        if (getOffsetTimer() % 5 != 0) return;
+        if (!fast && getOffsetTimer() % 5 != 0) return;
         if (isEmpty()) return;
         if (currentHeat > MAX_HEAT) {
-            currentHeat = 0;
+            currentHeat = 300;
             this.machineStorage.setStackInSlot(0, ItemStack.EMPTY);
             this.getRecipeLogic().interruptRecipe();
             return;
@@ -91,21 +98,15 @@ public class AdvancedInfiniteDrillMachine extends StorageMachine {
 
         int heat = 0;
         if (getRecipeLogic().isWorking()) {
-            heat += (int) Math.ceil((currentHeat - RUNNING_HEAT) / 2000D);
+            heat += (int) Math.floor((currentHeat - RUNNING_HEAT) / 2000D);
         }
 
-        if (inputCooling(GTMaterials.DistilledWater)) {
-            if (currentHeat <= 3000) {
-                heat--;
-            }
-        } else if (inputCooling(GTMaterials.Nitrogen)) {
-            if (currentHeat > 3000 && currentHeat < 7000) {
-                heat -= 2;
-            }
-        } else if (inputCooling(GTMaterials.Helium)) {
-            if (currentHeat > 7000 && currentHeat <= 10000) {
-                heat -= 4;
-            }
+        if (MachineIO.inputFluid(this, DISTILLED_WATER)) {
+            heat--;
+        } else if (MachineIO.inputFluid(this, OXYGEN)) {
+            heat -= 2;
+        } else if (MachineIO.inputFluid(this, HELIUM)) {
+            heat -= 4;
         } else if (inputBlast()) {
             heat++;
         }
@@ -137,12 +138,10 @@ public class AdvancedInfiniteDrillMachine extends StorageMachine {
     @Override
     public void addDisplayText(List<Component> tooltips) {
         if (isFormed()) {
-            tooltips.add(ComponentPanelWidget.withButton(Component.literal("+10"), "+10"));
-            tooltips.add(ComponentPanelWidget.withButton(Component.literal("-10"), "-10"));
             MultiblockDisplayText.builder(tooltips, true)
                     .setWorkingStatus(isWorkingEnabled(), isActive())
+                    .addIdlingLine(false)
                     .addEnergyUsageLine(energyContainer);
-
             if (isEmpty()) {
                 tooltips.add(Component.translatable("gtceu.machine.advanced_infinite_driller.not_fluid_head")
                         .withStyle(ChatFormatting.RED));
@@ -151,6 +150,9 @@ public class AdvancedInfiniteDrillMachine extends StorageMachine {
                         Component.literal("5x5").withStyle(ChatFormatting.GOLD)));
                 tooltips.add(Component.translatable("gtceu.machine.advanced_infinite_driller.heat", MAX_HEAT, RUNNING_HEAT));
                 tooltips.add(Component.translatable("gtceu.machine.advanced_infinite_driller.current_heat", currentHeat));
+                tooltips.add(Component.translatable("gtceu.machine.advanced_infinite_driller.fast",
+                        ComponentPanelWidget.withButton(Component.literal(fast ? "[开启]" : "[关闭]"),
+                                "fast_mode")));
                 var fluids = getRecipeLogic().getVeinFluids();
                 if (!fluids.isEmpty()) {
                     fluids.forEach((fluid, produced) -> {
@@ -178,6 +180,13 @@ public class AdvancedInfiniteDrillMachine extends StorageMachine {
         }
     }
 
+    @Override
+    public void handleDisplayClick(String componentData, ClickData clickData) {
+        if (componentData.equals("fast_mode")) {
+            fast = !fast;
+        }
+    }
+
     public int getRate() {
         return (int) Math.max(1, (currentHeat - RUNNING_HEAT) * getDrillHeadTier() * 0.75);
     }
@@ -195,51 +204,12 @@ public class AdvancedInfiniteDrillMachine extends StorageMachine {
         return 0;
     }
 
-    @Override
-    public void handleDisplayClick(String componentData, ClickData clickData) {
-        if (isFormed()) {
-            if (componentData.equals("+10")) {
-                currentHeat += 10;
-            } else if (componentData.equals("-10")) {
-                currentHeat -= 10;
-            }
-        }
-    }
-
     protected boolean inputBlast() {
         return MachineIO.inputFluid(this, GTMaterials.Blaze.getFluid(getFluidConsume()));
     }
 
-    // protected boolean inputWater() {
-    // if (currentHeat <= 0) return false;
-    // long heat = (long) Math.pow(currentHeat, 1.5);
-    // var success = MachineIO.inputFluid(this, GTMaterials.DistilledWater.getFluid(heat));
-    // if (success) currentHeat--;
-    // return success;
-    // }
-    //
-    // protected boolean inputLiquidNitrogen() {
-    // if (currentHeat <= 0) return false;
-    // long heat = (long) Math.pow(currentHeat, 1.5);
-    // var success = MachineIO.inputFluid(this, GTMaterials.Nitrogen.getFluid(heat));
-    // if (success) currentHeat -= 2;
-    // return success;
-    // }
-    //
-    // protected boolean inputLiquidHelium() {
-    // if (currentHeat <= 0) return false;
-    // var success = MachineIO.inputFluid(this, GTMaterials.Helium.getFluid(getFluidConsume()));
-    // if (success) currentHeat -= 4;
-    // return success;
-    // }
-
-    protected boolean inputCooling(Material material) {
-        if (currentHeat <= 0) return false;
-        return MachineIO.inputFluid(this, material.getFluid(30000L));
-    }
-
     protected long getFluidConsume() {
-        return (long) Math.pow(currentHeat, 1.5);
+        return (long) Math.pow(currentHeat, 1.3);
     }
 
     public boolean canRunnable() {

@@ -85,7 +85,7 @@ public class MachineRecipe {
                 .duration(400).EUt(480).save(provider);
 
         ASSEMBLER_RECIPES.recipeBuilder("adv")
-                .inputItems(GTMachines.FLUID_DRILLING_RIG[ZPM])
+                .inputItems(AdvancedMultiBlockMachine.FLUID_DRILLING_RIG[ZPM])
                 .inputItems(CIRCUIT.getIngredient(UEV), 4)
                 .inputItems(CONVEYOR_MODULE_UHV, 4)
                 .inputItems(FLUID_REGULATOR_UHV, 4)

@@ -88,7 +88,7 @@ public class AdvancedInfiniteDrillLogic extends RecipeLogic {
                             .toArray(FluidStack[]::new))
                     .buildRawRecipe();
             recipe = recipe.copy(new ContentModifier(getParallel(),
-                    efficiency(getMachine().getRate())), false);
+                    efficiency(getMachine().getRate() * 500)), false);
             if (recipe.matchRecipe(getMachine()).isSuccess() && recipe.matchTickRecipe(getMachine()).isSuccess()) {
                 return recipe;
             }
@@ -144,8 +144,8 @@ public class AdvancedInfiniteDrillLogic extends RecipeLogic {
                 if (fluid != null) {
                     long produced = getFluidToProduce(data.getFluidVeinWorldEntry(x + i, z + j));
                     if (produced > 0) {
-                        var value = veinFluids.getOrDefault(fluid, 0L) + produced;
-                        veinFluids.put(fluid, Math.min(1000L, value));
+                        var value = veinFluids.getOrDefault(fluid, 0L) + (produced * 10);
+                        veinFluids.put(fluid, value);
                     }
                 }
             }

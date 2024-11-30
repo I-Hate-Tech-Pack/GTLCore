@@ -2046,7 +2046,7 @@ public class AdvancedMultiBlockMachine {
     public final static MultiblockMachineDefinition ADVANCED_INFINITE_DRILLER = REGISTRATE.multiblock("advanced_infinite_driller", AdvancedInfiniteDrillMachine::new)
             .rotationState(RotationState.NON_Y_AXIS)
             .recipeType(DUMMY_RECIPES)
-            .appearanceBlock(GTLBlocks.HYPER_MECHANICAL_CASING)
+            .appearanceBlock(GTLBlocks.IRIDIUM_CASING)
             .tooltips(Component.translatable("gtceu.machine.advanced_infinite_driller.drilled_fluid.tooltip.0"))
             .tooltips(Component.translatable("gtceu.multiblock.laser.tooltip"))
             .tooltipBuilder((item, list) -> {
@@ -2087,21 +2087,21 @@ public class AdvancedMultiBlockMachine {
                     .where("N", blocks(Registries.getBlock("kubejs:naquadriatictaranium_coil_block")))
                     .where("M", blocks(Registries.getBlock("kubejs:neutronium_gearbox")))
                     .where("L", blocks(Registries.getBlock("gtceu:vanadium_block")))
-                    .where("B", blocks(Registries.getBlock("gtceu:hyper_core")))
+                    .where("B", blocks(Registries.getBlock("gtlcore:hyper_core")))
                     .where("D", blocks(Registries.getBlock("minecraft:oak_log")))
                     .where("F", blocks(Registries.getBlock("kubejs:restraint_device")))
                     .where("H", blocks(Registries.getBlock("gtceu:heat_vent")))
                     .where("K", blocks(Registries.getBlock("kubejs:machine_casing_grinding_head")))
                     .where("E", blocks(Registries.getBlock("gtceu:neutronium_frame")))
                     .where("J", blocks(Registries.getBlock("gtceu:ptfe_pipe_casing")))
-                    .where("C", blocks(Registries.getBlock("gtceu:hyper_mechanical_casing")))
-                    .where("A", blocks(Registries.getBlock("gtceu:iridium_casing"))
+                    .where("C", blocks(Registries.getBlock("gtlcore:hyper_mechanical_casing")))
+                    .where("A", blocks(Registries.getBlock("gtlcore:iridium_casing"))
                             .or(abilities(PartAbility.IMPORT_FLUIDS).setMaxGlobalLimited(2))
                             .or(abilities(PartAbility.EXPORT_FLUIDS).setMaxGlobalLimited(16))
                             .or(abilities(PartAbility.INPUT_ENERGY).setMaxGlobalLimited(2).setMinGlobalLimited(1))
                             .or(abilities(PartAbility.INPUT_LASER).setMaxGlobalLimited(1)))
                     .build())
-            .workableCasingRenderer(GTLCore.id("block/casings/hyper_mechanical_casing"),
+            .workableCasingRenderer(GTLCore.id("block/casings/iridium_casing"),
                     GTCEu.id("block/multiblock/fluid_drilling_rig"))
             .register();
 }
