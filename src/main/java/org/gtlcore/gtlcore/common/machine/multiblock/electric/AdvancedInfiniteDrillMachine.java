@@ -72,6 +72,9 @@ public class AdvancedInfiniteDrillMachine extends StorageMachine {
     protected int currentHeat = 300;
 
     @Persisted
+    protected int process;
+
+    @Persisted
     protected boolean fast;
 
     protected ConditionalSubscriptionHandler heatSubs;
@@ -89,28 +92,37 @@ public class AdvancedInfiniteDrillMachine extends StorageMachine {
     protected void heatUpdate() {
         if (!fast && getOffsetTimer() % 5 != 0) return;
         if (isEmpty()) return;
-        if (currentHeat > MAX_HEAT) {
-            currentHeat = 300;
-            this.machineStorage.setStackInSlot(0, ItemStack.EMPTY);
-            this.getRecipeLogic().interruptRecipe();
-            return;
-        }
-
         int heat = 0;
+
         if (getRecipeLogic().isWorking()) {
-            heat += (int) Math.floor((currentHeat - RUNNING_HEAT) / 2000D);
+            if (process <= 0) {
+                heat += (int) Math.floor((currentHeat - RUNNING_HEAT) / 2000D);
+            }
+            if (MachineIO.inputFluid(this, DISTILLED_WATER)) {
+                heat--;
+            } else if (MachineIO.inputFluid(this, OXYGEN)) {
+                heat -= 2;
+            } else if (MachineIO.inputFluid(this, HELIUM)) {
+                heat -= 4;
+            }
         }
 
-        if (MachineIO.inputFluid(this, DISTILLED_WATER)) {
-            heat--;
-        } else if (MachineIO.inputFluid(this, OXYGEN)) {
-            heat -= 2;
-        } else if (MachineIO.inputFluid(this, HELIUM)) {
-            heat -= 4;
-        } else if (inputBlast()) {
+        if (inputBlast()) {
             heat++;
         }
+
         this.currentHeat += heat;
+
+        if (currentHeat > MAX_HEAT) {
+            process += fast ? 1 : 5;
+            if (process >= 200) {
+                currentHeat = 300;
+                this.machineStorage.setStackInSlot(0, ItemStack.EMPTY);
+                this.getRecipeLogic().interruptRecipe();
+            }
+        } else if (process > 0) {
+            process--;
+        }
     }
 
     @Override
@@ -153,6 +165,9 @@ public class AdvancedInfiniteDrillMachine extends StorageMachine {
                 tooltips.add(Component.translatable("gtceu.machine.advanced_infinite_driller.fast",
                         ComponentPanelWidget.withButton(Component.literal(fast ? "[开启]" : "[关闭]"),
                                 "fast_mode")));
+                tooltips.add(Component.translatable("gtceu.machine.advanced_infinite_driller.process",
+                        FormattingUtil.formatNumber2Places(200F / process * 100))
+                        .append("%"));
                 var fluids = getRecipeLogic().getVeinFluids();
                 if (!fluids.isEmpty()) {
                     fluids.forEach((fluid, produced) -> {
