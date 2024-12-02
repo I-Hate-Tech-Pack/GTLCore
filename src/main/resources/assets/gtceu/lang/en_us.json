@@ -593,6 +593,7 @@
     "gtceu.machine.advanced_infinite_driller.heat": "最大温度: %sK / 工作温度: %sK",
     "gtceu.machine.advanced_infinite_driller.current_heat": "当前温度: %sK",
     "gtceu.machine.advanced_infinite_driller.fast": "高速模式: %s ",
+    "gtceu.machine.advanced_infinite_driller.process": "损坏: %s",
     "gtceu.machine.advanced_infinite_driller.drilled_fluid": "流体: %s 产量: %s",
     "gtceu.machine.advanced_infinite_driller.drilled_fluid.tooltip.0": "更加高级的无尽流体钻井",
     "gtceu.machine.advanced_infinite_driller.drilled_fluid.tooltip.1": "可以更加高效的抽取流体, 与此同时钻机需要一定温度来启动,可以通入液态烈焰来升温",

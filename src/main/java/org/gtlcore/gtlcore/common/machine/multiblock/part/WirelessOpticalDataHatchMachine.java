@@ -220,7 +220,7 @@ public class WirelessOpticalDataHatchMachine extends MultiblockPartMachine imple
 
     @Override
     public GTRecipe modifyRecipe(GTRecipe recipe) {
-        return super.modifyRecipe(recipe);
+        return IOpticalDataAccessHatch.super.modifyRecipe(recipe);
     }
 
     @Override

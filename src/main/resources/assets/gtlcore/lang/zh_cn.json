@@ -84,6 +84,7 @@
     "block.gtlcore.ultimate_stellar_containment_casing": "终极恒星热力容器",
     "block.gtlcore.uxv_hermetic_casing": "密封机械方块 XII",
     "config.gtlcore.option.cellType": "AE磁盘存储类型倍数",
+    "config.gtlcore.option.canBreakCable": "允许连锁AE线缆",
     "config.gtlcore.option.disableDrift": "禁用飞行惯性",
     "config.gtlcore.option.durationMultiplier": "配方时间乘数",
     "config.gtlcore.option.enablePrimitiveVoidOre": "启用原始虚空矿机",
