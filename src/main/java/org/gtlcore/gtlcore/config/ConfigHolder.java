@@ -45,7 +45,8 @@ public class ConfigHolder {
     @Configurable.Range(min = 36, max = 360)
     public int exPatternProvider = 36;
     @Configurable
-    public boolean canBreakCable = false;
+    @Configurable.Comment("连锁黑名单,支持通配符*")
+    public String[] blackBlockList = { "ae2:cable_bus", "minecraft:grass_block" };
     @Configurable
     public String[] mobList1 = new String[] { "chicken", "rabbit", "sheep", "cow", "horse", "pig", "donkey", "skeleton_horse", "iron_golem", "wolf", "goat", "parrot", "camel", "cat", "fox", "llama", "panda", "polar_bear" };
     @Configurable

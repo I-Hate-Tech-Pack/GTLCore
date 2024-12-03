@@ -2,6 +2,8 @@ package org.gtlcore.gtlcore.utils;
 
 import net.minecraft.ChatFormatting;
 
+import java.util.regex.Pattern;
+
 import static net.minecraft.ChatFormatting.*;
 
 public class TextUtil {
@@ -42,5 +44,22 @@ public class TextUtil {
 
     public static String dark_green(String input) {
         return formatting(input, new ChatFormatting[] { GREEN, DARK_GREEN }, 160.0D);
+    }
+
+    /**
+     * 查询某个内容是否出现在数组中，支持通配符
+     * 
+     * @param array  要查询的数组
+     * @param target 要查询的内容，支持通配符
+     * @return 如果内容存在于数组中，返回true；否则返回false
+     */
+    public static boolean containsWithWildcard(String[] array, String target) {
+        for (String element : array) {
+            String regex = element.replace("*", ".*");
+            if (Pattern.matches(regex, target)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -1,8 +1,8 @@
 package org.gtlcore.gtlcore.mixin.ftbu;
 
 import org.gtlcore.gtlcore.config.ConfigHolder;
+import org.gtlcore.gtlcore.utils.TextUtil;
 
-import appeng.block.networking.CableBusBlock;
 import dev.ftb.mods.ftbultimine.FTBUltiminePlayerData;
 import dev.ftb.mods.ftbultimine.shape.BlockMatcher;
 import org.spongepowered.asm.mixin.Mixin;
@@ -17,9 +17,12 @@ public class YouCantBreakAE2Mixin {
 
     @ModifyVariable(method = "updateBlocks", at = @At(value = "STORE", ordinal = 2), remap = false)
     public BlockMatcher modifyBlockMatcher(BlockMatcher matcher) {
-        if (ConfigHolder.INSTANCE.canBreakCable) {
+        if (ConfigHolder.INSTANCE.blackBlockList == null || ConfigHolder.INSTANCE.blackBlockList.length < 1) {
             return matcher;
         }
-        return (original, state) -> !(state.getBlock() instanceof CableBusBlock) && original.getBlock() == state.getBlock();
+        return (original, state) -> {
+            boolean flag = !TextUtil.containsWithWildcard(ConfigHolder.INSTANCE.blackBlockList, state.getBlock().kjs$getId());
+            return flag && state.getBlock() == original.getBlock();
+        };
     }
 }
