@@ -14,7 +14,6 @@ import com.gregtechceu.gtceu.api.pattern.error.SinglePredicateError;
 import com.gregtechceu.gtceu.common.item.TooltipBehavior;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -44,7 +43,7 @@ public class StructureDetectBehavior extends TooltipBehavior implements IToolBeh
         lines.add(Component.translatable("item.gtlcore.structure_detect.tooltip.1"));
     });
 
-    private static final ExecutorService DETECT_THREAD = new ThreadPoolExecutor(1, 1, 0l, TimeUnit.MILLISECONDS,
+    private static final ExecutorService DETECT_THREAD = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS,
             new LinkedBlockingQueue<>(1), r -> new Thread(r, "Structure-Detect-Thread-1"));
 
     /**
@@ -59,7 +58,7 @@ public class StructureDetectBehavior extends TooltipBehavior implements IToolBeh
         Player player = context.getPlayer();
         if (player != null) {
             Level level = context.getLevel();
-            if (level instanceof ClientLevel) return InteractionResult.PASS;
+            if (level.isClientSide) return InteractionResult.PASS;
             BlockPos blockPos = context.getClickedPos();
             if (MetaMachine.getMachine(level, blockPos) instanceof IMultiController controller) {
                 if (controller.isFormed()) {
