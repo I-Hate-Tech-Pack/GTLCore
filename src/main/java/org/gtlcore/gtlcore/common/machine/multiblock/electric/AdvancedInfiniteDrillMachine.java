@@ -72,7 +72,7 @@ public class AdvancedInfiniteDrillMachine extends StorageMachine {
     protected int currentHeat = 300;
 
     @Persisted
-    protected int process;
+    protected int process = 0;
 
     @Persisted
     protected boolean fast;
@@ -116,6 +116,7 @@ public class AdvancedInfiniteDrillMachine extends StorageMachine {
         if (currentHeat > MAX_HEAT) {
             process += fast ? 1 : 5;
             if (process >= 200) {
+                process = 0;
                 currentHeat = 300;
                 this.machineStorage.setStackInSlot(0, ItemStack.EMPTY);
                 this.getRecipeLogic().interruptRecipe();
@@ -166,7 +167,7 @@ public class AdvancedInfiniteDrillMachine extends StorageMachine {
                         ComponentPanelWidget.withButton(Component.literal(fast ? "[开启]" : "[关闭]"),
                                 "fast_mode")));
                 tooltips.add(Component.translatable("gtceu.machine.advanced_infinite_driller.process",
-                        FormattingUtil.formatNumber2Places(200F / process * 100))
+                        FormattingUtil.formatNumber2Places(process / 200F * 100))
                         .append("%"));
                 var fluids = getRecipeLogic().getVeinFluids();
                 if (!fluids.isEmpty()) {
