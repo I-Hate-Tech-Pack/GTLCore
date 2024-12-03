@@ -287,6 +287,13 @@ public class GTLRecipeTypes {
             .setProgressBar(GuiTextures.PROGRESS_BAR_ARROW, LEFT_TO_RIGHT)
             .setSound(GTSoundEntries.SCIENCE);
 
+    public static final GTRecipeType SPACE_COSMIC_PROBE_RECEIVERS_RECIPES = register("space_cosmic_probe_receivers", MULTIBLOCK)
+            .setEUIO(IO.IN)
+            .setMaxTooltips(4)
+            .setMaxIOSize(2, 0, 0, 1)
+            .setProgressBar(GuiTextures.PROGRESS_BAR_ARROW, LEFT_TO_RIGHT)
+            .setSound(GTSoundEntries.SCIENCE);
+
     public static final GTRecipeType DECAY_HASTENER_RECIPES = register("decay_hastener", MULTIBLOCK)
             .setEUIO(IO.IN)
             .setMaxIOSize(0, 1, 1, 1)

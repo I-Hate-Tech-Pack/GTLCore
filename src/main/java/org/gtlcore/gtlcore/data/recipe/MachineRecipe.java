@@ -1,5 +1,7 @@
 package org.gtlcore.gtlcore.data.recipe;
 
+import org.gtlcore.gtlcore.GTLCore;
+import org.gtlcore.gtlcore.api.data.tag.GTLTagPrefix;
 import org.gtlcore.gtlcore.common.data.GTLBlocks;
 import org.gtlcore.gtlcore.common.data.GTLItems;
 import org.gtlcore.gtlcore.common.data.GTLMachines;
@@ -8,6 +10,7 @@ import org.gtlcore.gtlcore.common.data.machines.*;
 import org.gtlcore.gtlcore.utils.Registries;
 
 import com.gregtechceu.gtceu.api.GTValues;
+import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.chemical.material.stack.UnificationEntry;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
@@ -38,8 +41,10 @@ import static com.gregtechceu.gtceu.api.data.tag.TagPrefix.*;
 import static com.gregtechceu.gtceu.common.data.GTItems.*;
 import static com.gregtechceu.gtceu.common.data.GTMaterials.*;
 import static com.gregtechceu.gtceu.common.data.GTRecipeTypes.ASSEMBLER_RECIPES;
+import static com.gregtechceu.gtceu.common.data.GTRecipeTypes.ASSEMBLY_LINE_RECIPES;
 import static com.gregtechceu.gtceu.data.recipe.CraftingComponent.*;
 import static com.gregtechceu.gtceu.data.recipe.misc.MetaTileEntityLoader.registerMachineRecipe;
+import static org.gtlcore.gtlcore.common.data.GTLRecipeTypes.SPACE_COSMIC_PROBE_RECEIVERS_RECIPES;
 
 public class MachineRecipe {
 
@@ -599,6 +604,50 @@ public class MachineRecipe {
                 .outputItems(WirelessMachines.WIRELESS_ENERGY_OUTPUT_HATCH_4096A[MAX].asStack())
                 .duration(200)
                 .EUt(GTValues.VA[MAX])
+                .save(provider);
+
+        ASSEMBLY_LINE_RECIPES
+                .recipeBuilder(GTLCore.id("space_cosmic_probe_receivers"))
+                .inputItems(EMITTER_OpV, 16)
+                .inputItems(SENSOR_OpV, 16)
+                .inputItems(CIRCUIT.getIngredient(MAX), 16)
+                .inputItems(ChemicalHelper.get(rod, GTLMaterials.Infinity), 32)
+                .inputItems(ChemicalHelper.get(plateDouble, GTLMaterials.Starmetal), 32)
+                .inputItems(AdvancedMultiBlockMachine.SPACE_PROBE_SURFACE_RECEPTION, 8)
+                .inputItems(GTLBlocks.ADVANCED_FUSION_COIL, 16)
+                .inputItems(Registries.getItem("kubejs:awakened_core"), 16)
+                .inputItems(ChemicalHelper.get(GTLTagPrefix.nanoswarm, GTLMaterials.BlackDwarfMatter), 64)
+                .inputItems(ChemicalHelper.get(GTLTagPrefix.nanoswarm, GTLMaterials.WhiteDwarfMatter), 64)
+                .inputItems(GTLItems.INSANELY_ULTIMATE_BATTERY)
+                .inputFluids(GTLMaterials.SuperMutatedLivingSolder.getFluid(32000))
+                .inputFluids(GTLMaterials.Periodicium.getFluid(16000))
+                .stationResearch(b -> b.researchStack(AdvancedMultiBlockMachine.SPACE_PROBE_SURFACE_RECEPTION.asStack())
+                        .dataStack(GTItems.TOOL_DATA_MODULE.asStack())
+                        .EUt(VA[UXV])
+                        .CWUt(2048))
+                .outputItems(AdvancedMultiBlockMachine.SPACE_COSMIC_PROBE_RECEIVERS)
+                .duration(2000)
+                .EUt(GTValues.VA[OpV])
+                .save(provider);
+
+        // adv
+        space_probe(GTLMaterials.Starlight, 2, 1000, 2, provider);
+        space_probe(GTLMaterials.Starlight, 3, 10000, 2, provider);
+        space_probe(GTLMaterials.HeavyLeptonMixture, 1, 100, 1, provider);
+        space_probe(GTLMaterials.HeavyLeptonMixture, 2, 1000, 1, provider);
+        space_probe(GTLMaterials.HeavyLeptonMixture, 3, 10000, 1, provider);
+        space_probe(GTLMaterials.CosmicElement, 3, 10000, 3, provider);
+    }
+
+    private static void space_probe(Material material, int grade, int amount, int circuit, Consumer<FinishedRecipe> provider) {
+        SPACE_COSMIC_PROBE_RECEIVERS_RECIPES
+                .recipeBuilder(GTLCore.id("space_cosmic_probe_receivers_" + material.getName()))
+                .notConsumable(Registries.getItem("kubejs:space_probe_mk" + grade))
+                .outputFluids(material.getFluid(amount))
+                .EUt((long) (VA[UEV] * Math.pow(4, grade)))
+                .duration(200)
+                .circuitMeta(circuit)
+                .CWUt(grade)
                 .save(provider);
     }
 }
