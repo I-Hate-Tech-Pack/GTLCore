@@ -17,6 +17,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -27,10 +28,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 
 /**
@@ -38,13 +36,12 @@ import java.util.function.Consumer;
  */
 public class StructureDetectBehavior extends TooltipBehavior implements IToolBehavior, IInteractionItem {
 
+    private static final ReentrantLock LOCK = new ReentrantLock();
+
     public static final StructureDetectBehavior INSTANCE = new StructureDetectBehavior(lines -> {
         lines.add(Component.translatable("item.gtlcore.structure_detect.tooltip.0"));
         lines.add(Component.translatable("item.gtlcore.structure_detect.tooltip.1"));
     });
-
-    private static final ExecutorService DETECT_THREAD = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS,
-            new LinkedBlockingQueue<>(1), r -> new Thread(r, "Structure-Detect-Thread-1"));
 
     /**
      * @param tooltips a consumer adding translated tooltips to the tooltip list
@@ -71,11 +68,17 @@ public class StructureDetectBehavior extends TooltipBehavior implements IToolBeh
                             showError(player, error, false);
                         }
                     } else {
-                        DETECT_THREAD.submit(() -> {
+                        ((ServerLevel) level).getServer().execute(() -> {
                             BlockPattern pattern = controller.getPattern();
-                            List<PatternError> errors = check(controller, pattern);
-                            for (int i = 0; i < errors.size(); i++) {
-                                showError(player, errors.get(i), (i == 1));
+                            LOCK.lock();
+                            if (LOCK.tryLock()) {
+                                var result = check(controller, pattern);
+                                for (int i = 0; i < result.size(); i++) {
+                                    showError(player, result.get(i), (i == 1));
+                                }
+                                LOCK.unlock();
+                            } else {
+                                LOCK.unlock();
                             }
                         });
                     }
