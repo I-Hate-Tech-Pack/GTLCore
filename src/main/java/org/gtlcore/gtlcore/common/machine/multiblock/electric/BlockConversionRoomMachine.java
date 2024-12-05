@@ -70,7 +70,8 @@ public class BlockConversionRoomMachine extends StorageMachine {
 
     @Override
     protected boolean filter(@NotNull ItemStack itemStack) {
-        return itemStack.getItem() == GTLItems.CONVERSION_SIMULATE_CARD.get();
+        return itemStack.getItem() == GTLItems.CONVERSION_SIMULATE_CARD.get() ||
+                itemStack.getItem() == GTLItems.FAST_CONVERSION_SIMULATE_CARD.get();
     }
 
     @Override
@@ -94,12 +95,16 @@ public class BlockConversionRoomMachine extends StorageMachine {
         boolean value = super.onWorking();
         if (getOffsetTimer() % 20 == 0) {
             int amount = getTier() * am - 7;
-            if (blockBusPartMachine != null && getMachineStorageItem().getItem() == GTLItems.CONVERSION_SIMULATE_CARD.get()) {
+            if (blockBusPartMachine != null && !getMachineStorageItem().isEmpty()) {
                 ItemStackTransfer stackTransfer = blockBusPartMachine.getInventory().storage;
                 int a = amount;
+                if (getMachineStorageItem().is(GTLItems.FAST_CONVERSION_SIMULATE_CARD.get())) {
+                    a = 81 * 64;
+                }
                 for (int i = 0; a > 0 && i < stackTransfer.getSlots(); i++) {
                     ItemStack itemStack = stackTransfer.getStackInSlot(i);
-                    if (itemStack.getItem() instanceof BlockItem blockItem && covRecipe.containsKey(blockItem.getBlock())) {
+                    if (itemStack.getItem() instanceof BlockItem blockItem &&
+                            covRecipe.containsKey(blockItem.getBlock())) {
                         int count = itemStack.getCount();
                         a -= count;
                         stackTransfer.setStackInSlot(i, new ItemStack(covRecipe.get(blockItem.getBlock()).asItem(), count));
@@ -128,9 +133,16 @@ public class BlockConversionRoomMachine extends StorageMachine {
         return value;
     }
 
+    public int getConversionCount() {
+        if (!getMachineStorageItem().isEmpty() && getMachineStorageItem().is(GTLItems.FAST_CONVERSION_SIMULATE_CARD.get())) {
+            return 81 * am;
+        }
+        return getTier() * am - 7;
+    }
+
     @Override
     public void addDisplayText(@NotNull List<Component> textList) {
         super.addDisplayText(textList);
-        textList.add(Component.translatable("gtceu.machine.block_conversion_room.am", (getTier() * am - 7)));
+        textList.add(Component.translatable("gtceu.machine.block_conversion_room.am", getConversionCount()));
     }
 }

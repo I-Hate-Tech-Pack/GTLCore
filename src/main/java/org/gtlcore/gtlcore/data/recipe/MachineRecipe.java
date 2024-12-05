@@ -2,10 +2,7 @@ package org.gtlcore.gtlcore.data.recipe;
 
 import org.gtlcore.gtlcore.GTLCore;
 import org.gtlcore.gtlcore.api.data.tag.GTLTagPrefix;
-import org.gtlcore.gtlcore.common.data.GTLBlocks;
-import org.gtlcore.gtlcore.common.data.GTLItems;
-import org.gtlcore.gtlcore.common.data.GTLMachines;
-import org.gtlcore.gtlcore.common.data.GTLMaterials;
+import org.gtlcore.gtlcore.common.data.*;
 import org.gtlcore.gtlcore.common.data.machines.*;
 import org.gtlcore.gtlcore.utils.Registries;
 
@@ -15,6 +12,7 @@ import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.chemical.material.stack.UnificationEntry;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.data.tag.TagUtil;
+import com.gregtechceu.gtceu.api.fluids.store.FluidStorageKeys;
 import com.gregtechceu.gtceu.api.item.ComponentItem;
 import com.gregtechceu.gtceu.common.data.GTBlocks;
 import com.gregtechceu.gtceu.common.data.GTItems;
@@ -629,6 +627,20 @@ public class MachineRecipe {
                 .duration(2000)
                 .EUt(GTValues.VA[OpV])
                 .save(provider);
+
+        GTLRecipeTypes.ASSEMBLER_MODULE_RECIPES.recipeBuilder("fast_conversion_simulate_card")
+                .inputItems(FIELD_GENERATOR_UIV, 4)
+                .inputItems(EMITTER_UIV, 4)
+                .inputItems(SENSOR_UIV, 4)
+                .inputItems(CIRCUIT.getIngredient(UIV), 8)
+                .inputItems(GTLItems.CONVERSION_SIMULATE_CARD)
+                .inputFluids(GTLMaterials.CosmicSuperconductor.getFluid(16000))
+                .inputFluids(GTLMaterials.Periodicium.getFluid(16000))
+                .inputFluids(GTLMaterials.HeavyLeptonMixture.getFluid(FluidStorageKeys.GAS, 8000))
+                .inputFluids(GTLMaterials.Legendarium.getFluid(8000))
+                .outputItems(GTLItems.FAST_CONVERSION_SIMULATE_CARD)
+                .addData("SEPMTier", 5)
+                .duration(200).EUt(V[UXV]).save(provider);
 
         // adv
         space_probe(GTLMaterials.Starlight, 2, 1000, 2, provider);

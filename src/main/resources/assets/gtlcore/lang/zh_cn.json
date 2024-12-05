@@ -108,6 +108,7 @@
     "item.gtlcore.cfg_copy": "配置复制工具",
     "item.gtlcore.contaminated_petri_dish": "污染的培养皿",
     "item.gtlcore.conversion_simulate_card": "转换模拟卡",
+    "item.gtlcore.fast_conversion_simulate_card": "高速转换模拟卡",
     "item.gtlcore.cupriavidus_petri_dish": "钩虫贪铜菌培养皿",
     "item.gtlcore.debug_pattern_test": "配方样板调试工具",
     "item.gtlcore.debug_structure_writer": "多方块结构导出工具",

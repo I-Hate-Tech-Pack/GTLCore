@@ -546,6 +546,7 @@ public class AdvancedMultiBlockMachine {
             .recipeType(GTLRecipeTypes.BLOCK_CONVERSIONRECIPES)
             .tooltips(Component.translatable("gtceu.machine.block_conversion_room.tooltip.0"))
             .tooltips(Component.translatable("gtceu.machine.large_block_conversion_room.tooltip.1"))
+            .tooltips(Component.translatable("gtceu.machine.large_block_conversion_room.tooltip.2"))
             .tooltips(Component.translatable("gtceu.machine.available_recipe_map_1.tooltip",
                     Component.translatable("gtceu.block_conversion")))
             .tooltipBuilder(GTLMachines.GTL_ADD)

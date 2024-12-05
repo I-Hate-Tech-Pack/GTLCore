@@ -303,4 +303,5 @@ public class GTLItems {
     public static ItemEntry<Item> CUPRIAVIDUS_PETRI_DISH = register("cupriavidus_petri_dish", false);
     public static ItemEntry<Item> SHEWANELLA_PETRI_DISH = register("shewanella_petri_dish", false);
     public static ItemEntry<Item> CONVERSION_SIMULATE_CARD = register("conversion_simulate_card", true);
+    public static ItemEntry<Item> FAST_CONVERSION_SIMULATE_CARD = register("fast_conversion_simulate_card", true);
 }

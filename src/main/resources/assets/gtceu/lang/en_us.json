@@ -699,6 +699,7 @@
     "gtceu.machine.isa_mill.tooltip.0": "工业级湿法碾磨",
     "gtceu.machine.large_arc_smelter.tooltip.0": "运行闪电处理配方时耗时x4",
     "gtceu.machine.large_block_conversion_room.tooltip.1": "电压等级每高出MV1级，每次转换方块数量+64，且不会重复",
+    "gtceu.machine.large_block_conversion_room.tooltip.2": "放入转换模拟卡会启用虚拟模式, 放入高速转换模拟卡后单次可以转化整个总线内方块",
     "gtceu.machine.large_gas_collector.tooltip.0": "最大并行数：100000",
     "gtceu.machine.large_greenhouse.tooltip.0": "无需要阳光就能运行",
     "gtceu.machine.large_recycler.tooltip.0": "电压等级每高出EV1级，最大并行数x4",
