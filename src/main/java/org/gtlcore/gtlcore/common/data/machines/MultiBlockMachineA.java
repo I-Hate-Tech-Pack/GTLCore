@@ -1,6 +1,7 @@
 package org.gtlcore.gtlcore.common.data.machines;
 
 import org.gtlcore.gtlcore.GTLCore;
+import org.gtlcore.gtlcore.api.machine.multiblock.CoilWorkableElectricMultipleRecipesMachine;
 import org.gtlcore.gtlcore.api.machine.multiblock.NoEnergyMultiblockMachine;
 import org.gtlcore.gtlcore.api.pattern.GTLPredicates;
 import org.gtlcore.gtlcore.common.data.*;
@@ -966,7 +967,7 @@ public class MultiBlockMachineA {
             .workableCasingRenderer(GTLCore.id("block/manipulator"), GTCEu.id("block/multiblock/fusion_reactor"))
             .register();
 
-    public final static MultiblockMachineDefinition SUPER_BLAST_SMELTER = REGISTRATE.multiblock("super_blast_smelter", CoilWorkableElectricMultiblockMachine::new)
+    public final static MultiblockMachineDefinition SUPER_BLAST_SMELTER = REGISTRATE.multiblock("super_blast_smelter", CoilWorkableElectricMultipleRecipesMachine::new)
             .rotationState(RotationState.NON_Y_AXIS)
             .allowExtendedFacing(false)
             .recipeModifiers((machine, recipe, params, result) -> GTLRecipeModifiers.reduction(machine, recipe, 1, 0.2), GTRecipeModifiers.PARALLEL_HATCH, GTRecipeModifiers::ebfOverclock)

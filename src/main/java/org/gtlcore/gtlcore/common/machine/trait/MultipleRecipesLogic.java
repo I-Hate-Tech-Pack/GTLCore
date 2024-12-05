@@ -1,8 +1,10 @@
 package org.gtlcore.gtlcore.common.machine.trait;
 
-import org.gtlcore.gtlcore.common.machine.multiblock.electric.WorkableElectricMultipleRecipesMachine;
+import org.gtlcore.gtlcore.api.machine.multiblock.ParallelMachine;
 
 import com.gregtechceu.gtceu.api.capability.recipe.*;
+import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
+import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.RecipeHelper;
@@ -20,13 +22,16 @@ import java.util.List;
 @Getter
 public class MultipleRecipesLogic extends RecipeLogic {
 
-    public MultipleRecipesLogic(WorkableElectricMultipleRecipesMachine machine) {
-        super(machine);
+    private final ParallelMachine parallel;
+
+    public MultipleRecipesLogic(ParallelMachine machine) {
+        super((IRecipeLogicMachine) machine);
+        this.parallel = machine;
     }
 
     @Override
-    public WorkableElectricMultipleRecipesMachine getMachine() {
-        return (WorkableElectricMultipleRecipesMachine) super.getMachine();
+    public WorkableElectricMultiblockMachine getMachine() {
+        return (WorkableElectricMultiblockMachine) super.getMachine();
     }
 
     @Override
@@ -49,7 +54,7 @@ public class MultipleRecipesLogic extends RecipeLogic {
         recipe.outputs.put(ItemRecipeCapability.CAP, new ArrayList<>());
         recipe.outputs.put(FluidRecipeCapability.CAP, new ArrayList<>());
         long totalEu = 0;
-        int parallel = getMachine().getMaxParallel();
+        int parallel = this.parallel.getMaxParallel();
         for (int i = 0; i < 64; i++) {
             match = parallelRecipe(match, parallel);
             GTRecipe input = buildEmptyRecipe();
@@ -68,7 +73,8 @@ public class MultipleRecipesLogic extends RecipeLogic {
             match = LookupRecipe();
             if (match == null) break;
         }
-        if (recipe.outputs.get(ItemRecipeCapability.CAP).equals(new ArrayList<>()) && recipe.outputs.get(FluidRecipeCapability.CAP).equals(new ArrayList<>())) return null;
+        if (recipe.outputs.get(ItemRecipeCapability.CAP).equals(new ArrayList<>()) && recipe.outputs.get(FluidRecipeCapability.CAP).equals(new ArrayList<>()))
+            return null;
         long maxEUt = getMachine().getOverclockVoltage();
         double d = (double) totalEu / maxEUt;
         long eut = d > 20 ? maxEUt : (long) (maxEUt * d / 20);

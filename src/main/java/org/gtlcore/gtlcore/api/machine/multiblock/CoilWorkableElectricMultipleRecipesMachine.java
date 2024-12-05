@@ -1,18 +1,22 @@
-package org.gtlcore.gtlcore.common.machine.multiblock.electric;
+package org.gtlcore.gtlcore.api.machine.multiblock;
 
-import org.gtlcore.gtlcore.api.machine.multiblock.ParallelMachine;
 import org.gtlcore.gtlcore.common.machine.trait.MultipleRecipesLogic;
 
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
-import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
+import com.gregtechceu.gtceu.api.machine.multiblock.CoilWorkableElectricMultiblockMachine;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 
 import org.jetbrains.annotations.NotNull;
 
-public class WorkableElectricMultipleRecipesMachine extends WorkableElectricMultiblockMachine implements ParallelMachine {
+import static org.gtlcore.gtlcore.common.data.GTLRecipeModifiers.getHatchParallel;
 
-    public WorkableElectricMultipleRecipesMachine(IMachineBlockEntity holder, Object... args) {
-        super(holder, args);
+/**
+ * @author EasterFG on 2024/12/5
+ */
+public class CoilWorkableElectricMultipleRecipesMachine extends CoilWorkableElectricMultiblockMachine implements ParallelMachine {
+
+    public CoilWorkableElectricMultipleRecipesMachine(IMachineBlockEntity holder) {
+        super(holder);
     }
 
     @Override
@@ -27,6 +31,6 @@ public class WorkableElectricMultipleRecipesMachine extends WorkableElectricMult
     }
 
     public int getMaxParallel() {
-        return Integer.MAX_VALUE;
+        return getHatchParallel(this);
     }
 }
