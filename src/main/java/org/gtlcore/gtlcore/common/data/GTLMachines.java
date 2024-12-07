@@ -1,15 +1,11 @@
 package org.gtlcore.gtlcore.common.data;
 
 import org.gtlcore.gtlcore.api.machine.multiblock.GTLPartAbility;
-import org.gtlcore.gtlcore.common.data.machines.AdvancedMultiBlockMachine;
-import org.gtlcore.gtlcore.common.data.machines.GeneratorMachine;
-import org.gtlcore.gtlcore.common.data.machines.MultiBlockMachineA;
-import org.gtlcore.gtlcore.common.data.machines.TootipsModify;
+import org.gtlcore.gtlcore.common.data.machines.*;
 import org.gtlcore.gtlcore.common.machine.generator.LightningRodMachine;
 import org.gtlcore.gtlcore.common.machine.generator.MagicEnergyMachine;
 import org.gtlcore.gtlcore.common.machine.multiblock.electric.CoilWorkableElectricMultipleRecipesMultiblockMachine;
 import org.gtlcore.gtlcore.common.machine.multiblock.part.*;
-import org.gtlcore.gtlcore.common.machine.multiblock.part.WirelessOpticalDataHatchMachine;
 import org.gtlcore.gtlcore.common.machine.multiblock.part.maintenance.*;
 
 import com.gregtechceu.gtceu.GTCEu;
@@ -108,6 +104,7 @@ public class GTLMachines {
         GeneratorMachine.init();
         MultiBlockMachineA.init();
         AdvancedMultiBlockMachine.init();
+        AdditionalMultiBlockMachine.init();
     }
 
     static {

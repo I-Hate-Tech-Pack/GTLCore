@@ -29,6 +29,7 @@ import com.hepdd.gtmthings.GTMThings;
 import com.hepdd.gtmthings.data.CustomItems;
 import com.hepdd.gtmthings.data.WirelessMachines;
 import com.tterrag.registrate.util.entry.ItemEntry;
+import earth.terrarium.adastra.common.registry.ModItems;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.List;
@@ -641,6 +642,50 @@ public class MachineRecipe {
                 .outputItems(GTLItems.FAST_CONVERSION_SIMULATE_CARD)
                 .addData("SEPMTier", 5)
                 .duration(200).EUt(V[UXV]).save(provider);
+
+        ASSEMBLY_LINE_RECIPES.recipeBuilder("advanced_rare_earth_centrifugal")
+                .inputItems(ChemicalHelper.get(GTLTagPrefix.nanoswarm, Neutronium), 32)
+                .inputItems(ChemicalHelper.get(plateDense, TungstenSteel), 9)
+                .inputItems(ChemicalHelper.get(plateDouble, GTLMaterials.Enderium), 9)
+                .inputItems(ChemicalHelper.get(plateDouble, GTLMaterials.Echoite), 16)
+                .inputItems(CIRCUIT.getIngredient(UXV), 16)
+                .inputItems(ChemicalHelper.get(plateDense, NaquadahAlloy), 9)
+                .inputItems(ChemicalHelper.get(pipeLargeItem, Osmiridium), 8)
+                .inputItems(ChemicalHelper.get(rod, GTLMaterials.AttunedTengam), 16)
+                .inputItems(ChemicalHelper.get(cableGtHex, GTLMaterials.Mithril), 16)
+                .inputFluids(GTLMaterials.MutatedLivingSolder.getFluid(32000))
+                .inputFluids(GTLMaterials.FallKing.getFluid(24000))
+                .inputFluids(GTLMaterials.Quantum.getFluid(32000))
+                .outputItems(AdditionalMultiBlockMachine.ADVANCED_RARE_EARTH_CENTRIFUGAL)
+                .stationResearch(b -> b.researchStack(MultiBlockMachineA.RARE_EARTH_CENTRIFUGAL.asStack())
+                        .dataStack(GTItems.TOOL_DATA_MODULE.asStack())
+                        .EUt(VA[UXV])
+                        .CWUt(2048))
+                .addData("SEPMTier", 5)
+                .duration(200).EUt(V[UXV]).save(provider);
+
+        ASSEMBLY_LINE_RECIPES.recipeBuilder("advanced_vacuum_drying_furnace")
+                .inputItems(CIRCUIT.getIngredient(UIV), 32)
+                .inputItems(GTBlocks.HIGH_POWER_CASING, 16)
+                .inputItems(ModItems.CALORITE_PLATE, 16)
+                .inputItems(MultiBlockMachineA.VACUUM_DRYING_FURNACE, 64)
+                .inputItems(ChemicalHelper.get(pipeLargeFluid, Neutronium), 4)
+                .inputItems(ELECTRIC_PUMP_UEV, 64)
+                .inputItems(FIELD_GENERATOR_UEV, 64)
+                .inputItems(ChemicalHelper.get(GTLTagPrefix.nanoswarm, Iron), 32)
+                .inputItems(ChemicalHelper.get(plateDouble, RedSteel), 16)
+                .inputItems(ChemicalHelper.get(plateDense, Steel), 16)
+                .inputItems(ChemicalHelper.get(plateDense, RhodiumPlatedPalladium), 16)
+                .inputFluids(SolderingAlloy.getFluid(16000))
+                .inputFluids(GTLMaterials.HastelloyX78.getFluid(8000))
+                .inputFluids(GTLMaterials.Quantum.getFluid(16000))
+                .outputItems(AdditionalMultiBlockMachine.ADVANCED_VACUUM_DRYING_FURNACE)
+                .stationResearch(b -> b.researchStack(MultiBlockMachineA.VACUUM_DRYING_FURNACE.asStack())
+                        .dataStack(GTItems.TOOL_DATA_MODULE.asStack())
+                        .EUt(VA[UIV])
+                        .CWUt(256))
+                .addData("SEPMTier", 2)
+                .duration(200).EUt(V[UIV]).save(provider);
 
         // adv
         space_probe(GTLMaterials.Starlight, 2, 1000, 2, provider);

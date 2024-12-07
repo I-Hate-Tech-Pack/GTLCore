@@ -973,6 +973,7 @@ public class MultiBlockMachineA {
             .recipeModifiers((machine, recipe, params, result) -> GTLRecipeModifiers.reduction(machine, recipe, 1, 0.2), GTRecipeModifiers.PARALLEL_HATCH, GTRecipeModifiers::ebfOverclock)
             .appearanceBlock(GCyMBlocks.CASING_HIGH_TEMPERATURE_SMELTING)
             .recipeType(GTRecipeTypes.BLAST_RECIPES)
+            .recipeType(GTRecipeTypes.ALLOY_SMELTER_RECIPES)
             .recipeType(GCyMRecipeTypes.ALLOY_BLAST_RECIPES)
             .tooltips(Component.translatable("gtceu.machine.duration_multiplier.tooltip", 0.2))
             .tooltips(Component.translatable("gtceu.machine.electric_blast_furnace.tooltip.a"))
@@ -980,9 +981,10 @@ public class MultiBlockMachineA {
             .tooltips(Component.translatable("gtceu.machine.perfect_oc"))
             .tooltips(Component.translatable("gtceu.machine.electric_blast_furnace.tooltip.2"))
             .tooltips(Component.translatable("gtceu.multiblock.laser.tooltip"))
+            .tooltips(Component.translatable("gtceu.machine.multiple_recipes.tooltip"))
             .tooltips(Component.translatable("gtceu.multiblock.parallelizable.tooltip"))
-            .tooltips(Component.translatable("gtceu.machine.available_recipe_map_2.tooltip",
-                    Component.translatable("gtceu.electric_blast_furnace"), Component.translatable("gtceu.alloy_blast_smelter")))
+            .tooltips(Component.translatable("gtceu.machine.available_recipe_map_3.tooltip",
+                    Component.translatable("gtceu.electric_blast_furnace"), Component.translatable("gtceu.alloy_blast_smelter"), Component.translatable("gtceu.alloy_smelter")))
             .tooltipBuilder(GTLMachines.GTL_ADD)
             .pattern(definition -> FactoryBlockPattern.start()
                     .aisle("aaaaaaaaaaaaaaaaaaaaaaa", "aaaaaaaaaaaaaaaaaaaaaaa", "                       ", "                       ", "                       ", "                       ", "                       ", "                       ", "                       ", "                       ", "                       ", "                       ", "                       ", "                       ", "                       ", "                       ", "                       ", "                       ", "                       ", "                       ", "                       ", "                       ", "                       ", "                       ", "                       ", "                       ", "                       ", "                       ", "                       ", "                       ", "                       ", "                       ", "                       ", "                       ", "                       ", "                       ", "                       ", "                       ", "                       ", "                       ", "                       ", "                       ")
