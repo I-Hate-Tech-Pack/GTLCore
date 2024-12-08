@@ -687,6 +687,32 @@ public class MachineRecipe {
                 .addData("SEPMTier", 2)
                 .duration(200).EUt(V[UIV]).save(provider);
 
+        ASSEMBLY_LINE_RECIPES.recipeBuilder("huge_incubator")
+                .inputItems(CIRCUIT.getIngredient(UIV), 32)
+                .inputItems(MultiBlockMachineA.LARGE_INCUBATOR, 4)
+                .inputItems(GTLItems.STERILIZED_PETRI_DISH, 16)
+                .inputItems(ChemicalHelper.get(gear, Neutronium), 64)
+                .inputItems(ROBOT_ARM_UIV, 16)
+                .inputItems(FLUID_REGULATOR_UIV, 16)
+                .inputItems(FIELD_GENERATOR_UIV, 16)
+                .inputItems(EMITTER_UIV, 16)
+                .inputItems(SENSOR_UIV, 16)
+                .inputItems(ChemicalHelper.get(plate, GTLMaterials.DegenerateRhenium), 32)
+                .inputItems(ChemicalHelper.get(gearSmall, GTLMaterials.Vibramantium), 32)
+                .inputItems(ChemicalHelper.get(rod, GTLMaterials.Vibramantium), 16)
+                .inputItems(ChemicalHelper.get(screw, GTLMaterials.Vibramantium), 16)
+                .inputItems(Registries.getItem("kubejs:x_ray_laser"), 1)
+                .inputFluids(SolderingAlloy.getFluid(16000))
+                .inputFluids(GTLMaterials.MutatedLivingSolder.getFluid(16000))
+                .inputFluids(GTLMaterials.Photopolymer.getFluid(8000))
+                .inputFluids(GTMaterials.SterileGrowthMedium.getFluid(8000))
+                .outputItems(AdditionalMultiBlockMachine.HUGE_INCUBATOR)
+                .stationResearch(b -> b.researchStack(MultiBlockMachineA.LARGE_INCUBATOR.asStack())
+                        .dataStack(GTItems.TOOL_DATA_MODULE.asStack())
+                        .EUt(VA[UIV])
+                        .CWUt(256))
+                .duration(200).EUt(V[UIV]).save(provider);
+
         // adv
         space_probe(GTLMaterials.Starlight, 2, 1000, 2, provider);
         space_probe(GTLMaterials.Starlight, 3, 10000, 2, provider);
