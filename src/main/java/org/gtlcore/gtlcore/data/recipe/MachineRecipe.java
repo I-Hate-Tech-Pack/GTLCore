@@ -713,6 +713,27 @@ public class MachineRecipe {
                         .CWUt(256))
                 .duration(200).EUt(V[UIV]).save(provider);
 
+        ASSEMBLY_LINE_RECIPES.recipeBuilder("advanced_neutron_activator")
+                .inputItems(CIRCUIT.getIngredient(UXV), 32)
+                .inputItems(ChemicalHelper.get(frameGt, GTLMaterials.BlackTitanium), 32)
+                .inputItems(AdvancedMultiBlockMachine.NEUTRON_ACTIVATOR, 16)
+                .inputItems(GTLMachines.NEUTRON_COMPRESSOR, 16)
+                .inputItems(GTLMachines.NEUTRON_ACCELERATOR[UHV], 8)
+                .inputItems(GTLMachines.NEUTRON_ACCELERATOR[UEV], 8)
+                .inputItems(GTLMachines.NEUTRON_ACCELERATOR[UIV], 8)
+                .inputItems(GTLItems.EXTREMELY_ULTIMATE_BATTERY)
+                .inputItems(Registries.getItem("kubejs:wyvern_core"), 4)
+                .inputFluids(GTLMaterials.SuperMutatedLivingSolder.getFluid(16000))
+                .inputFluids(GTLMaterials.MutatedLivingSolder.getFluid(16000))
+                .inputFluids(GTMaterials.Oganesson.getFluid(1296))
+                .inputFluids(GTLMaterials.Vibranium.getFluid(1296))
+                .outputItems(AdditionalMultiBlockMachine.ADVANCED_NEUTRON_ACTIVATOR)
+                .stationResearch(b -> b.researchStack(AdvancedMultiBlockMachine.NEUTRON_ACTIVATOR.asStack())
+                        .dataStack(GTItems.TOOL_DATA_MODULE.asStack())
+                        .EUt(VA[UXV])
+                        .CWUt(512))
+                .duration(400).EUt(V[UXV]).save(provider);
+
         // adv
         space_probe(GTLMaterials.Starlight, 2, 1000, 2, provider);
         space_probe(GTLMaterials.Starlight, 3, 10000, 2, provider);
