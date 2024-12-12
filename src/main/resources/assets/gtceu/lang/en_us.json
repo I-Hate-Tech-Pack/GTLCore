@@ -851,6 +851,7 @@
     "gtceu.tier.advanced": "高级",
     "gtceu.tier.base": "基础",
     "gtceu.tier.ultimate": "终极",
+    "gtceu.top.electricity": "%sA %s",
     "gtceu.ultimate_material_forge": "终极物质锻造",
     "gtceu.universal.tooltip.ampere_out": "§b输出电流：§r%sA",
     "gtceu.vacuum_drying": "真空干燥",
