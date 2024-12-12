@@ -96,7 +96,8 @@ public class AdvancedInfiniteDrillMachine extends StorageMachine {
 
         if (getRecipeLogic().isWorking()) {
             if (process <= 0) {
-                heat += (int) Math.floor((currentHeat - RUNNING_HEAT) / 2000D);
+                heat += (int) Math.floor(Math.abs(currentHeat - RUNNING_HEAT) / 2000D);
+
             }
             if (MachineIO.inputFluid(this, DISTILLED_WATER)) {
                 heat--;
@@ -111,7 +112,7 @@ public class AdvancedInfiniteDrillMachine extends StorageMachine {
             heat++;
         }
 
-        this.currentHeat += heat;
+        this.currentHeat = Math.max(0, currentHeat + heat);
 
         if (currentHeat > MAX_HEAT) {
             process += fast ? 1 : 5;
