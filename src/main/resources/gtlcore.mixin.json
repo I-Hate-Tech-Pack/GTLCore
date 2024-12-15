@@ -61,6 +61,7 @@
     "gtm.recipe.CraftingComponentMixin",
     "gtm.recipe.FuelRecipesMixin",
     "gtm.recipe.GCyMRecipesMixin",
+    "gtm.recipe.GTRecipeMixin",
     "gtm.recipe.MaterialRecipeHandlerMixin",
     "gtm.recipe.OreRecipeHandlerMixin",
     "gtm.recipe.WireRecipeHandlerMixin",
