@@ -97,7 +97,7 @@ public class AdditionalMultiBlockMachine {
             .rotationState(RotationState.NON_Y_AXIS)
             .recipeType(GTLRecipeTypes.VACUUM_DRYING_RECIPES)
             .recipeType(GTLRecipeTypes.DEHYDRATOR_RECIPES)
-            .tooltips(Component.translatable("gtceu.machine.electric_blast_furnace.tooltip.a"))
+            .tooltips(Component.translatable("gtceu.machine.duration_multiplier.tooltip", 0.5))
             .tooltips(Component.translatable("gtceu.machine.electric_blast_furnace.tooltip.0"))
             .tooltips(Component.translatable("gtceu.machine.electric_blast_furnace.tooltip.2"))
             .tooltips(Component.translatable("gtceu.machine.perfect_oc"))
@@ -115,7 +115,7 @@ public class AdditionalMultiBlockMachine {
                     }
                 }
                 return null;
-            }, GTRecipeModifiers::ebfOverclock)
+            }, (machine, recipe, params, result) -> GTLRecipeModifiers.reduction(machine, recipe, 1, 0.5))
             .pattern(definition -> FactoryBlockPattern.start()
                     .aisle("          AAAAAAA  ", "   BBBBBBBBBBBBBB  ", "   B         C     ", "           CCCCC   ", "          CCCCCCC  ", "         CCCCCCCCC ", "         CCCDDDCCC ", "        CCCCDDDCCCC", "         CCCDDDCCC ", "         CCCCCCCCC ", "          CCCCCCC  ", "           CCCCC   ", "             C     ", "                   ")
                     .aisle("CCCCCCC   A CCC A  ", "  GGG       CCC B  ", "  GBG      FFFFF   ", "  GGG     FFFFFFF  ", "  GGG    FFFFFFFFF ", "  GGG   FFFFFFFFFFF", "  GGG   FFFFFFFFFFF", "  GGG   FFFFFFFFFFF", "  GGG   FFFFFFFFFFF", "   C    FFFFFFFFFFF", "         FFFFFFFFF ", "          FFFFFFF  ", "           FFFFF   ", "                   ")
@@ -158,11 +158,7 @@ public class AdditionalMultiBlockMachine {
                     .where("K", Predicates.blocks(GTBlocks.COMPUTER_CASING.get()))
                     .where("L", Predicates.blocks(GTBlocks.COMPUTER_HEAT_VENT.get()))
                     .where("M", Predicates.blocks(GTBlocks.HIGH_POWER_CASING.get())
-                            .or(Predicates.abilities(PartAbility.INPUT_ENERGY).setMaxGlobalLimited(1))
-                            .or(Predicates.abilities(PartAbility.IMPORT_FLUIDS).setMaxGlobalLimited(4))
-                            .or(Predicates.abilities(PartAbility.IMPORT_ITEMS).setMaxGlobalLimited(4))
-                            .or(Predicates.abilities(PartAbility.EXPORT_FLUIDS).setMaxGlobalLimited(1))
-                            .or(Predicates.abilities(PartAbility.EXPORT_ITEMS).setMaxGlobalLimited(1))
+                            .or(Predicates.autoAbilities(definition.getRecipeTypes()))
                             .or(Predicates.abilities(PartAbility.INPUT_LASER).setExactLimit(1))
                             .or(Predicates.abilities(PartAbility.MAINTENANCE).setExactLimit(1)))
                     .where("O", Predicates.blocks(GTBlocks.HERMETIC_CASING_LuV.get()))
