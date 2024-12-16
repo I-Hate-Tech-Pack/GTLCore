@@ -53,6 +53,8 @@ public class MultipleRecipesLogic extends RecipeLogic {
         GTRecipe recipe = buildEmptyRecipe();
         recipe.outputs.put(ItemRecipeCapability.CAP, new ArrayList<>());
         recipe.outputs.put(FluidRecipeCapability.CAP, new ArrayList<>());
+        recipe.data = match.data.copy();
+        long maxEUt = getMachine().getOverclockVoltage();
         long totalEu = 0;
         int parallel = this.parallel.getMaxParallel();
         for (int i = 0; i < 64; i++) {
@@ -60,7 +62,11 @@ public class MultipleRecipesLogic extends RecipeLogic {
             GTRecipe input = buildEmptyRecipe();
             input.inputs.putAll(match.inputs);
             if (input.matchRecipe(machine).isSuccess() && input.handleRecipeIO(IO.IN, machine, getChanceCaches())) {
-                totalEu += match.duration * RecipeHelper.getInputEUt(match);
+                long inputEUt = RecipeHelper.getInputEUt(match);
+                if (inputEUt > maxEUt) {
+                    continue;
+                }
+                totalEu += match.duration * inputEUt;
                 List<Content> item = match.outputs.get(ItemRecipeCapability.CAP);
                 if (item != null) {
                     recipe.outputs.get(ItemRecipeCapability.CAP).addAll(item);
@@ -73,9 +79,8 @@ public class MultipleRecipesLogic extends RecipeLogic {
             match = LookupRecipe();
             if (match == null) break;
         }
-        if (recipe.outputs.get(ItemRecipeCapability.CAP).equals(new ArrayList<>()) && recipe.outputs.get(FluidRecipeCapability.CAP).equals(new ArrayList<>()))
+        if (recipe.outputs.get(ItemRecipeCapability.CAP).isEmpty() && recipe.outputs.get(FluidRecipeCapability.CAP).isEmpty())
             return null;
-        long maxEUt = getMachine().getOverclockVoltage();
         double d = (double) totalEu / maxEUt;
         long eut = d > 20 ? maxEUt : (long) (maxEUt * d / 20);
         recipe.tickInputs.put(EURecipeCapability.CAP, List.of(new Content(eut, ChanceLogic.getMaxChancedValue(), ChanceLogic.getMaxChancedValue(), 0, null, null)));
