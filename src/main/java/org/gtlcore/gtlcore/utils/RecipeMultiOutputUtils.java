@@ -1,5 +1,7 @@
 package org.gtlcore.gtlcore.utils;
 
+import org.gtlcore.gtlcore.config.ConfigHolder;
+
 import com.gregtechceu.gtceu.api.capability.recipe.RecipeCapability;
 import com.gregtechceu.gtceu.api.recipe.content.Content;
 import com.gregtechceu.gtceu.api.recipe.content.ContentModifier;
@@ -34,7 +36,8 @@ public class RecipeMultiOutputUtils {
         FluidIngredient copy = content.copy();
         long amount = modifier.apply(copy.getAmount()).longValue();
         if (amount > Integer.MAX_VALUE) {
-            long times = (long) Math.min(Math.ceil((double) amount / Integer.MAX_VALUE), 16L);
+            long times = (long) Math.min(Math.ceil((double) amount / Integer.MAX_VALUE),
+                    ConfigHolder.INSTANCE.recipeMultiMax);
             for (; times > 0; times--) {
                 var cp = content.copy();
                 if (times == 1) {

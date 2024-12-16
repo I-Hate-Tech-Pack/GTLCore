@@ -1,5 +1,6 @@
 package org.gtlcore.gtlcore.mixin.gtm.recipe;
 
+import org.gtlcore.gtlcore.config.ConfigHolder;
 import org.gtlcore.gtlcore.utils.RecipeMultiOutputUtils;
 
 import com.gregtechceu.gtceu.api.capability.recipe.FluidRecipeCapability;
@@ -87,7 +88,12 @@ public abstract class GTRecipeMixin {
      */
     @Overwrite(remap = false)
     public GTRecipe copy(ContentModifier modifier, boolean modifyDuration) {
-        var copied = new GTRecipe(recipeType, id, copyContents(inputs, modifier), gTLCore$copyContentsWhitMore(outputs, modifier), copyContents(tickInputs, modifier), copyContents(tickOutputs, modifier), new HashMap<>(inputChanceLogics), new HashMap<>(outputChanceLogics), new HashMap<>(tickInputChanceLogics), new HashMap<>(tickOutputChanceLogics), new ArrayList<>(conditions), new ArrayList<>(ingredientActions), data, duration, isFuel());
+        GTRecipe copied;
+        if (ConfigHolder.INSTANCE.recipeMultiOutput) {
+            copied = new GTRecipe(recipeType, id, copyContents(inputs, modifier), gTLCore$copyContentsWhitMore(outputs, modifier), copyContents(tickInputs, modifier), copyContents(tickOutputs, modifier), new HashMap<>(inputChanceLogics), new HashMap<>(outputChanceLogics), new HashMap<>(tickInputChanceLogics), new HashMap<>(tickOutputChanceLogics), new ArrayList<>(conditions), new ArrayList<>(ingredientActions), data, duration, isFuel());
+        } else {
+            copied = new GTRecipe(recipeType, id, copyContents(inputs, modifier), copyContents(outputs, modifier), copyContents(tickInputs, modifier), copyContents(tickOutputs, modifier), new HashMap<>(inputChanceLogics), new HashMap<>(outputChanceLogics), new HashMap<>(tickInputChanceLogics), new HashMap<>(tickOutputChanceLogics), new ArrayList<>(conditions), new ArrayList<>(ingredientActions), data, duration, isFuel());
+        }
         if (modifyDuration) {
             copied.duration = modifier.apply(this.duration).intValue();
         }

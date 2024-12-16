@@ -85,6 +85,8 @@
     "block.gtlcore.uxv_hermetic_casing": "密封机械方块 XII",
     "config.gtlcore.option.cellType": "AE磁盘存储类型倍数",
     "config.gtlcore.option.blackBlockList": "FTBU连锁黑名单",
+    "config.gtlcore.option.recipeMultiOutput": "启用配方超出int额外输出",
+    "config.gtlcore.option.recipeMultiMax": "配方超出int额外输出最大值",
     "config.gtlcore.option.disableDrift": "禁用飞行惯性",
     "config.gtlcore.option.durationMultiplier": "配方时间乘数",
     "config.gtlcore.option.enablePrimitiveVoidOre": "启用原始虚空矿机",
