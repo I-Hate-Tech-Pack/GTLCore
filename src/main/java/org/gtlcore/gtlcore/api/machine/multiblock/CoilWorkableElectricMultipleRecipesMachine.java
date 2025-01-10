@@ -1,12 +1,19 @@
 package org.gtlcore.gtlcore.api.machine.multiblock;
 
 import org.gtlcore.gtlcore.common.machine.trait.MultipleRecipesLogic;
+import org.gtlcore.gtlcore.config.ConfigHolder;
 
+import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
+import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.CoilWorkableElectricMultiblockMachine;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 
+import net.minecraft.nbt.CompoundTag;
+
 import org.jetbrains.annotations.NotNull;
+
+import java.util.function.BiPredicate;
 
 import static org.gtlcore.gtlcore.common.data.GTLRecipeModifiers.getHatchParallel;
 
@@ -15,13 +22,22 @@ import static org.gtlcore.gtlcore.common.data.GTLRecipeModifiers.getHatchParalle
  */
 public class CoilWorkableElectricMultipleRecipesMachine extends CoilWorkableElectricMultiblockMachine implements ParallelMachine {
 
+    private static final BiPredicate<CompoundTag, IRecipeLogicMachine> EBF_CHECK = (data, machine) -> {
+        var tm = (CoilWorkableElectricMultiblockMachine) machine;
+        var temp = tm.getCoilType().getCoilTemperature() + 100L * Math.max(0, tm.getTier() - GTValues.MV);
+        return temp > data.getInt("ebf_temp");
+    };
+
     public CoilWorkableElectricMultipleRecipesMachine(IMachineBlockEntity holder) {
         super(holder);
     }
 
     @Override
     protected @NotNull RecipeLogic createRecipeLogic(Object @NotNull... args) {
-        return new MultipleRecipesLogic(this);
+        if (ConfigHolder.INSTANCE.enableSuperBlastMultiRecipe) {
+            return new MultipleRecipesLogic(this, EBF_CHECK);
+        }
+        return super.getRecipeLogic();
     }
 
     @NotNull

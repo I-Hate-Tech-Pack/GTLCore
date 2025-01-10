@@ -1040,13 +1040,6 @@ public class MultiBlockMachineA {
                     .where("t", Predicates.abilities(PartAbility.MUFFLER))
                     .where(" ", Predicates.any())
                     .build())
-            .beforeWorking((machine, recipe) -> {
-                if (recipe.recipeType == GTRecipeTypes.ALLOY_SMELTER_RECIPES || recipe.data.getInt("ebf_temp") <= ((CoilWorkableElectricMultiblockMachine) machine).getCoilType().getCoilTemperature()) {
-                    return true;
-                }
-                machine.getRecipeLogic().interruptRecipe();
-                return false;
-            })
             .additionalDisplay(GTLMachines.MAX_TEMPERATURE)
             .workableCasingRenderer(GTCEu.id("block/casings/gcym/high_temperature_smelting_casing"), GTCEu.id("block/multiblock/gcym/blast_alloy_smelter"))
             .register();

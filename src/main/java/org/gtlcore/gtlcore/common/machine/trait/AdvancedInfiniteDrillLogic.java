@@ -32,7 +32,6 @@ import java.util.Map;
 public class AdvancedInfiniteDrillLogic extends RecipeLogic {
 
     public static final int MAX_PROGRESS = 20;
-    public static final long MULTIPLIER = 384;
 
     @NotNull
     private final Map<Fluid, Long> veinFluids;

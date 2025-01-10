@@ -46,6 +46,7 @@ public class ConfigHolder {
     public int exPatternProvider = 36;
     @Configurable
     @Configurable.Comment("连锁黑名单,支持通配符*")
+    @Configurable.Synchronized
     public String[] blackBlockList = { "ae2:cable_bus", "minecraft:grass_block" };
     @Configurable
     @Configurable.Comment("是否允许额外超出int部分额外输出, 当出现发包过大时请禁用此选项")
@@ -54,6 +55,11 @@ public class ConfigHolder {
     @Configurable.Comment("最大创建多少个输出来承载配方超出int部分内容")
     @Configurable.Range(min = 1, max = 16)
     public int recipeMultiMax = 8;
+
+    @Configurable
+    @Configurable.Comment("是否启用超级冶炼炉跨配方并行")
+    public boolean enableSuperBlastMultiRecipe = true;
+
     @Configurable
     public String[] mobList1 = new String[] { "chicken", "rabbit", "sheep", "cow", "horse", "pig", "donkey", "skeleton_horse", "iron_golem", "wolf", "goat", "parrot", "camel", "cat", "fox", "llama", "panda", "polar_bear" };
     @Configurable

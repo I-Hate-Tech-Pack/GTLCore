@@ -13,20 +13,30 @@ import com.gregtechceu.gtceu.api.recipe.content.Content;
 import com.gregtechceu.gtceu.api.recipe.content.ContentModifier;
 import com.gregtechceu.gtceu.data.recipe.builder.GTRecipeBuilder;
 
+import net.minecraft.nbt.CompoundTag;
+
 import lombok.Getter;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiPredicate;
 
 @Getter
 public class MultipleRecipesLogic extends RecipeLogic {
 
     private final ParallelMachine parallel;
 
+    private final BiPredicate<CompoundTag, IRecipeLogicMachine> dataCheck;
+
     public MultipleRecipesLogic(ParallelMachine machine) {
+        this(machine, null);
+    }
+
+    public MultipleRecipesLogic(ParallelMachine machine, BiPredicate<CompoundTag, IRecipeLogicMachine> dataCheck) {
         super((IRecipeLogicMachine) machine);
         this.parallel = machine;
+        this.dataCheck = dataCheck;
     }
 
     @Override
@@ -48,24 +58,27 @@ public class MultipleRecipesLogic extends RecipeLogic {
     @Nullable
     private GTRecipe getRecipe() {
         if (!machine.hasProxies()) return null;
-        GTRecipe match = LookupRecipe();
+        GTRecipe match = lookupRecipe();
         if (match == null) return null;
         GTRecipe recipe = buildEmptyRecipe();
         recipe.outputs.put(ItemRecipeCapability.CAP, new ArrayList<>());
         recipe.outputs.put(FluidRecipeCapability.CAP, new ArrayList<>());
-        recipe.data = match.data.copy();
         long maxEUt = getMachine().getOverclockVoltage();
         long totalEu = 0;
         int parallel = this.parallel.getMaxParallel();
         for (int i = 0; i < 64; i++) {
             match = parallelRecipe(match, parallel);
             GTRecipe input = buildEmptyRecipe();
+            long inputEUt = RecipeHelper.getInputEUt(match);
+            if (inputEUt > maxEUt) {
+                continue;
+            }
+            // 需要在此check data
+            if (dataCheck != null && !dataCheck.test(match.data, machine)) {
+                continue;
+            }
             input.inputs.putAll(match.inputs);
             if (input.matchRecipe(machine).isSuccess() && input.handleRecipeIO(IO.IN, machine, getChanceCaches())) {
-                long inputEUt = RecipeHelper.getInputEUt(match);
-                if (inputEUt > maxEUt) {
-                    continue;
-                }
                 totalEu += match.duration * inputEUt;
                 List<Content> item = match.outputs.get(ItemRecipeCapability.CAP);
                 if (item != null) {
@@ -76,7 +89,7 @@ public class MultipleRecipesLogic extends RecipeLogic {
                     recipe.outputs.get(FluidRecipeCapability.CAP).addAll(fluid);
                 }
             }
-            match = LookupRecipe();
+            match = lookupRecipe();
             if (match == null) break;
         }
         if (recipe.outputs.get(ItemRecipeCapability.CAP).isEmpty() && recipe.outputs.get(FluidRecipeCapability.CAP).isEmpty())
@@ -88,7 +101,7 @@ public class MultipleRecipesLogic extends RecipeLogic {
         return recipe;
     }
 
-    private GTRecipe LookupRecipe() {
+    private GTRecipe lookupRecipe() {
         return machine.getRecipeType().getLookup().findRecipe(machine);
     }
 
