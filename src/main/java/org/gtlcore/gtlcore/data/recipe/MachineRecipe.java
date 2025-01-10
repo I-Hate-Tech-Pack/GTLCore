@@ -605,6 +605,17 @@ public class MachineRecipe {
                 .EUt(GTValues.VA[MAX])
                 .save(provider);
 
+        ASSEMBLER_RECIPES
+                .recipeBuilder(GTLCore.id("heat_sensor"))
+                .inputItems(SENSOR_UXV, 4)
+                .inputItems(EMITTER_UXV, 4)
+                .inputItems(CIRCUIT.getIngredient(UXV), 16)
+                .inputItems(HULL.getIngredient(UXV), 1)
+                .inputFluids(GTMaterials.SolderingAlloy.getFluid(1440))
+                .outputItems(GTLMachines.HEAT_SENSOR)
+                .duration(200).EUt(VA[UXV])
+                .save(provider);
+
         ASSEMBLY_LINE_RECIPES
                 .recipeBuilder(GTLCore.id("space_cosmic_probe_receivers"))
                 .inputItems(EMITTER_OpV, 16)

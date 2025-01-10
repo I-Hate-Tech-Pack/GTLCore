@@ -1,6 +1,7 @@
 package org.gtlcore.gtlcore.common.machine.multiblock.electric;
 
 import org.gtlcore.gtlcore.common.data.GTLMaterials;
+import org.gtlcore.gtlcore.common.machine.multiblock.part.TemperatureSensorPartMachine;
 import org.gtlcore.gtlcore.common.machine.trait.AdvancedInfiniteDrillLogic;
 import org.gtlcore.gtlcore.utils.MachineIO;
 
@@ -11,6 +12,7 @@ import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.fluids.store.FluidStorageKeys;
 import com.gregtechceu.gtceu.api.machine.ConditionalSubscriptionHandler;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
+import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiPart;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockDisplayText;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
@@ -79,6 +81,8 @@ public class AdvancedInfiniteDrillMachine extends StorageMachine {
 
     protected ConditionalSubscriptionHandler heatSubs;
 
+    private TemperatureSensorPartMachine sensorMachines;
+
     public AdvancedInfiniteDrillMachine(IMachineBlockEntity holder) {
         super(holder, 1);
         this.heatSubs = new ConditionalSubscriptionHandler(this, this::heatUpdate, this::isFormed);
@@ -97,8 +101,10 @@ public class AdvancedInfiniteDrillMachine extends StorageMachine {
         if (getRecipeLogic().isWorking()) {
             if (process <= 0) {
                 heat += (int) Math.floor(Math.abs(currentHeat - RUNNING_HEAT) / 2000D);
-
             }
+        }
+
+        if (getRecipeLogic().isWorking() || process > 0) {
             if (MachineIO.inputFluid(this, DISTILLED_WATER)) {
                 heat--;
             } else if (MachineIO.inputFluid(this, OXYGEN)) {
@@ -125,12 +131,29 @@ public class AdvancedInfiniteDrillMachine extends StorageMachine {
         } else if (process > 0) {
             process--;
         }
+
+        if (sensorMachines != null) {
+            sensorMachines.update(currentHeat);
+        }
     }
 
     @Override
     public void onStructureFormed() {
         super.onStructureFormed();
+        List<IMultiPart> parts = getParts();
+        for (IMultiPart part : parts) {
+            if (part instanceof TemperatureSensorPartMachine temperatureSensorPartMachine) {
+                sensorMachines = temperatureSensorPartMachine;
+                break;
+            }
+        }
         this.heatSubs.initialize(getLevel());
+    }
+
+    @Override
+    public void onStructureInvalid() {
+        super.onStructureInvalid();
+        sensorMachines = null;
     }
 
     @Override

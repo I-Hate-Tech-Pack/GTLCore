@@ -80,9 +80,10 @@ public class AdvancedInfiniteDrillLogic extends RecipeLogic {
     @Nullable
     private GTRecipe getFluidDrillRecipe() {
         if (!veinFluids.isEmpty()) {
+            long total = veinFluids.values().stream().mapToLong(Long::longValue).sum();
             var recipe = GTRecipeBuilder.ofRaw()
                     .duration(MAX_PROGRESS)
-                    .EUt(20000)
+                    .EUt(20000 + total)
                     .outputFluids(veinFluids.entrySet().stream()
                             .map(entry -> FluidStack.create(entry.getKey(), entry.getValue()))
                             .toArray(FluidStack[]::new))
