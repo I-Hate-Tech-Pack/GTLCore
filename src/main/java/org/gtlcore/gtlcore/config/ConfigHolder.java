@@ -26,6 +26,8 @@ public class ConfigHolder {
     @Configurable
     public boolean enablePrimitiveVoidOre = false;
     @Configurable
+    public boolean enableSkyBlokeMode = false;
+    @Configurable
     @Configurable.Range(min = 1)
     public int oreMultiplier = 4;
     @Configurable

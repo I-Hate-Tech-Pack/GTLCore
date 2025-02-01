@@ -244,4 +244,31 @@ public class MultiBlockMachineB {
                             GTCEu.id("block/multiblock/gcym/large_extractor"))
                     .register() :
             null;
+
+    public final static MultiblockMachineDefinition LARGE_FRAGMENT_WORLD_COLLECTION_MACHINE = ConfigHolder.INSTANCE.enableSkyBlokeMode ?
+            REGISTRATE.multiblock("large_fragment_world_collection_machine", PrimitiveOreMachine::new)
+                    .langValue("Large fragment world collection machine")
+                    .tooltips(Component.literal("空岛模式特供"))
+                    .tooltipBuilder(GTLMachines.GTL_ADD)
+                    .recipeModifiers(GTRecipeModifiers.PARALLEL_HATCH)
+                    .rotationState(RotationState.ALL)
+                    .recipeType(GTLRecipeTypes.FRAGMENT_WORLD_COLLECTION)
+                    .appearanceBlock(GTBlocks.CASING_TITANIUM_STABLE)
+                    .pattern(definition -> FactoryBlockPattern.start()
+                            .aisle("AAA", "AXA", "XXX", "XXX", "XXX", "AXA", "AAA")
+                            .aisle("AOA", "XXX", "XXX", "XXX", "XXX", "XXX", "AIA")
+                            .aisle("AAA", "AXA", "XXX", "XSX", "XXX", "AXA", "AAA")
+                            .where('S', Predicates.controller(Predicates.blocks(definition.get())))
+                            .where('X', Predicates.blocks(GTBlocks.CASING_TITANIUM_STABLE.get())
+                                    .or(Predicates.abilities(PartAbility.PARALLEL_HATCH).setMaxGlobalLimited(1))
+                                    .or(Predicates.abilities(PartAbility.MAINTENANCE).setExactLimit(1))
+                                    .or(Predicates.abilities(PartAbility.INPUT_ENERGY).setMaxGlobalLimited(2)))
+                            .where('I', Predicates.abilities(PartAbility.IMPORT_ITEMS))
+                            .where('O', Predicates.abilities(PartAbility.EXPORT_ITEMS))
+                            .where('A', Predicates.air())
+                            .build())
+                    .workableCasingRenderer(GTCEu.id("block/casings/solid/machine_casing_stable_titanium"),
+                            GTCEu.id("block/multiblock/gcym/large_extractor"))
+                    .register() :
+            null;
 }
