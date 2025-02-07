@@ -811,6 +811,9 @@ public class GTLMaterials {
     public static Material LutetiumExtractedNanoResin;
     public static Material ScandiumExtractedNanoResin;
     public static Material YttriumExtractedNanoResin;
+    public static Material MiracleGas;
+    public static Material Miracle;
+    public static Material MiracleAdhesive;
 
     public static void init() {
         MaterialAdd.init();

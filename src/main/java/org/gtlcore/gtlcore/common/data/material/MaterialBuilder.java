@@ -5840,5 +5840,26 @@ public class MaterialBuilder {
                 .iconSet(GTLMaterialIconSet.LIMPID)
                 .flags(DISABLE_DECOMPOSITION)
                 .buildAndRegister();
+
+        MiracleGas = new Material.Builder(
+                GTCEu.id("miracle_gas"))
+                .gas()
+                .color(0xea8bd6)
+                .flags(DISABLE_DECOMPOSITION)
+                .buildAndRegister();
+
+        Miracle = new Material.Builder(
+                GTCEu.id("miracle"))
+                .fluid()
+                .color(0xea8bd6)
+                .flags(DISABLE_DECOMPOSITION)
+                .buildAndRegister();
+
+        MiracleAdhesive = new Material.Builder(
+                GTCEu.id("miracle_adhesive"))
+                .fluid()
+                .color(0xefb5f1)
+                .flags(DISABLE_DECOMPOSITION)
+                .buildAndRegister();
     }
 }

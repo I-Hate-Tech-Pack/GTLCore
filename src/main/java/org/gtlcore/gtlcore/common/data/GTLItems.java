@@ -305,25 +305,41 @@ public class GTLItems {
     public static ItemEntry<Item> CONVERSION_SIMULATE_CARD = register("conversion_simulate_card", true);
     public static ItemEntry<Item> FAST_CONVERSION_SIMULATE_CARD = register("fast_conversion_simulate_card", true);
 
+    public static ItemEntry<Item> COMPRESSED_PUFFERFISH = register("compressed_pufferfish", true);
     public static ItemEntry<ComponentItem> MIRACLE_CRYSTAL = REGISTRATE
             .item("miracle_crystal", ComponentItem::create)
-            .properties(stack -> stack.stacksTo(1))
+            .properties(stack -> stack.stacksTo(16))
             .onRegister(attach(new TooltipBehavior(lines -> {
                 lines.add(Component.translatable("§d§l§o无人看见的角落里 奇迹正在酝酿发生"));
             })))
             .register();
     public static ItemEntry<ComponentItem> MINING_CRYSTAL = REGISTRATE
             .item("mining_crystal", ComponentItem::create)
-            .properties(stack -> stack.stacksTo(1))
+            .properties(stack -> stack.stacksTo(16))
             .onRegister(attach(new TooltipBehavior(lines -> {
                 lines.add(Component.translatable("§8§l§o辛苦劳动换来的是 一颗颗璀璨的结晶"));
             })))
             .register();
     public static ItemEntry<ComponentItem> TREASURES_CRYSTAL = REGISTRATE
             .item("treasures_crystal", ComponentItem::create)
-            .properties(stack -> stack.stacksTo(1))
+            .properties(stack -> stack.stacksTo(16))
             .onRegister(attach(new TooltipBehavior(lines -> {
                 lines.add(Component.translatable("§5§l§o某些平凡到极点的 或许是罕见的奇珍"));
+            })))
+            .register();
+    public static ItemEntry<ComponentItem> SUPER_GLUE = REGISTRATE
+            .item("super_glue", ComponentItem::create)
+            .properties(stack -> stack.stacksTo(16))
+            .onRegister(attach(new TooltipBehavior(lines -> {
+                lines.add(Component.translatable("§d§l§o宛如神迹般的连结"));
+                lines.add(Component.translatable("§d§l§o由§r§8█████§d§l§o出品"));
+            })))
+            .register();
+    public static ItemEntry<ComponentItem> ULTIMATE_TEA = REGISTRATE
+            .item("ultimate_tea", ComponentItem::create)
+            .properties(stack -> stack.stacksTo(1))
+            .onRegister(attach(new TooltipBehavior(lines -> {
+                lines.add(Component.translatable("§6§l§o休息一下吧"));
             })))
             .register();
 

@@ -1,4 +1,4 @@
-// 1.20.1	2025-01-29T13:06:56.1494799	Registrate Provider for gtlcore [Recipes, Advancements, Loot Tables, Tags (blocks), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
+// 1.20.1	2025-02-06T22:14:40.9219895	Registrate Provider for gtlcore [Recipes, Advancements, Loot Tables, Tags (blocks), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
 46f342ef8461a19d4ac40f284d9763fa45db0648 assets/gtlcore/blockstates/16m_storage.json
 7400be84a032519aa2d82750804ae8f04828fdae assets/gtlcore/blockstates/1m_storage.json
 5483bb31743b034345b5a059cc8bf43cfb875d7d assets/gtlcore/blockstates/256m_storage.json
@@ -78,8 +78,8 @@ ba75d75bb24da9bfafd569c2c2584cfb4d99c06b assets/gtlcore/blockstates/stellar_cont
 1536747b8f3d21fbcc61fd74010c88552b79c698 assets/gtlcore/blockstates/super_computation_component.json
 aa04d531b5ca53b5a56783ab2caf520d94f90d86 assets/gtlcore/blockstates/super_cooler_component.json
 406dd8ad0f18b0d9592528acf2afa92e21c642a0 assets/gtlcore/blockstates/ultimate_stellar_containment_casing.json
-eab98db73d3170e75b530771690b464a1774f52b assets/gtlcore/lang/en_ud.json
-3f414efbda8525900e164851c73a7a7877f356ba assets/gtlcore/lang/en_us.json
+26de0ee6275a518e7773eb1426041ef0e56b7565 assets/gtlcore/lang/en_ud.json
+f21334922c617ad2d532894249e9481c2999b206 assets/gtlcore/lang/en_us.json
 1e86cdc17231fb0b0c08fb79ac317c3978c918bf assets/gtlcore/models/block/advanced_stellar_containment_casing.json
 bf3d8755a8caf29f8d5e83eefc0f1af389f8e194 assets/gtlcore/models/block/aluminium_bronze_casing.json
 f562919f3479892c66f9299614d509d4b30384c1 assets/gtlcore/models/block/antifreeze_heatproof_machine_casing.json
@@ -175,6 +175,7 @@ e5199975ff2dc9a4f2884673fc90d6959b792549 assets/gtlcore/models/item/component_as
 e01860f87f9a3edee5dd23511d776077b2d29129 assets/gtlcore/models/item/compressed_fusion_coil.json
 d0f525ad6c3438f717f193cc2bf0d75d7dbbabbb assets/gtlcore/models/item/compressed_fusion_coil_mk2.json
 6a540fbd48d804e87b35615f4a5375c123c06c62 assets/gtlcore/models/item/compressed_fusion_coil_mk2_prototype.json
+6555f9b297a8f35b8ffa51b613c2a4ed497cb129 assets/gtlcore/models/item/compressed_pufferfish.json
 ef0b191936998ff9eacdd8fc36f34dbf1c80c954 assets/gtlcore/models/item/contaminated_petri_dish.json
 b80bd3948e0f0fce484452c296a7591943f587f4 assets/gtlcore/models/item/conversion_simulate_card.json
 470cefb89a120bd3620f5585dacad297565327c5 assets/gtlcore/models/item/cooler.json
@@ -261,6 +262,7 @@ b4b377d4b7f2e3dd47a7858bc0131b1388293375 assets/gtlcore/models/item/stellar_cont
 17d56d203124661ae270d3f56999c3c15f25fd39 assets/gtlcore/models/item/supercritical_turbine_casing.json
 056a86011ac7866f05fd832314ec9ade48080a5a assets/gtlcore/models/item/super_computation_component.json
 5752c3c59fe12651bcd6fb804dc0fcd1baf1b2dc assets/gtlcore/models/item/super_cooler_component.json
+2705a77a15f208d1d8920e02db80cb3c8d71763d assets/gtlcore/models/item/super_glue.json
 31644ea90f65ae89e2b0f0276dd3a656c7d5c9e1 assets/gtlcore/models/item/super_portable_fluid_storage_cell.json
 e17a879e7fc0d4817a77838a10a72d4c78f64916 assets/gtlcore/models/item/super_portable_item_storage_cell.json
 d638e3785ccdf65f06e8b15c7f6149a6aadc5d3c assets/gtlcore/models/item/transcendent_max_battery.json
@@ -268,6 +270,7 @@ d638e3785ccdf65f06e8b15c7f6149a6aadc5d3c assets/gtlcore/models/item/transcendent
 8fcadd95fca7eda0b24342fda1929bcdf0628c53 assets/gtlcore/models/item/uev_hermetic_casing.json
 25b2493f2165e2a11549908ba3bfe29fa9bb1980 assets/gtlcore/models/item/uiv_hermetic_casing.json
 0aca219ecd74885ede9cfcb628f1b9fb0c8923ab assets/gtlcore/models/item/ultimate_stellar_containment_casing.json
+cba874b1514eb89ba0e373fe64ca8b2a2ccbaa2a assets/gtlcore/models/item/ultimate_tea.json
 db455fd02ceac880820fe263d6f53f9d6c58785f assets/gtlcore/models/item/uxv_hermetic_casing.json
 8450af5ea69757cc7dadbdb1a4a11b2c210560be assets/gtlcore/models/item/world_fragments_barnarda.json
 18190f010b8ec5d3d018bb7560b81ead45eb3943 assets/gtlcore/models/item/world_fragments_ceres.json

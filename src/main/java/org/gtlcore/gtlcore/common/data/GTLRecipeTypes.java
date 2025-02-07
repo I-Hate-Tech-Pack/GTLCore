@@ -688,14 +688,12 @@ public class GTLRecipeTypes {
             .setProgressBar(GuiTextures.PROGRESS_BAR_ARROW, LEFT_TO_RIGHT)
             .setSound(GTSoundEntries.MIXER);
 
-    public static final GTRecipeType FRAGMENT_WORLD_COLLECTION = ConfigHolder.INSTANCE.enableSkyBlokeMode ?
-            register("fragment_world_collection", MULTIBLOCK)
-                    .setEUIO(IO.IN)
-                    .setMaxIOSize(3, 12, 1, 1)
-                    .setMaxTooltips(1)
-                    .setProgressBar(GuiTextures.PROGRESS_BAR_MACERATE, LEFT_TO_RIGHT)
-                    .setSound(GTSoundEntries.MINER) :
-            null;
+    public static final GTRecipeType FRAGMENT_WORLD_COLLECTION = register("fragment_world_collection", MULTIBLOCK)
+            .setEUIO(IO.IN)
+            .setMaxIOSize(3, 12, 1, 1)
+            .setMaxTooltips(1)
+            .setProgressBar(GuiTextures.PROGRESS_BAR_MACERATE, LEFT_TO_RIGHT)
+            .setSound(GTSoundEntries.MINER);
 
     public static void init() {
         RecipeModify.init();

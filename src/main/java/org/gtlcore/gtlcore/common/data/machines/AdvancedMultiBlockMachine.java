@@ -290,7 +290,7 @@ public class AdvancedMultiBlockMachine {
                             .or(Predicates.abilities(PartAbility.PARALLEL_HATCH).setMaxGlobalLimited(1))
                             .or(Predicates.abilities(PartAbility.COMPUTATION_DATA_RECEPTION).setMaxGlobalLimited(1)))
                     .where("G", Predicates.blocks(Registries.getBlock("kubejs:neutronium_pipe_casing")))
-                    .where("H", Predicates.blocks(GTLBlocks.HYPER_CORE.get()))
+                    .where("H", Predicates.blocks(Registries.getBlock("kubejs:annihilate_core")))
                     .where("I", Predicates.blocks(GCyMBlocks.HEAT_VENT.get()))
                     .where("J", Predicates.blocks(GTLBlocks.ANTIFREEZE_HEATPROOF_MACHINE_CASING.get()))
                     .where("K", Predicates.blocks(GTBlocks.HIGH_POWER_CASING.get()))
@@ -803,6 +803,10 @@ public class AdvancedMultiBlockMachine {
                             }
                             if (entity instanceof ItemEntity item && Objects.equals(item.getItem().kjs$getId(), "gtceu:magmatter_ingot") && item.getItem().getCount() >= 64) {
                                 item.getServer().kjs$runCommandSilent("summon minecraft:item " + item.getX() + " " + item.getY() + " " + item.getZ() + " {PickupDelay:10,Motion:[0.0,0.2,0.0],Item:{id:\"gtceu:magmatter_block\",Count:" + (item.getItem().getCount() / 64) + "b}}");
+                                item.kill();
+                            }
+                            if (entity instanceof ItemEntity item && Objects.equals(item.getItem().kjs$getId(), "expatternprovider:fishbig") && item.getItem().getCount() >= 64) {
+                                item.getServer().kjs$runCommandSilent("summon minecraft:item " + item.getX() + " " + item.getY() + " " + item.getZ() + " {PickupDelay:10,Motion:[0.0,0.2,0.0],Item:{id:\"gtlcore:ultimate_tea\",Count:" + (item.getItem().getCount() / 64) + "b}}");
                                 item.kill();
                             }
                         }

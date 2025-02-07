@@ -8,7 +8,6 @@ import org.gtlcore.gtlcore.common.machine.generator.MagicEnergyMachine;
 import org.gtlcore.gtlcore.common.machine.multiblock.electric.CoilWorkableElectricMultipleRecipesMultiblockMachine;
 import org.gtlcore.gtlcore.common.machine.multiblock.part.*;
 import org.gtlcore.gtlcore.common.machine.multiblock.part.maintenance.*;
-import org.gtlcore.gtlcore.config.ConfigHolder;
 
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTValues;
@@ -171,19 +170,17 @@ public class GTLMachines {
     public static final MachineDefinition[] NEUTRON_COMPRESSOR = GTMachines.registerSimpleMachines("neutron_compressor",
             GTLRecipeTypes.NEUTRON_COMPRESSOR_RECIPES, GTMachines.defaultTankSizeFunction, false, GTValues.MAX);
 
-    public static final MachineDefinition[] FRAGMENT_WORLD_COLLECTION_MACHINE = ConfigHolder.INSTANCE.enableSkyBlokeMode ?
-            GTMachines.registerTieredMachines("fragment_world_collection_machine",
-                    (holder, tier) -> new SimpleTieredMachine(holder, tier, largeTankSizeFunction), (tier, builder) -> builder
-                            .editableUI(SimpleTieredMachine.EDITABLE_UI_CREATOR.apply(GTLCore.id("fragment_world_collection"),
-                                    GTLRecipeTypes.FRAGMENT_WORLD_COLLECTION))
-                            .rotationState(RotationState.NON_Y_AXIS)
-                            .recipeType(GTLRecipeTypes.FRAGMENT_WORLD_COLLECTION)
-                            .workableTieredHullRenderer(GTCEu.id("block/machines/fragment_world_collection_machine"))
-                            .tooltips(Component.translatable("从世界碎片中汲取资源"))
-                            .compassNode("fragment_world_collection")
-                            .register(),
-                    ULV) :
-            null;
+    public static final MachineDefinition[] FRAGMENT_WORLD_COLLECTION_MACHINE = GTMachines.registerTieredMachines("fragment_world_collection_machine",
+            (holder, tier) -> new SimpleTieredMachine(holder, tier, largeTankSizeFunction), (tier, builder) -> builder
+                    .editableUI(SimpleTieredMachine.EDITABLE_UI_CREATOR.apply(GTLCore.id("fragment_world_collection"),
+                            GTLRecipeTypes.FRAGMENT_WORLD_COLLECTION))
+                    .rotationState(RotationState.NON_Y_AXIS)
+                    .recipeType(GTLRecipeTypes.FRAGMENT_WORLD_COLLECTION)
+                    .workableTieredHullRenderer(GTCEu.id("block/machines/fragment_world_collection_machine"))
+                    .tooltips(Component.translatable("从世界碎片中汲取资源"))
+                    .compassNode("fragment_world_collection")
+                    .register(),
+            ULV);
 
     public static final MachineDefinition[] LIGHTNING_ROD = GTMachines.registerTieredMachines(
             "lightning_rod",

@@ -14,21 +14,21 @@ import com.gregtechceu.gtceu.common.data.GTMachines;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
 import com.gregtechceu.gtceu.data.recipe.VanillaRecipeHelper;
 
-import com.lowdragmc.lowdraglib.side.fluid.FluidStack;
-
 import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 
-import earth.terrarium.adastra.common.registry.ModFluids;
 import earth.terrarium.adastra.common.registry.ModItems;
 
 import java.util.function.Consumer;
 
-import static com.gregtechceu.gtceu.api.GTValues.ULV;
+import static com.gregtechceu.gtceu.api.GTValues.*;
 import static com.gregtechceu.gtceu.api.data.tag.TagPrefix.*;
 import static com.gregtechceu.gtceu.common.data.GTMaterials.*;
+import static com.gregtechceu.gtceu.common.data.GTRecipeTypes.DISTILLATION_RECIPES;
+import static org.gtlcore.gtlcore.api.data.tag.GTLTagPrefix.nanoswarm;
 import static org.gtlcore.gtlcore.common.data.GTLItems.*;
 import static org.gtlcore.gtlcore.common.data.GTLMaterials.*;
 import static org.gtlcore.gtlcore.common.data.GTLRecipeTypes.*;
@@ -215,35 +215,35 @@ public class SkyTearsAndGregHeart {
         };
 
         // sky_fluid
-        int[][] skyFluid_n = {
-                { 100, 100 },// 盐水矿藏 0
-                { 200, 200 },// 重油矿藏
-                { 300, 300 },// 原油矿藏
-                { 300, 300 },// 石油矿藏
-                { 300, 300 },// 轻油矿藏
-                { 175, 175 },// 天然气矿藏
-                { 250, 250 },// 熔岩矿藏
-                { 300, 300 },// 下界天然气矿藏
-                { 180, 180 },// 氦-3 矿藏
-                { 300, 300 },// 氦矿藏
+        int[] skyFluid_n = {
+                1000,// 盐水矿藏 0
+                2000,// 重油矿藏
+                3000,// 原油矿藏
+                3000,// 石油矿藏
+                3000,// 轻油矿藏
+                1750,// 天然气矿藏
+                2500,// 熔岩矿藏
+                3000,// 下界天然气矿藏
+                1800,// 氦-3 矿藏
+                3000,// 氦矿藏
 
-                { 80, 80 },// 氡矿藏 10
-                { 250, 250 },// 硫酸矿藏
-                { 300, 300 },// 氘矿藏
-                { 250, 250 },// 氖矿藏
-                { 250, 250 },// 氪矿藏
-                { 250, 250 },// 氡矿藏
-                { 250, 250 },// 氙矿藏
-                { 300, 300 },// 煤气矿藏
-                { 350, 350 },// 盐酸矿藏
-                { 300, 300 },// 硝酸矿藏
+                800,// 氡矿藏 10
+                2500,// 硫酸矿藏
+                3000,// 氘矿藏
+                2500,// 氖矿藏
+                2500,// 氪矿藏
+                2500,// 氡矿藏
+                2500,// 氙矿藏
+                3000,// 煤气矿藏
+                3500,// 盐酸矿藏
+                3000,// 硝酸矿藏
 
-                { 420, 420 },// 氯矿藏 20
-                { 320, 320 },// 氟矿藏
-                { 160, 160 },// 苯矿藏
-                { 250, 250 },// 甲烷矿藏
-                { 260, 260 },// 木炭副产矿藏
-                { 60, 60 }// 不明液体矿藏
+                4200,// 氯矿藏 20
+                3200,// 氟矿藏
+                1600,// 苯矿藏
+                2500,// 甲烷矿藏
+                2600,// 木炭副产矿藏
+                600 // 不明液体矿藏
 
         };
 
@@ -293,6 +293,23 @@ public class SkyTearsAndGregHeart {
                 { 41, 39, 27, 33, 34, 32, 43, 25 }
         };
 
+        // sky_fluid_tool_head_drill
+        ItemStack[] skyDrill = {
+                ChemicalHelper.get(toolHeadDrill, Steel, 1),
+                ChemicalHelper.get(toolHeadDrill, Titanium, 1),
+                ChemicalHelper.get(toolHeadDrill, TungstenSteel, 1),
+                ChemicalHelper.get(toolHeadDrill, Neutronium, 1),
+                new ItemStack(Registries.getBlock("kubejs:machine_casing_grinding_head"), 1)
+        };
+
+        //
+        int[] skyDrill_n = {
+                1,
+                16,
+                64,
+                256,
+                4098
+        };
         if (ConfigHolder.INSTANCE.enableSkyBlokeMode) {
 
             VanillaRecipeHelper.addShapedRecipe(provider,
@@ -320,7 +337,7 @@ public class SkyTearsAndGregHeart {
                         FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1))
                                 .notConsumable(skyFragments[i])
                                 .chancedOutput(skyFragments[i], 50, 0)
-                                .chancedOutput(MINING_CRYSTAL.asStack(1), 1, 0)
+                                .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][0], skyOres_n[skyDMap[i][k]][0])
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][1], skyOres_n[skyDMap[i][k]][1])
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][2], skyOres_n[skyDMap[i][k]][2])
@@ -330,20 +347,22 @@ public class SkyTearsAndGregHeart {
                                 .outputItems(Blocks.DEEPSLATE.asItem(), 32)
                                 .outputItems(dust, Deepslate, 32)
                                 .circuitMeta(k + 2)
-                                .duration(96000 / skyOres_n[skyDMap[i][k]][4])
+                                .duration(24000 / skyOres_n[skyDMap[i][k]][4])
                                 .EUt(8)
                                 .save(provider);
                     } else {
-                        FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1))
-                                .notConsumable(skyFragments[i])
-                                .chancedInput(ChemicalHelper.get(toolHeadDrill, Steel, 1), 100, 0)
-                                .chancedOutput(skyFragments[i], 50, 0)
-                                .chancedOutput(MINING_CRYSTAL.asStack(1), 1, 0)
-                                .outputFluids(skyFluid[skyDMap[i][k]].getFluid(skyFluid_n[skyDMap[i][k]][0]))
-                                .circuitMeta(k + 2)
-                                .duration(200)
-                                .EUt(8)
-                                .save(provider);
+                        for (int m = 0; m < 5; m++) {
+                            FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1) + "_" + (m + 1))
+                                    .notConsumable(skyFragments[i])
+                                    .chancedInput(skyDrill[m], 100, -5)
+                                    .chancedOutput(skyFragments[i], 50, 0)
+                                    .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
+                                    .outputFluids(skyFluid[skyDMap[i][k]].getFluid(skyFluid_n[skyDMap[i][k]] * skyDrill_n[m]))
+                                    .circuitMeta(k + 2)
+                                    .duration(200)
+                                    .EUt(8)
+                                    .save(provider);
+                        }
                     }
                 }
             }
@@ -355,7 +374,7 @@ public class SkyTearsAndGregHeart {
                         FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1))
                                 .notConsumable(skyFragments[i])
                                 .chancedOutput(skyFragments[i], 50, 0)
-                                .chancedOutput(MINING_CRYSTAL.asStack(1), 1, 0)
+                                .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][0], skyOres_n[skyDMap[i][k]][0])
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][1], skyOres_n[skyDMap[i][k]][1])
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][2], skyOres_n[skyDMap[i][k]][2])
@@ -365,20 +384,22 @@ public class SkyTearsAndGregHeart {
                                 .outputItems(Blocks.BASALT.asItem(), 32)
                                 .outputItems(dust, Basalt, 32)
                                 .circuitMeta(k + 1)
-                                .duration(96000 / skyOres_n[skyDMap[i][k]][4])
+                                .duration(24000 / skyOres_n[skyDMap[i][k]][4])
                                 .EUt(8)
                                 .save(provider);
                     } else {
-                        FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1))
-                                .notConsumable(skyFragments[i])
-                                .chancedInput(ChemicalHelper.get(toolHeadDrill, Steel, 1), 100, 0)
-                                .chancedOutput(skyFragments[i], 50, 0)
-                                .chancedOutput(MINING_CRYSTAL.asStack(1), 1, 0)
-                                .outputFluids(skyFluid[skyDMap[i][k]].getFluid(skyFluid_n[skyDMap[i][k]][0]))
-                                .circuitMeta(k + 1)
-                                .duration(200)
-                                .EUt(8)
-                                .save(provider);
+                        for (int m = 0; m < 5; m++) {
+                            FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1) + "_" + (m + 1))
+                                    .notConsumable(skyFragments[i])
+                                    .chancedInput(skyDrill[m], 100, -5)
+                                    .chancedOutput(skyFragments[i], 50, 0)
+                                    .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
+                                    .outputFluids(skyFluid[skyDMap[i][k]].getFluid(skyFluid_n[skyDMap[i][k]] * skyDrill_n[m]))
+                                    .circuitMeta(k + 1)
+                                    .duration(200)
+                                    .EUt(8)
+                                    .save(provider);
+                        }
                     }
                 }
             }
@@ -390,7 +411,7 @@ public class SkyTearsAndGregHeart {
                         FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1))
                                 .notConsumable(skyFragments[i])
                                 .chancedOutput(skyFragments[i], 50, 0)
-                                .chancedOutput(MINING_CRYSTAL.asStack(1), 1, 0)
+                                .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][0], skyOres_n[skyDMap[i][k]][0])
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][1], skyOres_n[skyDMap[i][k]][1])
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][2], skyOres_n[skyDMap[i][k]][2])
@@ -398,20 +419,22 @@ public class SkyTearsAndGregHeart {
                                 .outputItems(Blocks.END_STONE.asItem(), 64)
                                 .outputItems(dust, Endstone, 64)
                                 .circuitMeta(k + 1)
-                                .duration(96000 / skyOres_n[skyDMap[i][k]][4])
+                                .duration(24000 / skyOres_n[skyDMap[i][k]][4])
                                 .EUt(8)
                                 .save(provider);
                     } else {
-                        FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1))
-                                .notConsumable(skyFragments[i])
-                                .chancedInput(ChemicalHelper.get(toolHeadDrill, Steel, 1), 100, 0)
-                                .chancedOutput(skyFragments[i], 50, 0)
-                                .chancedOutput(MINING_CRYSTAL.asStack(1), 1, 0)
-                                .outputFluids(skyFluid[skyDMap[i][k]].getFluid(skyFluid_n[skyDMap[i][k]][0]))
-                                .circuitMeta(k + 1)
-                                .duration(200)
-                                .EUt(8)
-                                .save(provider);
+                        for (int m = 0; m < 5; m++) {
+                            FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1) + "_" + (m + 1))
+                                    .notConsumable(skyFragments[i])
+                                    .chancedInput(skyDrill[m], 100, -5)
+                                    .chancedOutput(skyFragments[i], 50, 0)
+                                    .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
+                                    .outputFluids(skyFluid[skyDMap[i][k]].getFluid(skyFluid_n[skyDMap[i][k]] * skyDrill_n[m]))
+                                    .circuitMeta(k + 1)
+                                    .duration(200)
+                                    .EUt(8)
+                                    .save(provider);
+                        }
                     }
                 }
             }
@@ -423,7 +446,7 @@ public class SkyTearsAndGregHeart {
                         FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1))
                                 .notConsumable(skyFragments[i])
                                 .chancedOutput(skyFragments[i], 50, 0)
-                                .chancedOutput(MINING_CRYSTAL.asStack(1), 1, 0)
+                                .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][0], skyOres_n[skyDMap[i][k]][0])
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][1], skyOres_n[skyDMap[i][k]][1])
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][2], skyOres_n[skyDMap[i][k]][2])
@@ -431,20 +454,22 @@ public class SkyTearsAndGregHeart {
                                 .outputItems(Blocks.DIORITE.asItem(), 64)
                                 .outputItems(dust, Diorite, 64)
                                 .circuitMeta(k + 1)
-                                .duration(96000 / skyOres_n[skyDMap[i][k]][4])
+                                .duration(24000 / skyOres_n[skyDMap[i][k]][4])
                                 .EUt(8)
                                 .save(provider);
                     } else {
-                        FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1))
-                                .notConsumable(skyFragments[i])
-                                .chancedInput(ChemicalHelper.get(toolHeadDrill, Steel, 1), 100, 0)
-                                .chancedOutput(skyFragments[i], 50, 0)
-                                .chancedOutput(MINING_CRYSTAL.asStack(1), 1, 0)
-                                .outputFluids(skyFluid[skyDMap[i][k]].getFluid(skyFluid_n[skyDMap[i][k]][0]))
-                                .circuitMeta(k + 1)
-                                .duration(200)
-                                .EUt(8)
-                                .save(provider);
+                        for (int m = 0; m < 5; m++) {
+                            FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1) + "_" + (m + 1))
+                                    .notConsumable(skyFragments[i])
+                                    .chancedInput(skyDrill[m], 100, -5)
+                                    .chancedOutput(skyFragments[i], 50, 0)
+                                    .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
+                                    .outputFluids(skyFluid[skyDMap[i][k]].getFluid(skyFluid_n[skyDMap[i][k]] * skyDrill_n[m]))
+                                    .circuitMeta(k + 1)
+                                    .duration(200)
+                                    .EUt(8)
+                                    .save(provider);
+                        }
                     }
                 }
             }
@@ -456,27 +481,29 @@ public class SkyTearsAndGregHeart {
                         FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1))
                                 .notConsumable(skyFragments[i])
                                 .chancedOutput(skyFragments[i], 50, 0)
-                                .chancedOutput(MINING_CRYSTAL.asStack(1), 1, 0)
+                                .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][0], skyOres_n[skyDMap[i][k]][0])
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][1], skyOres_n[skyDMap[i][k]][1])
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][2], skyOres_n[skyDMap[i][k]][2])
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][3], skyOres_n[skyDMap[i][k]][3])
                                 .outputItems(ModItems.MOON_STONE, 64)
                                 .circuitMeta(k + 1)
-                                .duration(96000 / skyOres_n[skyDMap[i][k]][4])
+                                .duration(24000 / skyOres_n[skyDMap[i][k]][4])
                                 .EUt(8)
                                 .save(provider);
                     } else {
-                        FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1))
-                                .notConsumable(skyFragments[i])
-                                .chancedInput(ChemicalHelper.get(toolHeadDrill, Steel, 1), 100, 0)
-                                .chancedOutput(skyFragments[i], 50, 0)
-                                .chancedOutput(MINING_CRYSTAL.asStack(1), 1, 0)
-                                .outputFluids(skyFluid[skyDMap[i][k]].getFluid(skyFluid_n[skyDMap[i][k]][0]))
-                                .circuitMeta(k + 1)
-                                .duration(200)
-                                .EUt(8)
-                                .save(provider);
+                        for (int m = 0; m < 5; m++) {
+                            FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1) + "_" + (m + 1))
+                                    .notConsumable(skyFragments[i])
+                                    .chancedInput(skyDrill[m], 100, -5)
+                                    .chancedOutput(skyFragments[i], 50, 0)
+                                    .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
+                                    .outputFluids(skyFluid[skyDMap[i][k]].getFluid(skyFluid_n[skyDMap[i][k]] * skyDrill_n[m]))
+                                    .circuitMeta(k + 1)
+                                    .duration(200)
+                                    .EUt(8)
+                                    .save(provider);
+                        }
                     }
                 }
             }
@@ -488,27 +515,29 @@ public class SkyTearsAndGregHeart {
                         FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1))
                                 .notConsumable(skyFragments[i])
                                 .chancedOutput(skyFragments[i], 50, 0)
-                                .chancedOutput(MINING_CRYSTAL.asStack(1), 1, 0)
+                                .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][0], skyOres_n[skyDMap[i][k]][0])
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][1], skyOres_n[skyDMap[i][k]][1])
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][2], skyOres_n[skyDMap[i][k]][2])
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][3], skyOres_n[skyDMap[i][k]][3])
                                 .outputItems(ModItems.MARS_STONE, 64)
                                 .circuitMeta(k + 1)
-                                .duration(96000 / skyOres_n[skyDMap[i][k]][4])
+                                .duration(24000 / skyOres_n[skyDMap[i][k]][4])
                                 .EUt(8)
                                 .save(provider);
                     } else {
-                        FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1))
-                                .notConsumable(skyFragments[i])
-                                .chancedInput(ChemicalHelper.get(toolHeadDrill, Steel, 1), 100, 0)
-                                .chancedOutput(skyFragments[i], 50, 0)
-                                .chancedOutput(MINING_CRYSTAL.asStack(1), 1, 0)
-                                .outputFluids(skyFluid[skyDMap[i][k]].getFluid(skyFluid_n[skyDMap[i][k]][0]))
-                                .circuitMeta(k + 1)
-                                .duration(200)
-                                .EUt(8)
-                                .save(provider);
+                        for (int m = 0; m < 5; m++) {
+                            FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1) + "_" + (m + 1))
+                                    .notConsumable(skyFragments[i])
+                                    .chancedInput(skyDrill[m], 100, -5)
+                                    .chancedOutput(skyFragments[i], 50, 0)
+                                    .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
+                                    .outputFluids(skyFluid[skyDMap[i][k]].getFluid(skyFluid_n[skyDMap[i][k]] * skyDrill_n[m]))
+                                    .circuitMeta(k + 1)
+                                    .duration(200)
+                                    .EUt(8)
+                                    .save(provider);
+                        }
                     }
                 }
             }
@@ -520,27 +549,29 @@ public class SkyTearsAndGregHeart {
                         FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1))
                                 .notConsumable(skyFragments[i])
                                 .chancedOutput(skyFragments[i], 50, 0)
-                                .chancedOutput(MINING_CRYSTAL.asStack(1), 1, 0)
+                                .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][0], skyOres_n[skyDMap[i][k]][0])
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][1], skyOres_n[skyDMap[i][k]][1])
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][2], skyOres_n[skyDMap[i][k]][2])
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][3], skyOres_n[skyDMap[i][k]][3])
                                 .outputItems(ModItems.VENUS_STONE, 64)
                                 .circuitMeta(k + 1)
-                                .duration(96000 / skyOres_n[skyDMap[i][k]][4])
+                                .duration(24000 / skyOres_n[skyDMap[i][k]][4])
                                 .EUt(8)
                                 .save(provider);
                     } else {
-                        FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1))
-                                .notConsumable(skyFragments[i])
-                                .chancedInput(ChemicalHelper.get(toolHeadDrill, Steel, 1), 100, 0)
-                                .chancedOutput(skyFragments[i], 50, 0)
-                                .chancedOutput(MINING_CRYSTAL.asStack(1), 1, 0)
-                                .outputFluids(skyFluid[skyDMap[i][k]].getFluid(skyFluid_n[skyDMap[i][k]][0]))
-                                .circuitMeta(k + 1)
-                                .duration(200)
-                                .EUt(8)
-                                .save(provider);
+                        for (int m = 0; m < 5; m++) {
+                            FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1) + "_" + (m + 1))
+                                    .notConsumable(skyFragments[i])
+                                    .chancedInput(skyDrill[m], 100, -5)
+                                    .chancedOutput(skyFragments[i], 50, 0)
+                                    .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
+                                    .outputFluids(skyFluid[skyDMap[i][k]].getFluid(skyFluid_n[skyDMap[i][k]] * skyDrill_n[m]))
+                                    .circuitMeta(k + 1)
+                                    .duration(200)
+                                    .EUt(8)
+                                    .save(provider);
+                        }
                     }
                 }
             }
@@ -552,27 +583,29 @@ public class SkyTearsAndGregHeart {
                         FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1))
                                 .notConsumable(skyFragments[i])
                                 .chancedOutput(skyFragments[i], 50, 0)
-                                .chancedOutput(MINING_CRYSTAL.asStack(1), 1, 0)
+                                .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][0], skyOres_n[skyDMap[i][k]][0])
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][1], skyOres_n[skyDMap[i][k]][1])
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][2], skyOres_n[skyDMap[i][k]][2])
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][3], skyOres_n[skyDMap[i][k]][3])
                                 .outputItems(ModItems.MERCURY_STONE, 64)
                                 .circuitMeta(k + 1)
-                                .duration(96000 / skyOres_n[skyDMap[i][k]][4])
+                                .duration(24000 / skyOres_n[skyDMap[i][k]][4])
                                 .EUt(8)
                                 .save(provider);
                     } else {
-                        FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1))
-                                .notConsumable(skyFragments[i])
-                                .chancedInput(ChemicalHelper.get(toolHeadDrill, Steel, 1), 100, 0)
-                                .chancedOutput(skyFragments[i], 50, 0)
-                                .chancedOutput(MINING_CRYSTAL.asStack(1), 1, 0)
-                                .outputFluids(skyFluid[skyDMap[i][k]].getFluid(skyFluid_n[skyDMap[i][k]][0]))
-                                .circuitMeta(k + 1)
-                                .duration(200)
-                                .EUt(8)
-                                .save(provider);
+                        for (int m = 0; m < 5; m++) {
+                            FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1) + "_" + (m + 1))
+                                    .notConsumable(skyFragments[i])
+                                    .chancedInput(skyDrill[m], 100, -5)
+                                    .chancedOutput(skyFragments[i], 50, 0)
+                                    .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
+                                    .outputFluids(skyFluid[skyDMap[i][k]].getFluid(skyFluid_n[skyDMap[i][k]] * skyDrill_n[m]))
+                                    .circuitMeta(k + 1)
+                                    .duration(200)
+                                    .EUt(8)
+                                    .save(provider);
+                        }
                     }
                 }
             }
@@ -584,27 +617,29 @@ public class SkyTearsAndGregHeart {
                         FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1))
                                 .notConsumable(skyFragments[i])
                                 .chancedOutput(skyFragments[i], 50, 0)
-                                .chancedOutput(MINING_CRYSTAL.asStack(1), 1, 0)
+                                .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][0], skyOres_n[skyDMap[i][k]][0])
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][1], skyOres_n[skyDMap[i][k]][1])
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][2], skyOres_n[skyDMap[i][k]][2])
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][3], skyOres_n[skyDMap[i][k]][3])
-                                .outputItems(new ItemStack(Registries.getBlock("kubejs:ceresstone")), 64)
+                                .outputItems(new ItemStack(Registries.getBlock("kubejs:ceresstone"), 64))
                                 .circuitMeta(k + 1)
-                                .duration(96000 / skyOres_n[skyDMap[i][k]][4])
+                                .duration(24000 / skyOres_n[skyDMap[i][k]][4])
                                 .EUt(8)
                                 .save(provider);
                     } else {
-                        FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1))
-                                .notConsumable(skyFragments[i])
-                                .chancedInput(ChemicalHelper.get(toolHeadDrill, Steel, 1), 100, 0)
-                                .chancedOutput(skyFragments[i], 50, 0)
-                                .chancedOutput(MINING_CRYSTAL.asStack(1), 1, 0)
-                                .outputFluids(skyFluid[skyDMap[i][k]].getFluid(skyFluid_n[skyDMap[i][k]][0]))
-                                .circuitMeta(k + 1)
-                                .duration(200)
-                                .EUt(8)
-                                .save(provider);
+                        for (int m = 0; m < 5; m++) {
+                            FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1) + "_" + (m + 1))
+                                    .notConsumable(skyFragments[i])
+                                    .chancedInput(skyDrill[m], 100, -5)
+                                    .chancedOutput(skyFragments[i], 50, 0)
+                                    .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
+                                    .outputFluids(skyFluid[skyDMap[i][k]].getFluid(skyFluid_n[skyDMap[i][k]] * skyDrill_n[m]))
+                                    .circuitMeta(k + 1)
+                                    .duration(200)
+                                    .EUt(8)
+                                    .save(provider);
+                        }
                     }
                 }
             }
@@ -616,27 +651,29 @@ public class SkyTearsAndGregHeart {
                         FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1))
                                 .notConsumable(skyFragments[i])
                                 .chancedOutput(skyFragments[i], 50, 0)
-                                .chancedOutput(MINING_CRYSTAL.asStack(1), 1, 0)
+                                .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][0], skyOres_n[skyDMap[i][k]][0])
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][1], skyOres_n[skyDMap[i][k]][1])
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][2], skyOres_n[skyDMap[i][k]][2])
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][3], skyOres_n[skyDMap[i][k]][3])
-                                .outputItems(new ItemStack(Registries.getBlock("kubejs:iostone")), 64)
+                                .outputItems(new ItemStack(Registries.getBlock("kubejs:iostone"), 64))
                                 .circuitMeta(k + 1)
-                                .duration(96000 / skyOres_n[skyDMap[i][k]][4])
+                                .duration(24000 / skyOres_n[skyDMap[i][k]][4])
                                 .EUt(8)
                                 .save(provider);
                     } else {
-                        FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1))
-                                .notConsumable(skyFragments[i])
-                                .chancedInput(ChemicalHelper.get(toolHeadDrill, Steel, 1), 100, 0)
-                                .chancedOutput(skyFragments[i], 50, 0)
-                                .chancedOutput(MINING_CRYSTAL.asStack(1), 1, 0)
-                                .outputFluids(skyFluid[skyDMap[i][k]].getFluid(skyFluid_n[skyDMap[i][k]][0]))
-                                .circuitMeta(k + 1)
-                                .duration(200)
-                                .EUt(8)
-                                .save(provider);
+                        for (int m = 0; m < 5; m++) {
+                            FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1) + "_" + (m + 1))
+                                    .notConsumable(skyFragments[i])
+                                    .chancedInput(skyDrill[m], 100, -5)
+                                    .chancedOutput(skyFragments[i], 50, 0)
+                                    .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
+                                    .outputFluids(skyFluid[skyDMap[i][k]].getFluid(skyFluid_n[skyDMap[i][k]] * skyDrill_n[m]))
+                                    .circuitMeta(k + 1)
+                                    .duration(200)
+                                    .EUt(8)
+                                    .save(provider);
+                        }
                     }
                 }
             }
@@ -648,27 +685,29 @@ public class SkyTearsAndGregHeart {
                         FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1))
                                 .notConsumable(skyFragments[i])
                                 .chancedOutput(skyFragments[i], 50, 0)
-                                .chancedOutput(MINING_CRYSTAL.asStack(1), 1, 0)
+                                .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][0], skyOres_n[skyDMap[i][k]][0])
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][1], skyOres_n[skyDMap[i][k]][1])
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][2], skyOres_n[skyDMap[i][k]][2])
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][3], skyOres_n[skyDMap[i][k]][3])
-                                .outputItems(new ItemStack(Registries.getBlock("kubejs:ganymedestone")), 64)
+                                .outputItems(new ItemStack(Registries.getBlock("kubejs:ganymedestone"), 64))
                                 .circuitMeta(k + 1)
-                                .duration(96000 / skyOres_n[skyDMap[i][k]][4])
+                                .duration(24000 / skyOres_n[skyDMap[i][k]][4])
                                 .EUt(8)
                                 .save(provider);
                     } else {
-                        FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1))
-                                .notConsumable(skyFragments[i])
-                                .chancedInput(ChemicalHelper.get(toolHeadDrill, Steel, 1), 100, 0)
-                                .chancedOutput(skyFragments[i], 50, 0)
-                                .chancedOutput(MINING_CRYSTAL.asStack(1), 1, 0)
-                                .outputFluids(skyFluid[skyDMap[i][k]].getFluid(skyFluid_n[skyDMap[i][k]][0]))
-                                .circuitMeta(k + 1)
-                                .duration(200)
-                                .EUt(8)
-                                .save(provider);
+                        for (int m = 0; m < 5; m++) {
+                            FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1) + "_" + (m + 1))
+                                    .notConsumable(skyFragments[i])
+                                    .chancedInput(skyDrill[m], 100, -5)
+                                    .chancedOutput(skyFragments[i], 50, 0)
+                                    .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
+                                    .outputFluids(skyFluid[skyDMap[i][k]].getFluid(skyFluid_n[skyDMap[i][k]] * skyDrill_n[m]))
+                                    .circuitMeta(k + 1)
+                                    .duration(200)
+                                    .EUt(8)
+                                    .save(provider);
+                        }
                     }
                 }
             }
@@ -680,27 +719,29 @@ public class SkyTearsAndGregHeart {
                         FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1))
                                 .notConsumable(skyFragments[i])
                                 .chancedOutput(skyFragments[i], 50, 0)
-                                .chancedOutput(MINING_CRYSTAL.asStack(1), 1, 0)
+                                .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][0], skyOres_n[skyDMap[i][k]][0])
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][1], skyOres_n[skyDMap[i][k]][1])
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][2], skyOres_n[skyDMap[i][k]][2])
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][3], skyOres_n[skyDMap[i][k]][3])
-                                .outputItems(new ItemStack(Registries.getBlock("kubejs:plutostone")), 64)
+                                .outputItems(new ItemStack(Registries.getBlock("kubejs:plutostone"), 64))
                                 .circuitMeta(k + 1)
-                                .duration(96000 / skyOres_n[skyDMap[i][k]][4])
+                                .duration(24000 / skyOres_n[skyDMap[i][k]][4])
                                 .EUt(8)
                                 .save(provider);
                     } else {
-                        FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1))
-                                .notConsumable(skyFragments[i])
-                                .chancedInput(ChemicalHelper.get(toolHeadDrill, Steel, 1), 100, 0)
-                                .chancedOutput(skyFragments[i], 50, 0)
-                                .chancedOutput(MINING_CRYSTAL.asStack(1), 1, 0)
-                                .outputFluids(skyFluid[skyDMap[i][k]].getFluid(skyFluid_n[skyDMap[i][k]][0]))
-                                .circuitMeta(k + 1)
-                                .duration(200)
-                                .EUt(8)
-                                .save(provider);
+                        for (int m = 0; m < 5; m++) {
+                            FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1) + "_" + (m + 1))
+                                    .notConsumable(skyFragments[i])
+                                    .chancedInput(skyDrill[m], 100, -5)
+                                    .chancedOutput(skyFragments[i], 50, 0)
+                                    .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
+                                    .outputFluids(skyFluid[skyDMap[i][k]].getFluid(skyFluid_n[skyDMap[i][k]] * skyDrill_n[m]))
+                                    .circuitMeta(k + 1)
+                                    .duration(200)
+                                    .EUt(8)
+                                    .save(provider);
+                        }
                     }
                 }
             }
@@ -712,27 +753,29 @@ public class SkyTearsAndGregHeart {
                         FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1))
                                 .notConsumable(skyFragments[i])
                                 .chancedOutput(skyFragments[i], 50, 0)
-                                .chancedOutput(MINING_CRYSTAL.asStack(1), 1, 0)
+                                .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][0], skyOres_n[skyDMap[i][k]][0])
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][1], skyOres_n[skyDMap[i][k]][1])
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][2], skyOres_n[skyDMap[i][k]][2])
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][3], skyOres_n[skyDMap[i][k]][3])
-                                .outputItems(new ItemStack(Registries.getBlock("kubejs:enceladusstone")), 64)
+                                .outputItems(new ItemStack(Registries.getBlock("kubejs:enceladusstone"), 64))
                                 .circuitMeta(k + 1)
-                                .duration(96000 / skyOres_n[skyDMap[i][k]][4])
+                                .duration(24000 / skyOres_n[skyDMap[i][k]][4])
                                 .EUt(8)
                                 .save(provider);
                     } else {
-                        FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1))
-                                .notConsumable(skyFragments[i])
-                                .chancedInput(ChemicalHelper.get(toolHeadDrill, Steel, 1), 100, 0)
-                                .chancedOutput(skyFragments[i], 50, 0)
-                                .chancedOutput(MINING_CRYSTAL.asStack(1), 1, 0)
-                                .outputFluids(skyFluid[skyDMap[i][k]].getFluid(skyFluid_n[skyDMap[i][k]][0]))
-                                .circuitMeta(k + 1)
-                                .duration(200)
-                                .EUt(8)
-                                .save(provider);
+                        for (int m = 0; m < 5; m++) {
+                            FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1) + "_" + (m + 1))
+                                    .notConsumable(skyFragments[i])
+                                    .chancedInput(skyDrill[m], 100, -5)
+                                    .chancedOutput(skyFragments[i], 50, 0)
+                                    .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
+                                    .outputFluids(skyFluid[skyDMap[i][k]].getFluid(skyFluid_n[skyDMap[i][k]] * skyDrill_n[m]))
+                                    .circuitMeta(k + 1)
+                                    .duration(200)
+                                    .EUt(8)
+                                    .save(provider);
+                        }
                     }
                 }
             }
@@ -744,27 +787,29 @@ public class SkyTearsAndGregHeart {
                         FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1))
                                 .notConsumable(skyFragments[i])
                                 .chancedOutput(skyFragments[i], 50, 0)
-                                .chancedOutput(MINING_CRYSTAL.asStack(1), 1, 0)
+                                .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][0], skyOres_n[skyDMap[i][k]][0])
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][1], skyOres_n[skyDMap[i][k]][1])
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][2], skyOres_n[skyDMap[i][k]][2])
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][3], skyOres_n[skyDMap[i][k]][3])
-                                .outputItems(new ItemStack(Registries.getBlock("kubejs:titanstone")), 64)
+                                .outputItems(new ItemStack(Registries.getBlock("kubejs:titanstone"), 64))
                                 .circuitMeta(k + 1)
-                                .duration(96000 / skyOres_n[skyDMap[i][k]][4])
+                                .duration(24000 / skyOres_n[skyDMap[i][k]][4])
                                 .EUt(8)
                                 .save(provider);
                     } else {
-                        FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1))
-                                .notConsumable(skyFragments[i])
-                                .chancedInput(ChemicalHelper.get(toolHeadDrill, Steel, 1), 100, 0)
-                                .chancedOutput(skyFragments[i], 50, 0)
-                                .chancedOutput(MINING_CRYSTAL.asStack(1), 1, 0)
-                                .outputFluids(skyFluid[skyDMap[i][k]].getFluid(skyFluid_n[skyDMap[i][k]][0]))
-                                .circuitMeta(k + 1)
-                                .duration(200)
-                                .EUt(8)
-                                .save(provider);
+                        for (int m = 0; m < 5; m++) {
+                            FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1) + "_" + (m + 1))
+                                    .notConsumable(skyFragments[i])
+                                    .chancedInput(skyDrill[m], 100, -5)
+                                    .chancedOutput(skyFragments[i], 50, 0)
+                                    .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
+                                    .outputFluids(skyFluid[skyDMap[i][k]].getFluid(skyFluid_n[skyDMap[i][k]] * skyDrill_n[m]))
+                                    .circuitMeta(k + 1)
+                                    .duration(200)
+                                    .EUt(8)
+                                    .save(provider);
+                        }
                     }
                 }
             }
@@ -776,27 +821,29 @@ public class SkyTearsAndGregHeart {
                         FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1))
                                 .notConsumable(skyFragments[i])
                                 .chancedOutput(skyFragments[i], 50, 0)
-                                .chancedOutput(MINING_CRYSTAL.asStack(1), 1, 0)
+                                .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][0], skyOres_n[skyDMap[i][k]][0])
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][1], skyOres_n[skyDMap[i][k]][1])
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][2], skyOres_n[skyDMap[i][k]][2])
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][3], skyOres_n[skyDMap[i][k]][3])
                                 .outputItems(ModItems.GLACIO_STONE, 64)
                                 .circuitMeta(k + 1)
-                                .duration(96000 / skyOres_n[skyDMap[i][k]][4])
+                                .duration(24000 / skyOres_n[skyDMap[i][k]][4])
                                 .EUt(8)
                                 .save(provider);
                     } else {
-                        FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1))
-                                .notConsumable(skyFragments[i])
-                                .chancedInput(ChemicalHelper.get(toolHeadDrill, Steel, 1), 100, 0)
-                                .chancedOutput(skyFragments[i], 50, 0)
-                                .chancedOutput(MINING_CRYSTAL.asStack(1), 1, 0)
-                                .outputFluids(skyFluid[skyDMap[i][k]].getFluid(skyFluid_n[skyDMap[i][k]][0]))
-                                .circuitMeta(k + 1)
-                                .duration(200)
-                                .EUt(8)
-                                .save(provider);
+                        for (int m = 0; m < 5; m++) {
+                            FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1) + "_" + (m + 1))
+                                    .notConsumable(skyFragments[i])
+                                    .chancedInput(skyDrill[m], 100, -5)
+                                    .chancedOutput(skyFragments[i], 50, 0)
+                                    .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
+                                    .outputFluids(skyFluid[skyDMap[i][k]].getFluid(skyFluid_n[skyDMap[i][k]] * skyDrill_n[m]))
+                                    .circuitMeta(k + 1)
+                                    .duration(200)
+                                    .EUt(8)
+                                    .save(provider);
+                        }
                     }
                 }
             }
@@ -808,27 +855,29 @@ public class SkyTearsAndGregHeart {
                         FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1))
                                 .notConsumable(skyFragments[i])
                                 .chancedOutput(skyFragments[i], 50, 0)
-                                .chancedOutput(MINING_CRYSTAL.asStack(1), 1, 0)
+                                .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][0], skyOres_n[skyDMap[i][k]][0])
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][1], skyOres_n[skyDMap[i][k]][1])
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][2], skyOres_n[skyDMap[i][k]][2])
                                 .outputItems(rawOre, skyOres[skyDMap[i][k]][3], skyOres_n[skyDMap[i][k]][3])
                                 .outputItems(Blocks.STONE.asItem(), 64)
                                 .circuitMeta(k + 1)
-                                .duration(96000 / skyOres_n[skyDMap[i][k]][4])
+                                .duration(24000 / skyOres_n[skyDMap[i][k]][4])
                                 .EUt(8)
                                 .save(provider);
                     } else {
-                        FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1))
-                                .notConsumable(skyFragments[i])
-                                .chancedInput(ChemicalHelper.get(toolHeadDrill, Steel, 1), 100, 0)
-                                .chancedOutput(skyFragments[i], 50, 0)
-                                .chancedOutput(MINING_CRYSTAL.asStack(1), 1, 0)
-                                .outputFluids(skyFluid[skyDMap[i][k]].getFluid(skyFluid_n[skyDMap[i][k]][0]))
-                                .circuitMeta(k + 1)
-                                .duration(200)
-                                .EUt(8)
-                                .save(provider);
+                        for (int m = 0; m < 5; m++) {
+                            FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1) + "_" + (m + 1))
+                                    .notConsumable(skyFragments[i])
+                                    .chancedInput(skyDrill[m], 100, -5)
+                                    .chancedOutput(skyFragments[i], 50, 0)
+                                    .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
+                                    .outputFluids(skyFluid[skyDMap[i][k]].getFluid(skyFluid_n[skyDMap[i][k]] * skyDrill_n[m]))
+                                    .circuitMeta(k + 1)
+                                    .duration(200)
+                                    .EUt(8)
+                                    .save(provider);
+                        }
                     }
                 }
             }
@@ -837,7 +886,7 @@ public class SkyTearsAndGregHeart {
                 FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_special_1")
                         .notConsumable(WORLD_FRAGMENTS_OVERWORLD.asStack(1))
                         .chancedOutput(WORLD_FRAGMENTS_OVERWORLD.asStack(1), 50, 0)
-                        .chancedOutput(TREASURES_CRYSTAL.asStack(), 5, 0)
+                        .chancedOutput(TREASURES_CRYSTAL.asStack(), 5, 5)
                         .chancedOutput(new ItemStack(Blocks.DIRT, 16), 6000, 0)
                         .chancedOutput(new ItemStack(Blocks.SMOOTH_SANDSTONE, 16), 3000, 0)
                         .chancedOutput(new ItemStack(Blocks.GRAVEL, 16), 4000, 0)
@@ -850,14 +899,14 @@ public class SkyTearsAndGregHeart {
                         .chancedOutput(new ItemStack(Items.STRING, 8), 500, 0)
                         .chancedOutput(Lava.getFluid(1000), 500, 0)
                         .circuitMeta(0)
-                        .duration(1200)
+                        .duration(200)
                         .EUt(8)
                         .save(provider);
 
                 FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_special_2")
                         .notConsumable(WORLD_FRAGMENTS_OVERWORLD.asStack(1))
                         .chancedOutput(WORLD_FRAGMENTS_OVERWORLD.asStack(1), 50, 0)
-                        .chancedOutput(TREASURES_CRYSTAL.asStack(), 5, 0)
+                        .chancedOutput(TREASURES_CRYSTAL.asStack(), 5, 5)
                         .chancedOutput(new ItemStack(Items.HONEYCOMB, 1), 2000, 0)
                         .chancedOutput(new ItemStack(Items.KELP, 1), 2000, 0)
                         .chancedOutput(new ItemStack(Registries.getItem("ae2:silicon_press"), 1), 500, 0)
@@ -870,14 +919,14 @@ public class SkyTearsAndGregHeart {
                         .chancedOutput(new ItemStack(Blocks.SOUL_SAND, 10), 5, 0)
                         .chancedOutput(RawOil.getFluid(1000), 2000, 0)
                         .circuitMeta(1)
-                        .duration(1200)
+                        .duration(200)
                         .EUt(8)
                         .save(provider);
 
                 FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_special_3")
                         .notConsumable(WORLD_FRAGMENTS_NETHER.asStack(1))
                         .chancedOutput(WORLD_FRAGMENTS_NETHER.asStack(1), 50, 0)
-                        .chancedOutput(TREASURES_CRYSTAL.asStack(), 5, 0)
+                        .chancedOutput(TREASURES_CRYSTAL.asStack(), 5, 5)
                         .chancedOutput(new ItemStack(Blocks.SOUL_SAND, 16), 6000, 0)
                         .chancedOutput(new ItemStack(Blocks.SOUL_SOIL, 16), 3000, 0)
                         .chancedOutput(new ItemStack(Blocks.ANCIENT_DEBRIS, 4), 500, 0)
@@ -887,14 +936,14 @@ public class SkyTearsAndGregHeart {
                         .chancedOutput(new ItemStack(Items.BLAZE_ROD, 8), 500, 0)
                         .chancedOutput(Lava.getFluid(8000), 5000, 0)
                         .circuitMeta(0)
-                        .duration(1200)
+                        .duration(200)
                         .EUt(8)
                         .save(provider);
 
                 FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_special_4")
                         .notConsumable(WORLD_FRAGMENTS_END.asStack(1))
                         .chancedOutput(WORLD_FRAGMENTS_END.asStack(1), 50, 0)
-                        .chancedOutput(TREASURES_CRYSTAL.asStack(), 5, 0)
+                        .chancedOutput(TREASURES_CRYSTAL.asStack(), 5, 5)
                         .chancedOutput(new ItemStack(Blocks.DRAGON_EGG, 1), 5, 0)
                         .chancedOutput(new ItemStack(Blocks.DRAGON_HEAD, 1), 5, 0)
                         .chancedOutput(new ItemStack(Items.DRAGON_BREATH, 1), 500, 0)
@@ -902,233 +951,68 @@ public class SkyTearsAndGregHeart {
                         .chancedOutput(new ItemStack(Items.CHORUS_FRUIT, 16), 4000, 0)
                         .chancedOutput(new ItemStack(Items.CHORUS_FLOWER, 1), 500, 0)
                         .circuitMeta(0)
-                        .duration(1200)
+                        .duration(200)
                         .EUt(8)
                         .save(provider);
 
                 FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_special_5")
                         .notConsumable(WORLD_FRAGMENTS_GLACIO.asStack(1))
                         .chancedOutput(WORLD_FRAGMENTS_GLACIO.asStack(1), 50, 0)
-                        .chancedOutput(TREASURES_CRYSTAL.asStack(), 5, 0)
+                        .chancedOutput(TREASURES_CRYSTAL.asStack(), 5, 5)
                         .chancedOutput(new ItemStack(Registries.getItem("kubejs:glacio_spirit"), 1), 500, 0)
                         .chancedOutput(new ItemStack(ModItems.ICE_SHARD.get(), 1), 9500, 0)
                         .circuitMeta(0)
-                        .duration(1200)
+                        .duration(200)
                         .EUt(8)
                         .save(provider);
 
                 FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_special_6")
                         .notConsumable(WORLD_FRAGMENTS_BARNARDA.asStack(1))
                         .chancedOutput(WORLD_FRAGMENTS_BARNARDA.asStack(1), 50, 0)
-                        .chancedOutput(TREASURES_CRYSTAL.asStack(), 5, 0)
+                        .chancedOutput(TREASURES_CRYSTAL.asStack(), 5, 5)
                         .chancedOutput(new ItemStack(Registries.getBlock("kubejs:barnarda_log"), 1), 500, 0)
                         .chancedOutput(new ItemStack(Registries.getBlock("kubejs:barnarda_leaves"), 1), 9500, 0)
                         .chancedOutput(BarnardaAir.getFluid(16000), 2000, 0)
                         .circuitMeta(0)
-                        .duration(1200)
+                        .duration(200)
                         .EUt(8)
                         .save(provider);
 
             }
 
-            {
-                FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_make_fragments_1")
-                        .inputItems(WORLD_FRAGMENTS_OVERWORLD, 1)
-                        .notConsumable(Registries.getItem("kubejs:reactor_core"))
-                        .notConsumable(block, Steel, 4)
-                        .chancedOutput(TREASURES_CRYSTAL.asStack(), 5, 0)
-                        .outputItems(WORLD_FRAGMENTS_REACTOR, 1)
-                        .circuitMeta(32)
-                        .duration(200)
-                        .EUt(8)
-                        .save(provider);
+            WORLD_DATA_SCANNER_RECIPES.recipeBuilder("sky_block_make_overworld_data")
+                    .notConsumable(WORLD_FRAGMENTS_OVERWORLD)
+                    .inputItems(GTItems.TOOL_DATA_STICK.asStack())
+                    .inputItems(dust, Stone, 64)
+                    .inputFluids(PCBCoolant.getFluid(100))
+                    .inputFluids(Air.getFluid(64000))
+                    .outputItems(Registries.getItem("kubejs:overworld_data"))
+                    .circuitMeta(32)
+                    .duration(200)
+                    .EUt(8)
+                    .save(provider);
 
-                FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_make_fragments_2")
-                        .inputItems(WORLD_FRAGMENTS_OVERWORLD, 1)
-                        .notConsumable(ModItems.TIER_1_ROCKET)
-                        .inputFluids(RocketFuel.getFluid(16000))
-                        .chancedOutput(TREASURES_CRYSTAL.asStack(), 5, 0)
-                        .outputItems(WORLD_FRAGMENTS_MOON, 1)
-                        .circuitMeta(32)
-                        .duration(200)
-                        .EUt(8)
-                        .save(provider);
+            WORLD_DATA_SCANNER_RECIPES.recipeBuilder("sky_block_make_nether_data")
+                    .notConsumable(WORLD_FRAGMENTS_VENUS)
+                    .inputItems(GTItems.TOOL_DATA_STICK.asStack(2))
+                    .inputItems(dust, Netherrack, 64)
+                    .inputFluids(PCBCoolant.getFluid(200))
+                    .inputFluids(NetherAir.getFluid(64000))
+                    .outputItems(Registries.getItem("kubejs:nether_data"))
+                    .duration(200)
+                    .EUt(8)
+                    .save(provider);
 
-                FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_make_fragments_3")
-                        .inputItems(WORLD_FRAGMENTS_OVERWORLD, 1)
-                        .notConsumable(ModItems.TIER_2_ROCKET)
-                        .inputFluids(RocketFuelRp1.getFluid(16000))
-                        .chancedOutput(TREASURES_CRYSTAL.asStack(), 5, 0)
-                        .outputItems(WORLD_FRAGMENTS_MARS, 1)
-                        .circuitMeta(32)
-                        .duration(200)
-                        .EUt(8)
-                        .save(provider);
-
-                FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_make_fragments_4")
-                        .inputItems(WORLD_FRAGMENTS_OVERWORLD, 1)
-                        .notConsumable(ModItems.TIER_3_ROCKET)
-                        .inputFluids(DenseHydrazineFuelMixture.getFluid(16000))
-                        .chancedOutput(TREASURES_CRYSTAL.asStack(), 5, 0)
-                        .outputItems(WORLD_FRAGMENTS_VENUS, 1)
-                        .circuitMeta(32)
-                        .duration(200)
-                        .EUt(8)
-                        .save(provider);
-
-                FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_make_fragments_5")
-                        .inputItems(WORLD_FRAGMENTS_OVERWORLD, 1)
-                        .notConsumable(ModItems.TIER_3_ROCKET)
-                        .inputFluids(DenseHydrazineFuelMixture.getFluid(16000))
-                        .chancedOutput(TREASURES_CRYSTAL.asStack(), 5, 0)
-                        .outputItems(WORLD_FRAGMENTS_MERCURY, 1)
-                        .circuitMeta(31)
-                        .duration(200)
-                        .EUt(8)
-                        .save(provider);
-
-                WORLD_DATA_SCANNER_RECIPES.recipeBuilder("sky_block_make_overworld_data")
-                        .notConsumable(WORLD_FRAGMENTS_OVERWORLD)
-                        .inputItems(GTItems.TOOL_DATA_STICK.asStack())
-                        .inputItems(dust, Stone, 64)
-                        .inputFluids(PCBCoolant.getFluid(100))
-                        .inputFluids(Air.getFluid(64000))
-                        .outputItems(Registries.getItem("kubejs:overworld_data"))
-                        .circuitMeta(32)
-                        .duration(200)
-                        .EUt(8)
-                        .save(provider);
-
-                WORLD_DATA_SCANNER_RECIPES.recipeBuilder("sky_block_make_nether_data")
-                        .notConsumable(WORLD_FRAGMENTS_VENUS)
-                        .inputItems(GTItems.TOOL_DATA_STICK.asStack(2))
-                        .inputItems(dust, Netherrack, 64)
-                        .inputFluids(PCBCoolant.getFluid(200))
-                        .inputFluids(NetherAir.getFluid(64000))
-                        .outputItems(Registries.getItem("kubejs:nether_data"))
-                        .duration(200)
-                        .EUt(8)
-                        .save(provider);
-
-                FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_make_fragments_6")
-                        .inputItems(WORLD_FRAGMENTS_VENUS, 1)
-                        .notConsumable(Registries.getItem("kubejs:nether_data"))
-                        .chancedOutput(TREASURES_CRYSTAL.asStack(), 5, 0)
-                        .outputItems(WORLD_FRAGMENTS_NETHER, 1)
-                        .circuitMeta(32)
-                        .duration(200)
-                        .EUt(8)
-                        .save(provider);
-
-                FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_make_fragments_7")
-                        .inputItems(WORLD_FRAGMENTS_OVERWORLD, 1)
-                        .notConsumable(ModItems.TIER_4_ROCKET)
-                        .inputFluids(RocketFuelCn3h7o3.getFluid(16000))
-                        .chancedOutput(TREASURES_CRYSTAL.asStack(), 5, 0)
-                        .outputItems(WORLD_FRAGMENTS_CERES, 1)
-                        .circuitMeta(32)
-                        .duration(200)
-                        .EUt(8)
-                        .save(provider);
-
-                FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_make_fragments_8")
-                        .inputItems(WORLD_FRAGMENTS_OVERWORLD, 1)
-                        .notConsumable(Registries.getItem("ad_astra_rocketed:tier_5_rocket"))
-                        .inputFluids(RocketFuelH8n4c2o4.getFluid(16000))
-                        .chancedOutput(TREASURES_CRYSTAL.asStack(), 5, 0)
-                        .outputItems(WORLD_FRAGMENTS_IO, 1)
-                        .circuitMeta(32)
-                        .duration(200)
-                        .EUt(8)
-                        .save(provider);
-
-                FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_make_fragments_9")
-                        .inputItems(WORLD_FRAGMENTS_OVERWORLD, 1)
-                        .notConsumable(Registries.getItem("ad_astra_rocketed:tier_5_rocket"))
-                        .inputFluids(RocketFuelH8n4c2o4.getFluid(16000))
-                        .chancedOutput(TREASURES_CRYSTAL.asStack(), 5, 0)
-                        .outputItems(WORLD_FRAGMENTS_GANYMEDE, 1)
-                        .circuitMeta(31)
-                        .duration(200)
-                        .EUt(8)
-                        .save(provider);
-
-                FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_make_fragments_10")
-                        .inputItems(WORLD_FRAGMENTS_OVERWORLD, 1)
-                        .notConsumable(Registries.getItem("ad_astra_rocketed:tier_6_rocket"))
-                        .inputFluids(FluidStack.create(ModFluids.CRYO_FUEL.get(), 16000))
-                        .chancedOutput(TREASURES_CRYSTAL.asStack(), 5, 0)
-                        .outputItems(WORLD_FRAGMENTS_PLUTO, 1)
-                        .circuitMeta(32)
-                        .duration(200)
-                        .EUt(8)
-                        .save(provider);
-
-                FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_make_fragments_11")
-                        .inputItems(WORLD_FRAGMENTS_OVERWORLD, 1)
-                        .notConsumable(Registries.getItem("ad_astra_rocketed:tier_6_rocket"))
-                        .inputFluids(FluidStack.create(ModFluids.CRYO_FUEL.get(), 16000))
-                        .chancedOutput(TREASURES_CRYSTAL.asStack(), 5, 0)
-                        .outputItems(WORLD_FRAGMENTS_ENCELADUS, 1)
-                        .circuitMeta(31)
-                        .duration(200)
-                        .EUt(8)
-                        .save(provider);
-
-                FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_make_fragments_12")
-                        .inputItems(WORLD_FRAGMENTS_OVERWORLD, 1)
-                        .notConsumable(Registries.getItem("ad_astra_rocketed:tier_6_rocket"))
-                        .inputFluids(FluidStack.create(Registries.getFluid("ad_astra:cryo_fuel"), 16000))
-                        .chancedOutput(TREASURES_CRYSTAL.asStack(), 5, 0)
-                        .outputItems(WORLD_FRAGMENTS_TITAN, 1)
-                        .circuitMeta(30)
-                        .duration(200)
-                        .EUt(8)
-                        .save(provider);
-
-                WORLD_DATA_SCANNER_RECIPES.recipeBuilder("sky_block_make_enf_data")
-                        .notConsumable(WORLD_FRAGMENTS_PLUTO)
-                        .inputItems(GTItems.TOOL_DATA_STICK.asStack(4))
-                        .inputItems(dust, Endstone, 64)
-                        .inputFluids(PCBCoolant.getFluid(400))
-                        .inputFluids(EnderAir.getFluid(64000))
-                        .outputItems(Registries.getItem("kubejs:end_data"))
-                        .duration(200)
-                        .EUt(8)
-                        .save(provider);
-
-                FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_make_fragments_13")
-                        .inputItems(WORLD_FRAGMENTS_PLUTO, 1)
-                        .inputItems(Registries.getItem("kubejs:end_data"), 4)
-                        .inputItems(Items.ENDER_EYE, 4)
-                        .chancedOutput(TREASURES_CRYSTAL.asStack(), 5, 0)
-                        .outputItems(WORLD_FRAGMENTS_END, 1)
-                        .circuitMeta(32)
-                        .duration(200)
-                        .EUt(8)
-                        .save(provider);
-
-                FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_make_fragments_14")
-                        .inputItems(WORLD_FRAGMENTS_OVERWORLD, 1)
-                        .notConsumable(Registries.getItem("ad_astra_rocketed:tier_7_rocket"))
-                        .inputFluids(StellarEnergyRocketFuel.getFluid(16000))
-                        .chancedOutput(TREASURES_CRYSTAL.asStack(), 5, 0)
-                        .outputItems(WORLD_FRAGMENTS_GLACIO, 1)
-                        .circuitMeta(32)
-                        .duration(200)
-                        .EUt(8)
-                        .save(provider);
-
-                FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_make_fragments_15")
-                        .inputItems(WORLD_FRAGMENTS_OVERWORLD, 1)
-                        .notConsumable(SPACE_ELEVATOR.getItem())
-                        .chancedOutput(TREASURES_CRYSTAL.asStack(), 5, 0)
-                        .outputItems(WORLD_FRAGMENTS_BARNARDA, 1)
-                        .circuitMeta(32)
-                        .duration(200)
-                        .EUt(8)
-                        .save(provider);
-            }
+            WORLD_DATA_SCANNER_RECIPES.recipeBuilder("sky_block_make_end_data")
+                    .notConsumable(WORLD_FRAGMENTS_PLUTO)
+                    .inputItems(GTItems.TOOL_DATA_STICK.asStack(4))
+                    .inputItems(dust, Endstone, 64)
+                    .inputFluids(PCBCoolant.getFluid(400))
+                    .inputFluids(EnderAir.getFluid(64000))
+                    .outputItems(Registries.getItem("kubejs:end_data"))
+                    .duration(200)
+                    .EUt(8)
+                    .save(provider);
 
             FRAGMENT_WORLD_COLLECTION.recipeBuilder("make_damascus_steel_dust")
                     .notConsumable(WORLD_FRAGMENTS_REACTOR)
@@ -1141,35 +1025,307 @@ public class SkyTearsAndGregHeart {
                     .save(provider);
 
             QFT_RECIPES.recipeBuilder("make_miracle_crystal")
-                    .inputItems(WORLD_FRAGMENTS_OVERWORLD, 64)
-                    .inputItems(WORLD_FRAGMENTS_NETHER, 64)
-                    .inputItems(WORLD_FRAGMENTS_END, 64)
-                    .inputItems(WORLD_FRAGMENTS_REACTOR, 64)
-                    .inputItems(WORLD_FRAGMENTS_MOON, 64)
-                    .inputItems(WORLD_FRAGMENTS_MARS, 64)
-                    .inputItems(WORLD_FRAGMENTS_VENUS, 64)
-                    .inputItems(WORLD_FRAGMENTS_MERCURY, 64)
-                    .inputItems(WORLD_FRAGMENTS_CERES, 64)
-                    .inputItems(WORLD_FRAGMENTS_IO, 64)
-                    .inputItems(WORLD_FRAGMENTS_GANYMEDE, 64)
-                    .inputItems(WORLD_FRAGMENTS_PLUTO, 64)
-                    .inputItems(WORLD_FRAGMENTS_ENCELADUS, 64)
-                    .inputItems(WORLD_FRAGMENTS_TITAN, 64)
-                    .inputItems(WORLD_FRAGMENTS_GLACIO, 64)
-                    .inputItems(WORLD_FRAGMENTS_BARNARDA, 64)
-                    .inputItems(MINING_CRYSTAL, 64)
-                    .inputItems(TREASURES_CRYSTAL, 64)
+                    .inputItems(WORLD_FRAGMENTS_OVERWORLD, 1)
+                    .inputItems(WORLD_FRAGMENTS_NETHER, 1)
+                    .inputItems(WORLD_FRAGMENTS_END, 1)
+                    .inputItems(WORLD_FRAGMENTS_REACTOR, 1)
+                    .inputItems(WORLD_FRAGMENTS_MOON, 1)
+                    .inputItems(WORLD_FRAGMENTS_MARS, 1)
+                    .inputItems(WORLD_FRAGMENTS_VENUS, 1)
+                    .inputItems(WORLD_FRAGMENTS_MERCURY, 1)
+                    .inputItems(WORLD_FRAGMENTS_CERES, 1)
+                    .inputItems(WORLD_FRAGMENTS_IO, 1)
+                    .inputItems(WORLD_FRAGMENTS_GANYMEDE, 1)
+                    .inputItems(WORLD_FRAGMENTS_PLUTO, 1)
+                    .inputItems(WORLD_FRAGMENTS_ENCELADUS, 1)
+                    .inputItems(WORLD_FRAGMENTS_TITAN, 1)
+                    .inputItems(WORLD_FRAGMENTS_GLACIO, 1)
+                    .inputItems(WORLD_FRAGMENTS_BARNARDA, 1)
+                    .inputItems(MINING_CRYSTAL, 1)
+                    .inputItems(TREASURES_CRYSTAL, 1)
+                    .inputFluids(UUMatter.getFluid(1000000000))
+                    .inputFluids(Eternity.getFluid(1000000))
+                    .inputFluids(Magmatter.getFluid(1000000))
+                    .chancedOutput(MIRACLE_CRYSTAL.asStack(), 1000, 0)
+                    .duration(2000)
+                    .EUt(VEX[19])
+                    .save(provider);
 
+            QFT_RECIPES.recipeBuilder("make_miracle_crystal2")
+                    .inputItems(WORLD_FRAGMENTS_OVERWORLD, 1)
+                    .inputItems(WORLD_FRAGMENTS_NETHER, 1)
+                    .inputItems(WORLD_FRAGMENTS_END, 1)
+                    .inputItems(WORLD_FRAGMENTS_REACTOR, 1)
+                    .inputItems(WORLD_FRAGMENTS_MOON, 1)
+                    .inputItems(WORLD_FRAGMENTS_MARS, 1)
+                    .inputItems(WORLD_FRAGMENTS_VENUS, 1)
+                    .inputItems(WORLD_FRAGMENTS_MERCURY, 1)
+                    .inputItems(WORLD_FRAGMENTS_CERES, 1)
+                    .inputItems(WORLD_FRAGMENTS_IO, 1)
+                    .inputItems(WORLD_FRAGMENTS_GANYMEDE, 1)
+                    .inputItems(WORLD_FRAGMENTS_PLUTO, 1)
+                    .inputItems(WORLD_FRAGMENTS_ENCELADUS, 1)
+                    .inputItems(WORLD_FRAGMENTS_TITAN, 1)
+                    .inputItems(WORLD_FRAGMENTS_GLACIO, 1)
+                    .inputItems(WORLD_FRAGMENTS_BARNARDA, 1)
+                    .inputItems(MINING_CRYSTAL, 1)
+                    .inputItems(TREASURES_CRYSTAL, 1)
+                    .inputFluids(Miracle.getFluid(1000))
+                    .inputFluids(Eternity.getFluid(1000000))
+                    .inputFluids(Magmatter.getFluid(1000000))
                     .outputItems(MIRACLE_CRYSTAL, 1)
+                    .duration(2000)
+                    .EUt(VEX[20])
+                    .save(provider);
+        }
+
+        {
+            FRAGMENT_WORLD_COLLECTION.recipeBuilder("make_world_fragments_1")
+                    .inputItems(WORLD_FRAGMENTS_OVERWORLD, 1)
+                    .notConsumable(Registries.getItem("kubejs:reactor_core"))
+                    .notConsumable(block, Steel, 4)
+                    .chancedOutput(MIRACLE_CRYSTAL.asStack(), 1, 0)
+                    .outputItems(WORLD_FRAGMENTS_REACTOR, 1)
                     .circuitMeta(32)
                     .duration(200)
                     .EUt(8)
                     .save(provider);
 
+            FRAGMENT_WORLD_COLLECTION.recipeBuilder("make_world_fragments_2")
+                    .inputItems(WORLD_FRAGMENTS_OVERWORLD, 1)
+                    .notConsumable(ModItems.TIER_1_ROCKET)
+                    .inputFluids(RocketFuel.getFluid(16000))
+                    .chancedOutput(MIRACLE_CRYSTAL.asStack(), 1, 0)
+                    .outputItems(WORLD_FRAGMENTS_MOON, 1)
+                    .circuitMeta(32)
+                    .duration(200)
+                    .EUt(8)
+                    .save(provider);
+
+            FRAGMENT_WORLD_COLLECTION.recipeBuilder("make_world_fragments_3")
+                    .inputItems(WORLD_FRAGMENTS_OVERWORLD, 1)
+                    .notConsumable(ModItems.TIER_2_ROCKET)
+                    .inputFluids(RocketFuelRp1.getFluid(16000))
+                    .chancedOutput(MIRACLE_CRYSTAL.asStack(), 1, 0)
+                    .outputItems(WORLD_FRAGMENTS_MARS, 1)
+                    .circuitMeta(32)
+                    .duration(200)
+                    .EUt(8)
+                    .save(provider);
+
+            FRAGMENT_WORLD_COLLECTION.recipeBuilder("make_world_fragments_4")
+                    .inputItems(WORLD_FRAGMENTS_OVERWORLD, 1)
+                    .notConsumable(ModItems.TIER_3_ROCKET)
+                    .inputFluids(DenseHydrazineFuelMixture.getFluid(16000))
+                    .chancedOutput(MIRACLE_CRYSTAL.asStack(), 1, 0)
+                    .outputItems(WORLD_FRAGMENTS_VENUS, 1)
+                    .circuitMeta(32)
+                    .duration(200)
+                    .EUt(8)
+                    .save(provider);
+
+            FRAGMENT_WORLD_COLLECTION.recipeBuilder("make_world_fragments_5")
+                    .inputItems(WORLD_FRAGMENTS_OVERWORLD, 1)
+                    .notConsumable(ModItems.TIER_3_ROCKET)
+                    .inputFluids(DenseHydrazineFuelMixture.getFluid(16000))
+                    .chancedOutput(MIRACLE_CRYSTAL.asStack(), 1, 0)
+                    .outputItems(WORLD_FRAGMENTS_MERCURY, 1)
+                    .circuitMeta(31)
+                    .duration(200)
+                    .EUt(8)
+                    .save(provider);
+
+            FRAGMENT_WORLD_COLLECTION.recipeBuilder("make_world_fragments_6")
+                    .inputItems(WORLD_FRAGMENTS_VENUS, 1)
+                    .notConsumable(Registries.getItem("kubejs:nether_data"))
+                    .chancedOutput(MIRACLE_CRYSTAL.asStack(), 1, 0)
+                    .outputItems(WORLD_FRAGMENTS_NETHER, 1)
+                    .circuitMeta(32)
+                    .duration(200)
+                    .EUt(8)
+                    .save(provider);
+
+            FRAGMENT_WORLD_COLLECTION.recipeBuilder("make_world_fragments_7")
+                    .inputItems(WORLD_FRAGMENTS_OVERWORLD, 1)
+                    .notConsumable(ModItems.TIER_4_ROCKET)
+                    .inputFluids(RocketFuelCn3h7o3.getFluid(16000))
+                    .chancedOutput(MIRACLE_CRYSTAL.asStack(), 1, 0)
+                    .outputItems(WORLD_FRAGMENTS_CERES, 1)
+                    .circuitMeta(32)
+                    .duration(200)
+                    .EUt(8)
+                    .save(provider);
+
+            FRAGMENT_WORLD_COLLECTION.recipeBuilder("make_world_fragments_8")
+                    .inputItems(WORLD_FRAGMENTS_OVERWORLD, 1)
+                    .notConsumable(Registries.getItem("ad_astra_rocketed:tier_5_rocket"))
+                    .inputFluids(RocketFuelH8n4c2o4.getFluid(16000))
+                    .chancedOutput(MIRACLE_CRYSTAL.asStack(), 1, 0)
+                    .outputItems(WORLD_FRAGMENTS_IO, 1)
+                    .circuitMeta(32)
+                    .duration(200)
+                    .EUt(8)
+                    .save(provider);
+
+            FRAGMENT_WORLD_COLLECTION.recipeBuilder("make_world_fragments_9")
+                    .inputItems(WORLD_FRAGMENTS_OVERWORLD, 1)
+                    .notConsumable(Registries.getItem("ad_astra_rocketed:tier_5_rocket"))
+                    .inputFluids(RocketFuelH8n4c2o4.getFluid(16000))
+                    .chancedOutput(MIRACLE_CRYSTAL.asStack(), 1, 0)
+                    .outputItems(WORLD_FRAGMENTS_GANYMEDE, 1)
+                    .circuitMeta(31)
+                    .duration(200)
+                    .EUt(8)
+                    .save(provider);
+
+            FRAGMENT_WORLD_COLLECTION.recipeBuilder("make_world_fragments_13")
+                    .inputItems(WORLD_FRAGMENTS_PLUTO, 1)
+                    .notConsumable(new ItemStack(Registries.getItem("kubejs:end_data"), 16))
+                    .notConsumable(new ItemStack(Items.ENDER_EYE, 16))
+                    .chancedOutput(MIRACLE_CRYSTAL.asStack(), 1, 0)
+                    .outputItems(WORLD_FRAGMENTS_END, 1)
+                    .circuitMeta(32)
+                    .duration(200)
+                    .EUt(8)
+                    .save(provider);
+
+            FRAGMENT_WORLD_COLLECTION.recipeBuilder("make_world_fragments_14")
+                    .inputItems(WORLD_FRAGMENTS_OVERWORLD, 1)
+                    .notConsumable(Registries.getItem("ad_astra_rocketed:tier_7_rocket"))
+                    .inputFluids(StellarEnergyRocketFuel.getFluid(16000))
+                    .chancedOutput(MIRACLE_CRYSTAL.asStack(), 1, 0)
+                    .outputItems(WORLD_FRAGMENTS_GLACIO, 1)
+                    .circuitMeta(32)
+                    .duration(200)
+                    .EUt(8)
+                    .save(provider);
+
+            FRAGMENT_WORLD_COLLECTION.recipeBuilder("make_world_fragments_15")
+                    .inputItems(WORLD_FRAGMENTS_OVERWORLD, 1)
+                    .notConsumable(SPACE_ELEVATOR.getItem())
+                    .chancedOutput(MIRACLE_CRYSTAL.asStack(), 1, 0)
+                    .outputItems(WORLD_FRAGMENTS_BARNARDA, 1)
+                    .circuitMeta(32)
+                    .duration(200)
+                    .EUt(8)
+                    .save(provider);
+
+            for (int i = 0; i < 16; i++) {
+                ELEMENT_COPYING_RECIPES.recipeBuilder("copy_world_fragments_" + (i))
+                        .notConsumable(skyFragments[i])
+                        .inputFluids(UUMatter.getFluid(1000000))
+                        .outputItems(skyFragments[i])
+                        .duration(200)
+                        .EUt(VEX[18])
+                        .save(provider);
+            }
+
         }
 
-        // GregHeart
+        {
+            MASS_FABRICATOR_RECIPES.recipeBuilder("make_miracle_gas")
+                    .inputItems(MIRACLE_CRYSTAL, 1)
+                    .inputFluids(PrimordialMatter.getFluid(10000000))
+                    .outputFluids(MiracleGas.getFluid(8000000))
+                    .duration(2000)
+                    .EUt(VEX[21])
+                    .save(provider);
+
+            DISTILLATION_RECIPES.recipeBuilder("make_miracle")
+                    .inputFluids(MiracleGas.getFluid(10000000))
+                    .outputItems(MIRACLE_CRYSTAL, 1)
+                    .outputFluids(PrimordialMatter.getFluid(8000000))
+                    .outputFluids(Miracle.getFluid(1000))
+                    .duration(6000)
+                    .EUt(VEX[22])
+                    .save(provider);
+
+            PRECISION_ASSEMBLER_RECIPES.recipeBuilder("make_super_glue")
+                    .inputItems(new ItemStack(Registries.getItem("kubejs:hyper_stable_self_healing_adhesive"), 64))
+                    .inputItems(new ItemStack(Registries.getItem("kubejs:cosmic_fabric"), 32))
+                    .inputItems(foil, Shirabon, 64)
+                    .inputItems(new ItemStack(Registries.getItem("kubejs:chain_command_block_core"), 8))
+                    .inputFluids(Miracle.getFluid(1000000))
+                    .inputFluids(Infinity.getFluid(1000000))
+                    .inputFluids(PrimordialMatter.getFluid(1000000))
+                    .inputFluids(SuperMutatedLivingSolder.getFluid(10000000))
+                    .outputItems(SUPER_GLUE)
+                    .duration(10000)
+                    .EUt(VEX[23])
+                    .save(provider);
+
+            ELECTRIC_IMPLOSION_COMPRESSOR_RECIPES.recipeBuilder("make_big_fish")
+                    .inputItems(Items.PUFFERFISH, 2000000000)
+                    .inputItems(block, MagnetohydrodynamicallyConstrainedStarMatter, 2000000000)
+                    .outputItems(COMPRESSED_PUFFERFISH)
+                    .duration(200)
+                    .EUt(VEX[26])
+                    .save(provider);
+
+        }
+
         if (!ConfigHolder.INSTANCE.enableSkyBlokeMode) {
+
+            VanillaRecipeHelper.addShapedRecipe(provider,
+                    GTLCore.id("make_fragment_world_collection_machine"), GTLMachines.FRAGMENT_WORLD_COLLECTION_MACHINE[ULV].asStack(),
+                    "WNW", "PCP", "XNX",
+                    'X', new UnificationEntry(cableGtSingle, CosmicNeutronium),
+                    'N', CustomTags.MAX_CIRCUITS,
+                    'P', SENSOR_MAX,
+                    'C', GTMachines.HULL[14].asStack(),
+                    'W', FIELD_GENERATOR_MAX);
+
+            QFT_RECIPES.recipeBuilder("make_miracle_crystal")
+                    .notConsumable(new ItemStack(Registries.getItem("kubejs:giga_chad"), 64))
+                    .chancedInput(ChemicalHelper.get(nanoswarm, CosmicNeutronium, 4), 2500, 0)
+                    .chancedInput(ChemicalHelper.get(nanoswarm, SpaceTime, 4), 2500, 0)
+                    .chancedInput(ChemicalHelper.get(nanoswarm, TranscendentMetal, 4), 2500, 0)
+                    .chancedInput(ChemicalHelper.get(nanoswarm, Eternity, 4), 2500, 0)
+                    .inputItems(new ItemStack(Registries.getItem("kubejs:chaotic_core"), 16))
+                    .inputItems(new ItemStack(Registries.getItem("kubejs:quantum_anomaly"), 16))
+                    .inputFluids(ExcitedDtec.getFluid(100000000))
+                    .inputFluids(TranscendentMetal.getFluid(100000))
+                    .inputFluids(Shirabon.getFluid(100000))
+                    .chancedOutput(MIRACLE_CRYSTAL.asStack(), 2000, 0)
+                    .duration(1000)
+                    .EUt(VEX[18])
+                    .save(provider);
+
+            QFT_RECIPES.recipeBuilder("make_miracle_crystal2")
+                    .chancedInput(new ItemStack(Registries.getItem("kubejs:chaotic_core"), 16), 2500, 0)
+                    .chancedInput(new ItemStack(Registries.getItem("kubejs:quantum_anomaly"), 16), 2500, 0)
+                    .inputItems(WORLD_FRAGMENTS_OVERWORLD, 1)
+                    .inputItems(WORLD_FRAGMENTS_NETHER, 1)
+                    .inputItems(WORLD_FRAGMENTS_END, 1)
+                    .inputItems(WORLD_FRAGMENTS_REACTOR, 1)
+                    .inputItems(WORLD_FRAGMENTS_MOON, 1)
+                    .inputItems(WORLD_FRAGMENTS_MARS, 1)
+                    .inputItems(WORLD_FRAGMENTS_VENUS, 1)
+                    .inputItems(WORLD_FRAGMENTS_MERCURY, 1)
+                    .inputItems(WORLD_FRAGMENTS_CERES, 1)
+                    .inputItems(WORLD_FRAGMENTS_IO, 1)
+                    .inputItems(WORLD_FRAGMENTS_GANYMEDE, 1)
+                    .inputItems(WORLD_FRAGMENTS_PLUTO, 1)
+                    .inputItems(WORLD_FRAGMENTS_ENCELADUS, 1)
+                    .inputItems(WORLD_FRAGMENTS_TITAN, 1)
+                    .inputItems(WORLD_FRAGMENTS_GLACIO, 1)
+                    .inputItems(WORLD_FRAGMENTS_BARNARDA, 1)
+                    .inputFluids(Miracle.getFluid(1000))
+                    .inputFluids(TranscendentMetal.getFluid(100000))
+                    .inputFluids(Shirabon.getFluid(100000))
+                    .outputItems(MIRACLE_CRYSTAL, 1)
+                    .duration(1000)
+                    .EUt(VEX[19])
+                    .save(provider);
+
+            GRAVITATION_SHOCKBURST_RECIPES.recipeBuilder("make_world_fragments_0")
+                    .inputItems(Blocks.GRASS_BLOCK.asItem(), 64)
+                    .inputItems(MIRACLE_CRYSTAL, 1)
+                    .outputItems(WORLD_FRAGMENTS_OVERWORLD, 1)
+                    .duration(200)
+                    .EUt(VEX[17])
+                    .dimension(new ResourceLocation("overworld"))
+                    .save(provider);
 
         }
     }
