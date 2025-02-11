@@ -308,7 +308,7 @@ public class SkyTearsAndGregHeart {
                 16,
                 64,
                 256,
-                4098
+                10000
         };
         if (ConfigHolder.INSTANCE.enableSkyBlokeMode) {
 
@@ -888,8 +888,8 @@ public class SkyTearsAndGregHeart {
                         .chancedOutput(WORLD_FRAGMENTS_OVERWORLD.asStack(1), 50, 0)
                         .chancedOutput(TREASURES_CRYSTAL.asStack(), 5, 5)
                         .chancedOutput(new ItemStack(Blocks.DIRT, 16), 6000, 0)
-                        .chancedOutput(new ItemStack(Blocks.SMOOTH_SANDSTONE, 16), 3000, 0)
                         .chancedOutput(new ItemStack(Blocks.GRAVEL, 16), 4000, 0)
+                        .chancedOutput(new ItemStack(Blocks.SAND, 16), 3000, 0)
                         .chancedOutput(new ItemStack(Items.CLAY_BALL, 64), 2000, 0)
                         .chancedOutput(new ItemStack(Items.SPRUCE_SAPLING, 8), 2000, 0)
                         .chancedOutput(new ItemStack(Items.CHERRY_SAPLING, 8), 2000, 0)
@@ -1081,11 +1081,11 @@ public class SkyTearsAndGregHeart {
 
         {
             FRAGMENT_WORLD_COLLECTION.recipeBuilder("make_world_fragments_1")
-                    .inputItems(WORLD_FRAGMENTS_OVERWORLD, 1)
                     .notConsumable(Registries.getItem("kubejs:reactor_core"))
-                    .notConsumable(block, Steel, 4)
+                    .inputItems(block, Steel, 4)
                     .chancedOutput(MIRACLE_CRYSTAL.asStack(), 1, 0)
                     .outputItems(WORLD_FRAGMENTS_REACTOR, 1)
+                    .dimension(new ResourceLocation("overworld"))
                     .circuitMeta(32)
                     .duration(200)
                     .EUt(8)
@@ -1181,7 +1181,6 @@ public class SkyTearsAndGregHeart {
             FRAGMENT_WORLD_COLLECTION.recipeBuilder("make_world_fragments_13")
                     .inputItems(WORLD_FRAGMENTS_PLUTO, 1)
                     .notConsumable(new ItemStack(Registries.getItem("kubejs:end_data"), 16))
-                    .notConsumable(new ItemStack(Items.ENDER_EYE, 16))
                     .chancedOutput(MIRACLE_CRYSTAL.asStack(), 1, 0)
                     .outputItems(WORLD_FRAGMENTS_END, 1)
                     .circuitMeta(32)
