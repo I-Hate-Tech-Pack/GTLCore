@@ -337,7 +337,7 @@ public class GTLItems {
             .register();
     public static ItemEntry<ComponentItem> ULTIMATE_TEA = REGISTRATE
             .item("ultimate_tea", ComponentItem::create)
-            .properties(stack -> stack.stacksTo(1))
+            .properties(stack -> stack.stacksTo(16))
             .onRegister(attach(new TooltipBehavior(lines -> {
                 lines.add(Component.translatable("§6§l§o休息一下吧"));
             })))
