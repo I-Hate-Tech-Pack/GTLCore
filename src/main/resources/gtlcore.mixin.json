@@ -10,7 +10,8 @@
     "gtm.gui.AEFluidConfigSlotWidgetMixin",
     "gtm.gui.PatternPreviewWidgetMixin",
     "gtm.gui.ProspectingMapWidgetMixin",
-    "gtm.gui.ProspectingTextureMixin"
+    "gtm.gui.ProspectingTextureMixin",
+    "ldlib.CustomBakedModelFixed"
   ],
   "mixins": [
     "adastra.ModUtilsMixin",
