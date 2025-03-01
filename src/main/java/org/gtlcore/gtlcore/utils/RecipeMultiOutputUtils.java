@@ -17,11 +17,11 @@ import java.util.List;
  */
 public class RecipeMultiOutputUtils {
 
-    public static List<Content> copyAsList(Content content, RecipeCapability<?> capability, @Nullable ContentModifier modifier) {
+    public static List<Content> copyAsList(Content content, RecipeCapability<?> capability, @Nullable ContentModifier modifier, boolean input) {
         if (modifier == null || content.chance == 0) {
             return List.of(new Content(capability.copyContent(content.content), content.chance, content.maxChance, content.tierChanceBoost, content.slotName, content.uiName));
         } else {
-            var fluidIngredients = copyWithModifier((FluidIngredient) content.content, modifier);
+            var fluidIngredients = copyWithModifier((FluidIngredient) content.content, modifier, input);
             List<Content> list = new ArrayList<>();
             for (var fluidIngredient : fluidIngredients) {
                 list.add(new Content(fluidIngredient, content.chance, content.maxChance, content.tierChanceBoost, content.slotName, content.uiName));
@@ -30,7 +30,7 @@ public class RecipeMultiOutputUtils {
         }
     }
 
-    public static List<FluidIngredient> copyWithModifier(FluidIngredient content, ContentModifier modifier) {
+    public static List<FluidIngredient> copyWithModifier(FluidIngredient content, ContentModifier modifier, boolean input) {
         if (content.isEmpty()) return List.of(content.copy());
         List<FluidIngredient> list = new ArrayList<>();
         FluidIngredient copy = content.copy();
@@ -38,6 +38,7 @@ public class RecipeMultiOutputUtils {
         if (amount > Integer.MAX_VALUE) {
             long times = (long) Math.min(Math.ceil((double) amount / Integer.MAX_VALUE),
                     ConfigHolder.INSTANCE.recipeMultiMax);
+            times = input ? 32 : times;
             for (; times > 0; times--) {
                 var cp = content.copy();
                 if (times == 1) {

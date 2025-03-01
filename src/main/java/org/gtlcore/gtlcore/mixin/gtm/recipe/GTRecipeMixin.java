@@ -84,15 +84,15 @@ public abstract class GTRecipeMixin {
 
     /**
      * @author me
-     * @reason fix output can not exceed int
+     * @reason fix output and input can not exceed int
      */
     @Overwrite(remap = false)
     public GTRecipe copy(ContentModifier modifier, boolean modifyDuration) {
         GTRecipe copied;
         if (ConfigHolder.INSTANCE.recipeMultiOutput) {
-            copied = new GTRecipe(recipeType, id, copyContents(inputs, modifier), gTLCore$copyContentsWhitMore(outputs, modifier), copyContents(tickInputs, modifier), copyContents(tickOutputs, modifier), new HashMap<>(inputChanceLogics), new HashMap<>(outputChanceLogics), new HashMap<>(tickInputChanceLogics), new HashMap<>(tickOutputChanceLogics), new ArrayList<>(conditions), new ArrayList<>(ingredientActions), data, duration, isFuel());
+            copied = new GTRecipe(recipeType, id, gTLCore$copyContentsWhitMore(inputs, modifier, true), gTLCore$copyContentsWhitMore(outputs, modifier, false), copyContents(tickInputs, modifier), copyContents(tickOutputs, modifier), new HashMap<>(inputChanceLogics), new HashMap<>(outputChanceLogics), new HashMap<>(tickInputChanceLogics), new HashMap<>(tickOutputChanceLogics), new ArrayList<>(conditions), new ArrayList<>(ingredientActions), data, duration, isFuel());
         } else {
-            copied = new GTRecipe(recipeType, id, copyContents(inputs, modifier), copyContents(outputs, modifier), copyContents(tickInputs, modifier), copyContents(tickOutputs, modifier), new HashMap<>(inputChanceLogics), new HashMap<>(outputChanceLogics), new HashMap<>(tickInputChanceLogics), new HashMap<>(tickOutputChanceLogics), new ArrayList<>(conditions), new ArrayList<>(ingredientActions), data, duration, isFuel());
+            copied = new GTRecipe(recipeType, id, gTLCore$copyContentsWhitMore(inputs, modifier, true), copyContents(outputs, modifier), copyContents(tickInputs, modifier), copyContents(tickOutputs, modifier), new HashMap<>(inputChanceLogics), new HashMap<>(outputChanceLogics), new HashMap<>(tickInputChanceLogics), new HashMap<>(tickOutputChanceLogics), new ArrayList<>(conditions), new ArrayList<>(ingredientActions), data, duration, isFuel());
         }
         if (modifyDuration) {
             copied.duration = modifier.apply(this.duration).intValue();
@@ -101,7 +101,7 @@ public abstract class GTRecipeMixin {
     }
 
     @Unique
-    public Map<RecipeCapability<?>, List<Content>> gTLCore$copyContentsWhitMore(Map<RecipeCapability<?>, List<Content>> contents, @Nullable ContentModifier modifier) {
+    public Map<RecipeCapability<?>, List<Content>> gTLCore$copyContentsWhitMore(Map<RecipeCapability<?>, List<Content>> contents, @Nullable ContentModifier modifier, boolean input) {
         Map<RecipeCapability<?>, List<Content>> copyContents = new HashMap<>();
         for (var entry : contents.entrySet()) {
             var contentList = entry.getValue();
@@ -110,7 +110,7 @@ public abstract class GTRecipeMixin {
                 List<Content> contentsCopy = new ArrayList<>();
                 for (Content content : contentList) {
                     if (cap instanceof FluidRecipeCapability) {
-                        List<Content> list = RecipeMultiOutputUtils.copyAsList(content, cap, modifier);
+                        List<Content> list = RecipeMultiOutputUtils.copyAsList(content, cap, modifier, input);
                         contentsCopy.addAll(list);
                     } else {
                         contentsCopy.add(content.copy(cap, modifier));
