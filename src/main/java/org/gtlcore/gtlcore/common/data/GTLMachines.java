@@ -545,4 +545,18 @@ public class GTLMachines {
             .rotationState(RotationState.ALL)
             .renderer(() -> new OverlayTieredMachineRenderer(GTValues.LuV, GTCEu.id("block/machine/part/item_bus.import")))
             .register();
+
+    public static final MachineDefinition TAG_FILTER_ME_STOCK_BUS_PART_MACHINE = REGISTRATE
+            .machine("tag_filter_me_stock_bus_part_machine", TagFilterMEStockBusPartMachine::new)
+            .tier(LuV)
+            .abilities(PartAbility.IMPORT_ITEMS)
+            .rotationState(RotationState.ALL)
+            .renderer(() -> new OverlayTieredMachineRenderer(LuV, GTCEu.id("block/machine/part/me_item_bus.import")))
+            .tooltips(
+                    Component.translatable("gtceu.machine.item_bus.import.tooltip"),
+                    Component.translatable("gtceu.machine.me.item_import.tooltip"),
+                    Component.translatable("gtceu.machine.me.copy_paste.tooltip"),
+                    Component.translatable("gtceu.universal.enabled"))
+            .compassNode("item_bus")
+            .register();
 }
