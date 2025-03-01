@@ -567,7 +567,7 @@ public class AdvancedMultiBlockMachine {
                     .where("a", Predicates.controller(Predicates.blocks(definition.get())))
                     .where("b", Predicates.blocks(GTLBlocks.ALUMINIUM_BRONZE_CASING.get()).setMinGlobalLimited(240)
                             .or(Predicates.autoAbilities(definition.getRecipeTypes()))
-                            .or(Predicates.blocks(GTLMachines.BLOCK_BUS.getBlock()).setMaxGlobalLimited(1))
+                            .or(Predicates.blocks(GTLMachines.BLOCK_BUS.getBlock()).setMaxGlobalLimited(3))
                             .or(Predicates.abilities(PartAbility.MAINTENANCE).setExactLimit(1)))
                     .where("c", Predicates.blocks(Registries.getBlock("kubejs:shining_obsidian")))
                     .where("d", Predicates.blocks(GTBlocks.CASING_TEMPERED_GLASS.get())
@@ -924,7 +924,7 @@ public class AdvancedMultiBlockMachine {
                             level.setBlockAndUpdate(pos, Blocks.CHAIN_COMMAND_BLOCK.defaultBlockState());
                         }
                         if (MachineIO.inputItem((WorkableMultiblockMachine) machine, Registries.getItemStack("kubejs:repeating_command_block_core")) && Objects.equals(block, "kubejs:chain_command_block_broken")) {
-                            level.setBlockAndUpdate(pos, Blocks.COMMAND_BLOCK.defaultBlockState());
+                            level.setBlockAndUpdate(pos, Blocks.REPEATING_COMMAND_BLOCK.defaultBlockState());
                         }
                     }
                 }
