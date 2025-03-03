@@ -87,7 +87,6 @@
     "config.gtlcore.option.blackBlockList": "FTBU连锁黑名单",
     "config.gtlcore.option.recipeMultiOutput": "启用配方超出int额外输出",
     "config.gtlcore.option.recipeMultiMax": "配方超出int额外输出最大值",
-    "config.gtlcore.option.enableSuperBlastMultiRecipe": "启用超级冶炼炉跨配方并行",
     "config.gtlcore.option.disableDrift": "禁用飞行惯性",
     "config.gtlcore.option.durationMultiplier": "配方时间乘数",
     "config.gtlcore.option.enablePrimitiveVoidOre": "启用原始虚空矿机",

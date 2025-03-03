@@ -57,10 +57,6 @@ public class ConfigHolder {
     public int recipeMultiMax = 8;
 
     @Configurable
-    @Configurable.Comment("是否启用超级冶炼炉跨配方并行")
-    public boolean enableSuperBlastMultiRecipe = true;
-
-    @Configurable
     public String[] mobList1 = new String[] { "chicken", "rabbit", "sheep", "cow", "horse", "pig", "donkey", "skeleton_horse", "iron_golem", "wolf", "goat", "parrot", "camel", "cat", "fox", "llama", "panda", "polar_bear" };
     @Configurable
     public String[] mobList2 = new String[] { "ghast", "zombie", "pillager", "zombie_villager", "skeleton", "drowned", "witch", "spider", "creeper", "husk", "wither_skeleton", "blaze", "zombified_piglin", "slime", "vindicator", "enderman" };

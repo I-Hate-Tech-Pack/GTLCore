@@ -1,7 +1,6 @@
 package org.gtlcore.gtlcore.api.machine.multiblock;
 
 import org.gtlcore.gtlcore.common.machine.trait.MultipleRecipesLogic;
-import org.gtlcore.gtlcore.config.ConfigHolder;
 
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
@@ -34,10 +33,7 @@ public class CoilWorkableElectricMultipleRecipesMachine extends CoilWorkableElec
 
     @Override
     protected @NotNull RecipeLogic createRecipeLogic(Object @NotNull... args) {
-        if (ConfigHolder.INSTANCE.enableSuperBlastMultiRecipe) {
-            return new MultipleRecipesLogic(this, EBF_CHECK);
-        }
-        return super.getRecipeLogic();
+        return new MultipleRecipesLogic(this, EBF_CHECK);
     }
 
     @NotNull
