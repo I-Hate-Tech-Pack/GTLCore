@@ -277,7 +277,7 @@ public class TagFilterMEStockBusPartMachine extends MEInputBusPartMachine {
         }
     }
 
-    private class ItemTagPriority implements IPartitionList {
+    private static class ItemTagPriority implements IPartitionList {
 
         private final Set<TagKey<?>> whiteSet;
         private final Set<TagKey<?>> blackSet;
@@ -310,7 +310,7 @@ public class TagFilterMEStockBusPartMachine extends MEInputBusPartMachine {
             Holder<?> refer = null;
             if (obj instanceof Item item) {
                 refer = ForgeRegistries.ITEMS.getHolder(item).orElse(null);
-            } else if (obj instanceof Fluid fluid) {
+            } else if (obj instanceof Fluid) {
                 return false;
             }
 
