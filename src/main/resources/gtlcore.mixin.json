@@ -10,7 +10,8 @@
     "gtm.gui.AEFluidConfigSlotWidgetMixin",
     "gtm.gui.PatternPreviewWidgetMixin",
     "gtm.gui.ProspectingMapWidgetMixin",
-    "gtm.gui.ProspectingTextureMixin"
+    "gtm.gui.ProspectingTextureMixin",
+    "ldlib.CustomBakedModelFixed"
   ],
   "mixins": [
     "adastra.ModUtilsMixin",
@@ -34,6 +35,7 @@
     "ftbu.YouCantBreakAE2Mixin",
     "gtm.CWURecipeCapabilityMixin",
     "gtm.FluidPipeTypeMixin",
+    "gtm.MEStockingBusPartMachineMixin",
     "gtm.MultiblockInfoCategoryMixin",
     "gtm.OverclockingLogicMixin",
     "gtm.RecipeLogicProviderMixin",

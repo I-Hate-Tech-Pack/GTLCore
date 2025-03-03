@@ -22,10 +22,7 @@ import net.minecraft.world.level.block.Blocks;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class BlockConversionRoomMachine extends StorageMachine {
 
@@ -60,7 +57,7 @@ public class BlockConversionRoomMachine extends StorageMachine {
     private final int am;
     private final List<int[]> poses;
 
-    private BlockBusPartMachine blockBusPartMachine = null;
+    private Set<BlockBusPartMachine> blockBusPartMachine = new HashSet<>();
 
     public BlockConversionRoomMachine(IMachineBlockEntity holder, boolean isLarge) {
         super(holder, 1);
@@ -79,7 +76,7 @@ public class BlockConversionRoomMachine extends StorageMachine {
         super.onStructureFormed();
         for (IMultiPart part : getParts()) {
             if (part instanceof BlockBusPartMachine busPartMachine) {
-                this.blockBusPartMachine = busPartMachine;
+                blockBusPartMachine.add(busPartMachine);
             }
         }
     }
@@ -96,18 +93,21 @@ public class BlockConversionRoomMachine extends StorageMachine {
         if (getOffsetTimer() % 20 == 0) {
             int amount = getTier() * am - 7;
             if (blockBusPartMachine != null && !getMachineStorageItem().isEmpty()) {
-                ItemStackTransfer stackTransfer = blockBusPartMachine.getInventory().storage;
                 int a = amount;
                 if (getMachineStorageItem().is(GTLItems.FAST_CONVERSION_SIMULATE_CARD.get())) {
-                    a = 81 * 64;
+                    a = 81 * 64 * 3;
                 }
-                for (int i = 0; a > 0 && i < stackTransfer.getSlots(); i++) {
-                    ItemStack itemStack = stackTransfer.getStackInSlot(i);
-                    if (itemStack.getItem() instanceof BlockItem blockItem &&
-                            covRecipe.containsKey(blockItem.getBlock())) {
-                        int count = itemStack.getCount();
-                        a -= count;
-                        stackTransfer.setStackInSlot(i, new ItemStack(covRecipe.get(blockItem.getBlock()).asItem(), count));
+                for (BlockBusPartMachine busPartMachine : blockBusPartMachine) {
+                    ItemStackTransfer stackTransfer = busPartMachine.getInventory().storage;
+
+                    for (int i = 0; a > 0 && i < stackTransfer.getSlots(); i++) {
+                        ItemStack itemStack = stackTransfer.getStackInSlot(i);
+                        if (itemStack.getItem() instanceof BlockItem blockItem &&
+                                covRecipe.containsKey(blockItem.getBlock())) {
+                            int count = itemStack.getCount();
+                            a -= count;
+                            stackTransfer.setStackInSlot(i, new ItemStack(covRecipe.get(blockItem.getBlock()).asItem(), count));
+                        }
                     }
                 }
             } else {

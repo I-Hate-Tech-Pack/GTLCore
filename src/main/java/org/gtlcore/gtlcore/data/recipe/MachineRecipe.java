@@ -18,6 +18,7 @@ import com.gregtechceu.gtceu.common.data.GTBlocks;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.common.data.GTMachines;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
+import com.gregtechceu.gtceu.common.data.machines.GTAEMachines;
 import com.gregtechceu.gtceu.common.data.machines.GTResearchMachines;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
 import com.gregtechceu.gtceu.data.recipe.VanillaRecipeHelper;
@@ -603,6 +604,26 @@ public class MachineRecipe {
                 .outputItems(WirelessMachines.WIRELESS_ENERGY_OUTPUT_HATCH_4096A[MAX].asStack())
                 .duration(200)
                 .EUt(GTValues.VA[MAX])
+                .save(provider);
+
+        ASSEMBLER_RECIPES
+                .recipeBuilder(GTLCore.id("heat_sensor"))
+                .inputItems(SENSOR_UXV, 4)
+                .inputItems(EMITTER_UXV, 4)
+                .inputItems(CIRCUIT.getIngredient(UXV), 16)
+                .inputItems(HULL.getIngredient(UXV), 1)
+                .inputFluids(GTMaterials.SolderingAlloy.getFluid(1440))
+                .outputItems(GTLMachines.HEAT_SENSOR)
+                .duration(200).EUt(VA[UXV])
+                .save(provider);
+
+        ASSEMBLER_RECIPES
+                .recipeBuilder(GTLCore.id("heat_sensor"))
+                .inputItems(GTAEMachines.STOCKING_IMPORT_BUS_ME)
+                .inputItems(GTAEMachines.STOCKING_IMPORT_HATCH_ME)
+                .inputFluids(GTMaterials.SolderingAlloy.getFluid(1440))
+                .outputItems(GTLMachines.ME_DUAL_HATCH_STOCK_PART_MACHINE)
+                .duration(200).EUt(VA[EV])
                 .save(provider);
 
         ASSEMBLY_LINE_RECIPES

@@ -408,6 +408,44 @@ public class GTLMachines {
             .renderer(() -> new MaintenanceHatchPartRenderer(10, GTCEu.id("block/machine/part/maintenance.cleaning")))
             .register();
 
+    public static final MachineDefinition STERILE_CLEANING_GRAVITY_CONFIGURATION_MAINTENANCE_HATCH = REGISTRATE
+            .machine("sterile_cleaning_gravity_configuration_maintenance_hatch", holder -> new GravityCleaningConfigurationMaintenancePartMachine(holder, ICleaningRoom.STERILE_DUMMY_CLEANROOM))
+            .rotationState(RotationState.ALL)
+            .abilities(PartAbility.MAINTENANCE)
+            .tooltips(Component.translatable("gtceu.universal.disabled"),
+                    Component.translatable("gtceu.machine.maintenance_hatch_cleanroom_auto.tooltip.0"),
+                    Component.translatable("gtceu.machine.maintenance_hatch_cleanroom_auto.tooltip.1"))
+            .tooltipBuilder((stack, tooltips) -> {
+                for (CleanroomType type : ICleaningRoom
+                        .getCleanroomTypes(ICleaningRoom.STERILE_DUMMY_CLEANROOM)) {
+                    tooltips.add(Component.literal("  ")
+                            .append(Component.translatable(type.getTranslationKey())
+                                    .withStyle(ChatFormatting.GREEN)));
+                }
+                GTL_ADD.accept(stack, tooltips);
+            })
+            .renderer(() -> new MaintenanceHatchPartRenderer(11, GTCEu.id("block/machine/part/maintenance.cleaning")))
+            .register();
+
+    public static final MachineDefinition LAW_CLEANING_GRAVITY_CONFIGURATION_MAINTENANCE_HATCH = REGISTRATE
+            .machine("law_cleaning_gravity_configuration_maintenance_hatch", holder -> new GravityCleaningConfigurationMaintenancePartMachine(holder, ICleaningRoom.LAW_DUMMY_CLEANROOM))
+            .rotationState(RotationState.ALL)
+            .abilities(PartAbility.MAINTENANCE)
+            .tooltips(Component.translatable("gtceu.universal.disabled"),
+                    Component.translatable("gtceu.machine.maintenance_hatch_cleanroom_auto.tooltip.0"),
+                    Component.translatable("gtceu.machine.maintenance_hatch_cleanroom_auto.tooltip.1"))
+            .tooltipBuilder((stack, tooltips) -> {
+                for (CleanroomType type : ICleaningRoom
+                        .getCleanroomTypes(ICleaningRoom.LAW_DUMMY_CLEANROOM)) {
+                    tooltips.add(Component.literal("  ")
+                            .append(Component.translatable(type.getTranslationKey())
+                                    .withStyle(ChatFormatting.GREEN)));
+                }
+                GTL_ADD.accept(stack, tooltips);
+            })
+            .renderer(() -> new MaintenanceHatchPartRenderer(12, GTCEu.id("block/machine/part/maintenance.cleaning")))
+            .register();
+
     public static final MachineDefinition WIRELESS_DATA_HATCH_TRANSMITTER = REGISTRATE
             .machine("wireless_data_transmitter_hatch", (holder) -> new WirelessOpticalDataHatchMachine(holder, true))
             .rotationState(RotationState.ALL)
@@ -495,6 +533,16 @@ public class GTLMachines {
             .overlayTieredHullRenderer("neutron_sensor")
             .register();
 
+    public final static MachineDefinition HEAT_SENSOR = REGISTRATE
+            .machine("heat_sensor", TemperatureSensorPartMachine::new)
+            .langValue("Temperature Sensor")
+            .tier(GTValues.UXV)
+            .rotationState(RotationState.ALL)
+            .tooltips(Component.translatable("gtceu.machine.heat_sensor.tooltip.0"))
+            .tooltipBuilder(GTL_ADD)
+            .overlayTieredHullRenderer("neutron_sensor")
+            .register();
+
     public static final MachineDefinition ROTOR_HATCH = REGISTRATE
             .machine("rotor_hatch", RotorHatchPartMachine::new)
             .langValue("Rotor Hatch")
@@ -508,5 +556,32 @@ public class GTLMachines {
             .tier(GTValues.LuV)
             .rotationState(RotationState.ALL)
             .renderer(() -> new OverlayTieredMachineRenderer(GTValues.LuV, GTCEu.id("block/machine/part/item_bus.import")))
+            .register();
+
+    public static final MachineDefinition TAG_FILTER_ME_STOCK_BUS_PART_MACHINE = REGISTRATE
+            .machine("tag_filter_me_stock_bus_part_machine", TagFilterMEStockBusPartMachine::new)
+            .tier(LuV)
+            .abilities(PartAbility.IMPORT_ITEMS)
+            .rotationState(RotationState.ALL)
+            .renderer(() -> new OverlayTieredMachineRenderer(LuV, GTCEu.id("block/machine/part/me_item_bus.import")))
+            .tooltips(
+                    Component.translatable("gtceu.machine.item_bus.import.tooltip"),
+                    Component.translatable("gtceu.machine.me.item_import.tooltip"),
+                    Component.translatable("gtceu.machine.me.copy_paste.tooltip"),
+                    Component.translatable("gtceu.universal.enabled"))
+            .compassNode("item_bus")
+            .register();
+
+    public static final MachineDefinition ME_DUAL_HATCH_STOCK_PART_MACHINE = REGISTRATE
+            .machine("me_dual_hatch_stock_part_machine", MEDualHatchStockPartMachine::new)
+            .tier(LuV)
+            .abilities(PartAbility.IMPORT_ITEMS, PartAbility.IMPORT_FLUIDS)
+            .rotationState(RotationState.ALL)
+            .renderer(() -> new OverlayTieredMachineRenderer(LuV, GTCEu.id("block/machine/part/me_pattern_buffer")))
+            .tooltips(
+                    Component.translatable("gtceu.machine.dual_hatch.import.tooltip"),
+                    Component.translatable("gtceu.machine.me.item_import.tooltip"),
+                    Component.translatable("gtceu.universal.enabled"))
+            .compassNode("dual_hatch")
             .register();
 }
