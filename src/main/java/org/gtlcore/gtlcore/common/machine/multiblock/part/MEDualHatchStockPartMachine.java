@@ -4,6 +4,7 @@ import org.gtlcore.gtlcore.client.gui.widget.DualHatchConfigWidget;
 
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
+import com.gregtechceu.gtceu.api.machine.trait.NotifiableFluidTank;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
 import com.gregtechceu.gtceu.common.item.IntCircuitBehaviour;
 import com.gregtechceu.gtceu.integration.ae2.machine.MEInputBusPartMachine;
@@ -14,6 +15,7 @@ import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.lowdragmc.lowdraglib.side.fluid.FluidStack;
+import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 import com.lowdragmc.lowdraglib.utils.Position;
 
@@ -42,17 +44,26 @@ public class MEDualHatchStockPartMachine extends MEInputBusPartMachine {
             MEInputBusPartMachine.MANAGED_FIELD_HOLDER);
 
     protected ExportOnlyAEItemList aeItemHandler;
+
     protected ExportOnlyAEFluidList aeFluidHandler;
+
+    @Persisted
+    protected NotifiableFluidTank fluidTank;
 
     public MEDualHatchStockPartMachine(IMachineBlockEntity holder, Object... args) {
         super(holder, args);
+        fluidTank = createTank();
     }
 
     @Override
     protected NotifiableItemStackHandler createInventory(Object... args) {
         this.aeItemHandler = new ExportOnlyAEStockingItemList(this, 16);
-        this.aeFluidHandler = new ExportOnlyAEStockingFluidList(this, 8);
         return this.aeItemHandler;
+    }
+
+    protected NotifiableFluidTank createTank() {
+        this.aeFluidHandler = new ExportOnlyAEStockingFluidList(this, 8);
+        return this.aeFluidHandler;
     }
 
     @Override
