@@ -1,7 +1,8 @@
 package org.gtlcore.gtlcore.common.machine.multiblock.part;
 
-import org.gtlcore.gtlcore.client.gui.widget.DualHatchConfigWidget;
+import org.gtlcore.gtlcore.client.gui.widget.AEDualConfigWidget;
 
+import com.gregtechceu.gtceu.api.gui.fancy.FancyMachineUIWidget;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableFluidTank;
@@ -11,6 +12,7 @@ import com.gregtechceu.gtceu.integration.ae2.machine.MEInputBusPartMachine;
 import com.gregtechceu.gtceu.integration.ae2.slot.*;
 import com.gregtechceu.gtceu.integration.ae2.utils.AEUtil;
 
+import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
 import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
@@ -21,6 +23,7 @@ import com.lowdragmc.lowdraglib.utils.Position;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 import appeng.api.config.Actionable;
@@ -29,6 +32,7 @@ import appeng.api.stacks.AEFluidKey;
 import appeng.api.stacks.AEItemKey;
 import appeng.api.stacks.GenericStack;
 import appeng.api.storage.MEStorage;
+import lombok.Setter;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -50,6 +54,9 @@ public class MEDualHatchStockPartMachine extends MEInputBusPartMachine {
     @Persisted
     protected NotifiableFluidTank fluidTank;
 
+    @Setter
+    protected int page = 1;
+
     public MEDualHatchStockPartMachine(IMachineBlockEntity holder, Object... args) {
         super(holder, args);
         fluidTank = createTank();
@@ -57,12 +64,12 @@ public class MEDualHatchStockPartMachine extends MEInputBusPartMachine {
 
     @Override
     protected NotifiableItemStackHandler createInventory(Object... args) {
-        this.aeItemHandler = new ExportOnlyAEStockingItemList(this, 16);
+        this.aeItemHandler = new ExportOnlyAEStockingItemList(this, 64);
         return this.aeItemHandler;
     }
 
     protected NotifiableFluidTank createTank() {
-        this.aeFluidHandler = new ExportOnlyAEStockingFluidList(this, 8);
+        this.aeFluidHandler = new ExportOnlyAEStockingFluidList(this, 64);
         return this.aeFluidHandler;
     }
 
@@ -85,12 +92,19 @@ public class MEDualHatchStockPartMachine extends MEInputBusPartMachine {
         MEStorage networkInv = grid.getStorageService().getInventory();
         ExportOnlyAEItemSlot[] aeItem = aeItemHandler.getInventory();
         ExportOnlyAEFluidSlot[] aeFluid = aeFluidHandler.getInventory();
-        for (int i = 0; i < CONFIG_SIZE; i++) {
-            var slot = i < 8 ? aeItem[i] : aeFluid[i - 8];
+        ExportOnlyAESlot slot;
+        for (int i = 0; i < aeItem.length; i++) {
+            boolean isFluid = false;
+            slot = aeItem[i];
             var config = slot.getConfig();
+            if (config == null) {
+                slot = aeFluid[i];
+                isFluid = true;
+                config = slot.getConfig();
+            }
             if (config != null) {
                 var key = config.what();
-                long extracted = networkInv.extract(key, i < 8 ? Integer.MAX_VALUE : Long.MAX_VALUE,
+                long extracted = networkInv.extract(key, isFluid ? Long.MAX_VALUE : Integer.MAX_VALUE,
                         Actionable.SIMULATE, actionSource);
                 if (extracted > 0) {
                     slot.setStock(new GenericStack(key, extracted));
@@ -102,6 +116,12 @@ public class MEDualHatchStockPartMachine extends MEInputBusPartMachine {
     }
 
     @Override
+    public ModularUI createUI(Player entityPlayer) {
+        return new ModularUI(176, 180, this, entityPlayer)
+                .widget(new FancyMachineUIWidget(this, 176, 185));
+    }
+
+    @Override
     public Widget createUIWidget() {
         WidgetGroup group = new WidgetGroup(new Position(0, 0));
         // ME Network status
@@ -110,7 +130,7 @@ public class MEDualHatchStockPartMachine extends MEInputBusPartMachine {
                 "gtceu.gui.me_network.offline"));
 
         // Config slots
-        group.addWidget(new DualHatchConfigWidget(3, 10, this.aeItemHandler, this.aeFluidHandler));
+        group.addWidget(new AEDualConfigWidget(3, 10, this.aeItemHandler, this.aeFluidHandler, this, page));
 
         return group;
     }
@@ -119,12 +139,17 @@ public class MEDualHatchStockPartMachine extends MEInputBusPartMachine {
         CompoundTag tag = new CompoundTag();
         tag.putByte("GhostCircuit",
                 (byte) IntCircuitBehaviour.getCircuitConfiguration(circuitInventory.getStackInSlot(0)));
+        tag.putInt("CurrentPage", page);
         return tag;
     }
 
     protected void readConfigFromTag(CompoundTag tag) {
         if (tag.contains("GhostCircuit")) {
             circuitInventory.setStackInSlot(0, IntCircuitBehaviour.stack(tag.getByte("GhostCircuit")));
+        }
+
+        if (tag.contains("CurrentPage")) {
+            this.page = tag.getInt("CurrentPage");
         }
     }
 
