@@ -1,7 +1,9 @@
 package org.gtlcore.gtlcore.common.machine.multiblock.part;
 
+import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.gui.fancy.ConfiguratorPanel;
 import com.gregtechceu.gtceu.api.gui.fancy.IFancyConfigurator;
+import com.gregtechceu.gtceu.api.gui.fancy.IFancyConfiguratorButton;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
@@ -12,7 +14,7 @@ import com.gregtechceu.gtceu.integration.ae2.slot.ExportOnlyAEItemSlot;
 import com.gregtechceu.gtceu.integration.ae2.slot.ExportOnlyAESlot;
 
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
-import com.lowdragmc.lowdraglib.gui.texture.ItemStackTexture;
+import com.lowdragmc.lowdraglib.gui.texture.TextTexture;
 import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
@@ -37,16 +39,17 @@ import appeng.api.stacks.AEItemKey;
 import appeng.api.stacks.AEKey;
 import appeng.api.stacks.GenericStack;
 import appeng.api.storage.MEStorage;
-import appeng.core.definitions.AEItems;
 import appeng.util.prioritylist.IPartitionList;
 import com.glodblock.github.extendedae.common.me.taglist.TagExpParser;
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
 import it.unimi.dsi.fastutil.objects.Reference2BooleanMap;
 import it.unimi.dsi.fastutil.objects.Reference2BooleanOpenHashMap;
+import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -69,6 +72,11 @@ public class TagFilterMEStockBusPartMachine extends MEInputBusPartMachine {
     @Persisted
     protected String tagBlack = "";
 
+    @Getter
+    @Setter
+    @Persisted
+    private boolean isCountSort = false;
+
     public TagFilterMEStockBusPartMachine(IMachineBlockEntity holder, Object... args) {
         super(holder, args);
     }
@@ -82,6 +90,12 @@ public class TagFilterMEStockBusPartMachine extends MEInputBusPartMachine {
     @Override
     public void attachConfigurators(ConfiguratorPanel configuratorPanel) {
         super.attachConfigurators(configuratorPanel);
+        configuratorPanel.attachConfigurators(new IFancyConfiguratorButton.Toggle(
+                new TextTexture("A-Z"),
+                new TextTexture("数量▼"),
+                this::isCountSort,
+                (clickData, pressed) -> setCountSort(pressed))
+                .setTooltipsSupplier(pressed -> List.of(Component.literal("自动拉取排序方式"))));
         configuratorPanel.attachConfigurators(new FilterIFancyConfigurator());
     }
 
@@ -127,10 +141,11 @@ public class TagFilterMEStockBusPartMachine extends MEInputBusPartMachine {
         MEStorage networkStorage = storageService.getInventory();
         IPartitionList filter = new ItemTagPriority(TagExpParser.getMatchingOre(this.tagWhite),
                 TagExpParser.getMatchingOre(this.tagBlack), this.tagWhite + this.tagBlack);
+        List<GenericStack> order = new ArrayList<>();
         var counter = networkStorage.getAvailableStacks();
         int index = 0;
         for (Object2LongMap.Entry<AEKey> entry : counter) {
-            if (index >= CONFIG_SIZE) break;
+            if (!isCountSort && index >= CONFIG_SIZE) break;
             AEKey what = entry.getKey();
             long amount = entry.getLongValue();
             if (amount <= 0) continue;
@@ -138,13 +153,31 @@ public class TagFilterMEStockBusPartMachine extends MEInputBusPartMachine {
             if (!filter.isListed(itemKey)) {
                 continue;
             }
-            long request = networkStorage.extract(what, amount, Actionable.SIMULATE, actionSource);
-            if (request == 0) continue;
-            // Ensure that it is valid to configure with this stack
-            var slot = this.aeItemHandler.getInventory()[index];
-            slot.setConfig(new GenericStack(what, 1));
-            slot.setStock(new GenericStack(what, request));
-            index++;
+            if (isCountSort) {
+                order.add(new GenericStack(itemKey, amount));
+            } else {
+                long request = networkStorage.extract(what, amount, Actionable.SIMULATE, actionSource);
+                if (request == 0) continue;
+                // Ensure that it is valid to configure with this stack
+                var slot = this.aeItemHandler.getInventory()[index];
+                slot.setConfig(new GenericStack(what, 1));
+                slot.setStock(new GenericStack(what, request));
+                index++;
+            }
+        }
+        if (isCountSort) {
+            order.sort((o1, o2) -> Long.compare(o2.amount(), o1.amount()));
+            int len = Math.min(order.size(), CONFIG_SIZE);
+            for (int i = 0; i < len; i++) {
+                GenericStack stack = order.get(i);
+                long request = networkStorage.extract(stack.what(), stack.amount(), Actionable.SIMULATE, actionSource);
+                if (request == 0) continue;
+                // Ensure that it is valid to configure with this stack
+                var slot = this.aeItemHandler.getInventory()[index];
+                slot.setConfig(new GenericStack(stack.what(), 1));
+                slot.setStock(new GenericStack(stack.what(), request));
+                index++;
+            }
         }
         aeItemHandler.clearInventory(index);
     }
@@ -188,7 +221,7 @@ public class TagFilterMEStockBusPartMachine extends MEInputBusPartMachine {
 
         @Override
         public IGuiTexture getIcon() {
-            return new ItemStackTexture(AEItems.NETHER_QUARTZ_WRENCH.asItem());
+            return GuiTextures.BUTTON_BLACKLIST;
         }
 
         @Override
@@ -200,7 +233,7 @@ public class TagFilterMEStockBusPartMachine extends MEInputBusPartMachine {
                             () -> tagWhite,
                             v -> tagWhite = v))
                     .addWidget(new LabelWidget(9, 36,
-                            () -> "标签白名单"))
+                            () -> "标签黑名单"))
                     .addWidget(new TextFieldWidget(9, 48, 114, 16,
                             () -> tagBlack,
                             v -> tagBlack = v))
