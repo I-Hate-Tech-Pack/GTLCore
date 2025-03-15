@@ -14,6 +14,7 @@ import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.lowdragmc.lowdraglib.side.fluid.FluidStack;
+import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 import com.lowdragmc.lowdraglib.utils.Position;
 
@@ -42,6 +43,7 @@ public class MEDualHatchStockPartMachine extends MEInputBusPartMachine {
             MEInputBusPartMachine.MANAGED_FIELD_HOLDER);
 
     protected ExportOnlyAEItemList aeItemHandler;
+    @Persisted
     protected ExportOnlyAEFluidList aeFluidHandler;
 
     public MEDualHatchStockPartMachine(IMachineBlockEntity holder, Object... args) {

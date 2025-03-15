@@ -354,7 +354,7 @@ public class SkyTearsAndGregHeart {
                         for (int m = 0; m < 5; m++) {
                             FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1) + "_" + (m + 1))
                                     .notConsumable(skyFragments[i])
-                                    .chancedInput(skyDrill[m], 100, -5)
+                                    .chancedInput(skyDrill[m], 100 - (m * 20), 0)
                                     .chancedOutput(skyFragments[i], 50, 0)
                                     .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
                                     .outputFluids(skyFluid[skyDMap[i][k]].getFluid(skyFluid_n[skyDMap[i][k]] * skyDrill_n[m]))
@@ -391,7 +391,7 @@ public class SkyTearsAndGregHeart {
                         for (int m = 0; m < 5; m++) {
                             FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1) + "_" + (m + 1))
                                     .notConsumable(skyFragments[i])
-                                    .chancedInput(skyDrill[m], 100, -5)
+                                    .chancedInput(skyDrill[m], 100 - (m * 20), 0)
                                     .chancedOutput(skyFragments[i], 50, 0)
                                     .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
                                     .outputFluids(skyFluid[skyDMap[i][k]].getFluid(skyFluid_n[skyDMap[i][k]] * skyDrill_n[m]))
@@ -426,7 +426,7 @@ public class SkyTearsAndGregHeart {
                         for (int m = 0; m < 5; m++) {
                             FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1) + "_" + (m + 1))
                                     .notConsumable(skyFragments[i])
-                                    .chancedInput(skyDrill[m], 100, -5)
+                                    .chancedInput(skyDrill[m], 100 - (m * 20), 0)
                                     .chancedOutput(skyFragments[i], 50, 0)
                                     .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
                                     .outputFluids(skyFluid[skyDMap[i][k]].getFluid(skyFluid_n[skyDMap[i][k]] * skyDrill_n[m]))
@@ -461,7 +461,7 @@ public class SkyTearsAndGregHeart {
                         for (int m = 0; m < 5; m++) {
                             FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1) + "_" + (m + 1))
                                     .notConsumable(skyFragments[i])
-                                    .chancedInput(skyDrill[m], 100, -5)
+                                    .chancedInput(skyDrill[m], 100 - (m * 20), 0)
                                     .chancedOutput(skyFragments[i], 50, 0)
                                     .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
                                     .outputFluids(skyFluid[skyDMap[i][k]].getFluid(skyFluid_n[skyDMap[i][k]] * skyDrill_n[m]))
@@ -495,7 +495,7 @@ public class SkyTearsAndGregHeart {
                         for (int m = 0; m < 5; m++) {
                             FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1) + "_" + (m + 1))
                                     .notConsumable(skyFragments[i])
-                                    .chancedInput(skyDrill[m], 100, -5)
+                                    .chancedInput(skyDrill[m], 100 - (m * 20), 0)
                                     .chancedOutput(skyFragments[i], 50, 0)
                                     .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
                                     .outputFluids(skyFluid[skyDMap[i][k]].getFluid(skyFluid_n[skyDMap[i][k]] * skyDrill_n[m]))
@@ -529,7 +529,7 @@ public class SkyTearsAndGregHeart {
                         for (int m = 0; m < 5; m++) {
                             FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1) + "_" + (m + 1))
                                     .notConsumable(skyFragments[i])
-                                    .chancedInput(skyDrill[m], 100, -5)
+                                    .chancedInput(skyDrill[m], 100 - (m * 20), 0)
                                     .chancedOutput(skyFragments[i], 50, 0)
                                     .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
                                     .outputFluids(skyFluid[skyDMap[i][k]].getFluid(skyFluid_n[skyDMap[i][k]] * skyDrill_n[m]))
@@ -563,7 +563,7 @@ public class SkyTearsAndGregHeart {
                         for (int m = 0; m < 5; m++) {
                             FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1) + "_" + (m + 1))
                                     .notConsumable(skyFragments[i])
-                                    .chancedInput(skyDrill[m], 100, -5)
+                                    .chancedInput(skyDrill[m], 100 - (m * 20), 0)
                                     .chancedOutput(skyFragments[i], 50, 0)
                                     .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
                                     .outputFluids(skyFluid[skyDMap[i][k]].getFluid(skyFluid_n[skyDMap[i][k]] * skyDrill_n[m]))
@@ -597,7 +597,7 @@ public class SkyTearsAndGregHeart {
                         for (int m = 0; m < 5; m++) {
                             FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1) + "_" + (m + 1))
                                     .notConsumable(skyFragments[i])
-                                    .chancedInput(skyDrill[m], 100, -5)
+                                    .chancedInput(skyDrill[m], 100 - (m * 20), 0)
                                     .chancedOutput(skyFragments[i], 50, 0)
                                     .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
                                     .outputFluids(skyFluid[skyDMap[i][k]].getFluid(skyFluid_n[skyDMap[i][k]] * skyDrill_n[m]))
@@ -631,7 +631,7 @@ public class SkyTearsAndGregHeart {
                         for (int m = 0; m < 5; m++) {
                             FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1) + "_" + (m + 1))
                                     .notConsumable(skyFragments[i])
-                                    .chancedInput(skyDrill[m], 100, -5)
+                                    .chancedInput(skyDrill[m], 100 - (m * 20), 0)
                                     .chancedOutput(skyFragments[i], 50, 0)
                                     .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
                                     .outputFluids(skyFluid[skyDMap[i][k]].getFluid(skyFluid_n[skyDMap[i][k]] * skyDrill_n[m]))
@@ -665,7 +665,7 @@ public class SkyTearsAndGregHeart {
                         for (int m = 0; m < 5; m++) {
                             FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1) + "_" + (m + 1))
                                     .notConsumable(skyFragments[i])
-                                    .chancedInput(skyDrill[m], 100, -5)
+                                    .chancedInput(skyDrill[m], 100 - (m * 20), 0)
                                     .chancedOutput(skyFragments[i], 50, 0)
                                     .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
                                     .outputFluids(skyFluid[skyDMap[i][k]].getFluid(skyFluid_n[skyDMap[i][k]] * skyDrill_n[m]))
@@ -699,7 +699,7 @@ public class SkyTearsAndGregHeart {
                         for (int m = 0; m < 5; m++) {
                             FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1) + "_" + (m + 1))
                                     .notConsumable(skyFragments[i])
-                                    .chancedInput(skyDrill[m], 100, -5)
+                                    .chancedInput(skyDrill[m], 100 - (m * 20), 0)
                                     .chancedOutput(skyFragments[i], 50, 0)
                                     .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
                                     .outputFluids(skyFluid[skyDMap[i][k]].getFluid(skyFluid_n[skyDMap[i][k]] * skyDrill_n[m]))
@@ -733,7 +733,7 @@ public class SkyTearsAndGregHeart {
                         for (int m = 0; m < 5; m++) {
                             FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1) + "_" + (m + 1))
                                     .notConsumable(skyFragments[i])
-                                    .chancedInput(skyDrill[m], 100, -5)
+                                    .chancedInput(skyDrill[m], 100 - (m * 20), 0)
                                     .chancedOutput(skyFragments[i], 50, 0)
                                     .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
                                     .outputFluids(skyFluid[skyDMap[i][k]].getFluid(skyFluid_n[skyDMap[i][k]] * skyDrill_n[m]))
@@ -767,7 +767,7 @@ public class SkyTearsAndGregHeart {
                         for (int m = 0; m < 5; m++) {
                             FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1) + "_" + (m + 1))
                                     .notConsumable(skyFragments[i])
-                                    .chancedInput(skyDrill[m], 100, -5)
+                                    .chancedInput(skyDrill[m], 100 - (m * 20), 0)
                                     .chancedOutput(skyFragments[i], 50, 0)
                                     .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
                                     .outputFluids(skyFluid[skyDMap[i][k]].getFluid(skyFluid_n[skyDMap[i][k]] * skyDrill_n[m]))
@@ -801,7 +801,7 @@ public class SkyTearsAndGregHeart {
                         for (int m = 0; m < 5; m++) {
                             FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1) + "_" + (m + 1))
                                     .notConsumable(skyFragments[i])
-                                    .chancedInput(skyDrill[m], 100, -5)
+                                    .chancedInput(skyDrill[m], 100 - (m * 20), 0)
                                     .chancedOutput(skyFragments[i], 50, 0)
                                     .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
                                     .outputFluids(skyFluid[skyDMap[i][k]].getFluid(skyFluid_n[skyDMap[i][k]] * skyDrill_n[m]))
@@ -835,7 +835,7 @@ public class SkyTearsAndGregHeart {
                         for (int m = 0; m < 5; m++) {
                             FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1) + "_" + (m + 1))
                                     .notConsumable(skyFragments[i])
-                                    .chancedInput(skyDrill[m], 100, -5)
+                                    .chancedInput(skyDrill[m], 100 - (m * 20), 0)
                                     .chancedOutput(skyFragments[i], 50, 0)
                                     .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
                                     .outputFluids(skyFluid[skyDMap[i][k]].getFluid(skyFluid_n[skyDMap[i][k]] * skyDrill_n[m]))
@@ -869,7 +869,7 @@ public class SkyTearsAndGregHeart {
                         for (int m = 0; m < 5; m++) {
                             FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1) + "_" + (m + 1))
                                     .notConsumable(skyFragments[i])
-                                    .chancedInput(skyDrill[m], 100, -5)
+                                    .chancedInput(skyDrill[m], 100 - (m * 20), 0)
                                     .chancedOutput(skyFragments[i], 50, 0)
                                     .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
                                     .outputFluids(skyFluid[skyDMap[i][k]].getFluid(skyFluid_n[skyDMap[i][k]] * skyDrill_n[m]))
@@ -1255,7 +1255,7 @@ public class SkyTearsAndGregHeart {
 
             ELECTRIC_IMPLOSION_COMPRESSOR_RECIPES.recipeBuilder("make_big_fish")
                     .inputItems(Items.PUFFERFISH, 2000000000)
-                    .inputItems(block, MagnetohydrodynamicallyConstrainedStarMatter, 2000000000)
+                    .inputItems(block, MagnetohydrodynamicallyConstrainedStarMatter, 2000000)
                     .outputItems(COMPRESSED_PUFFERFISH)
                     .duration(200)
                     .EUt(VEX[26])
