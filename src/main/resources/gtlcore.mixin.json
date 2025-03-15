@@ -39,6 +39,7 @@
     "gtm.MultiblockInfoCategoryMixin",
     "gtm.OverclockingLogicMixin",
     "gtm.RecipeLogicProviderMixin",
+    "gtm.RecipeOutputProviderMixin",
     "gtm.RockBreakerConditionMixin",
     "gtm.TagPrefixItemMixin",
     "gtm.cover.ConveyorCoverMixin",
