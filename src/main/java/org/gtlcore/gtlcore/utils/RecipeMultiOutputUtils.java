@@ -32,13 +32,13 @@ public class RecipeMultiOutputUtils {
 
     public static List<FluidIngredient> copyWithModifier(FluidIngredient content, ContentModifier modifier, boolean input) {
         if (content.isEmpty()) return List.of(content.copy());
-        List<FluidIngredient> list = new ArrayList<>();
         FluidIngredient copy = content.copy();
         long amount = modifier.apply(copy.getAmount()).longValue();
         if (amount > Integer.MAX_VALUE) {
+            List<FluidIngredient> list = new ArrayList<>();
             long times = (long) Math.min(Math.ceil((double) amount / Integer.MAX_VALUE),
                     ConfigHolder.INSTANCE.recipeMultiMax);
-            times = input ? 32 : times;
+            times = input ? Math.min(32, times) : times;
             for (; times > 0; times--) {
                 var cp = content.copy();
                 if (times == 1) {
@@ -48,10 +48,10 @@ public class RecipeMultiOutputUtils {
                 }
                 list.add(cp);
             }
+            return list;
         } else {
             copy.setAmount(amount);
-            list.add(copy);
+            return List.of(copy);
         }
-        return list;
     }
 }
