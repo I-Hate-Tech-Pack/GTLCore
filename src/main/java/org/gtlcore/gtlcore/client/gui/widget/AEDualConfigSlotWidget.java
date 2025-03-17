@@ -160,8 +160,10 @@ public class AEDualConfigSlotWidget extends Widget implements IGhostItemTarget, 
                     DrawerHelper.drawFluidForGui(graphics, stack, stock.amount(), stackX, stackY + 18, 16, 16);
                 }
             }
-            drawStringFixedCorner(graphics, stock.what().formatAmount(stock.amount(), AmountFormat.SLOT),
-                    stackX + 17, stackY + 18 + 17, 16777215, true, 0.5f);
+            if (stock.amount() > 0) {
+                drawStringFixedCorner(graphics, stock.what().formatAmount(stock.amount(), AmountFormat.SLOT),
+                        stackX + 17, stackY + 18 + 17, 16777215, true, 0.5f);
+            }
             if (mouseOverConfig(mouseX, mouseY)) {
                 drawSelectionOverlay(graphics, stackX, stackY, 16, 16);
             } else if (mouseOverStock(mouseX, mouseY)) {
