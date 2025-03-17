@@ -126,8 +126,10 @@ public abstract class RecipeOutputProviderMixin extends CapabilityBlockProvider<
             }
             addItemTooltips(tooltip, outputItems);
             addFluidTooltips(tooltip, outputFluids);
-            tooltip.add(Component.translatable("gtceu.top.extra_output", capData.getInt("ExtraOutput"))
-                    .withStyle(ChatFormatting.GRAY));
+            if (capData.getInt("ExtraOutput") > 0) {
+                tooltip.add(Component.translatable("gtceu.top.extra_output", capData.getInt("ExtraOutput"))
+                        .withStyle(ChatFormatting.GRAY));
+            }
         }
     }
 }
