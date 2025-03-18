@@ -297,7 +297,7 @@ public class SkyTearsAndGregHeart {
         ItemStack[] skyDrill = {
                 ChemicalHelper.get(toolHeadDrill, Steel, 1),
                 ChemicalHelper.get(toolHeadDrill, Titanium, 1),
-                ChemicalHelper.get(toolHeadDrill, TungstenSteel, 1),
+                ChemicalHelper.get(toolHeadDrill, NaquadahAlloy, 1),
                 ChemicalHelper.get(toolHeadDrill, Neutronium, 1),
                 new ItemStack(Registries.getBlock("kubejs:machine_casing_grinding_head"), 1)
         };
@@ -306,9 +306,9 @@ public class SkyTearsAndGregHeart {
         int[] skyDrill_n = {
                 1,
                 16,
-                64,
-                256,
-                10000
+                128,
+                1024,
+                100000,
         };
         if (ConfigHolder.INSTANCE.enableSkyBlokeMode) {
 
@@ -1046,7 +1046,7 @@ public class SkyTearsAndGregHeart {
                     .inputFluids(UUMatter.getFluid(1000000000))
                     .inputFluids(Eternity.getFluid(1000000))
                     .inputFluids(Magmatter.getFluid(1000000))
-                    .chancedOutput(MIRACLE_CRYSTAL.asStack(), 1000, 0)
+                    .chancedOutput(MIRACLE_CRYSTAL.asStack(), 3000, 0)
                     .duration(2000)
                     .EUt(VEX[19])
                     .save(provider);
@@ -1081,12 +1081,12 @@ public class SkyTearsAndGregHeart {
 
         {
             FRAGMENT_WORLD_COLLECTION.recipeBuilder("make_world_fragments_1")
+                    .inputItems(WORLD_FRAGMENTS_OVERWORLD, 1)
                     .notConsumable(Registries.getItem("kubejs:reactor_core"))
                     .inputItems(block, Steel, 4)
                     .chancedOutput(MIRACLE_CRYSTAL.asStack(), 1, 0)
                     .outputItems(WORLD_FRAGMENTS_REACTOR, 1)
                     .dimension(new ResourceLocation("overworld"))
-                    .circuitMeta(32)
                     .duration(200)
                     .EUt(8)
                     .save(provider);
@@ -1225,7 +1225,7 @@ public class SkyTearsAndGregHeart {
             MASS_FABRICATOR_RECIPES.recipeBuilder("make_miracle_gas")
                     .inputItems(MIRACLE_CRYSTAL, 1)
                     .inputFluids(PrimordialMatter.getFluid(10000000))
-                    .outputFluids(MiracleGas.getFluid(8000000))
+                    .outputFluids(MiracleGas.getFluid(9000000))
                     .duration(2000)
                     .EUt(VEX[21])
                     .save(provider);
@@ -1233,7 +1233,7 @@ public class SkyTearsAndGregHeart {
             DISTILLATION_RECIPES.recipeBuilder("make_miracle")
                     .inputFluids(MiracleGas.getFluid(10000000))
                     .outputItems(MIRACLE_CRYSTAL, 1)
-                    .outputFluids(PrimordialMatter.getFluid(8000000))
+                    .outputFluids(PrimordialMatter.getFluid(9000000))
                     .outputFluids(Miracle.getFluid(1000))
                     .duration(6000)
                     .EUt(VEX[22])
@@ -1285,7 +1285,7 @@ public class SkyTearsAndGregHeart {
                     .inputFluids(ExcitedDtec.getFluid(100000000))
                     .inputFluids(TranscendentMetal.getFluid(100000))
                     .inputFluids(Shirabon.getFluid(100000))
-                    .chancedOutput(MIRACLE_CRYSTAL.asStack(), 2000, 0)
+                    .chancedOutput(MIRACLE_CRYSTAL.asStack(), 6000, 0)
                     .duration(1000)
                     .EUt(VEX[18])
                     .save(provider);
