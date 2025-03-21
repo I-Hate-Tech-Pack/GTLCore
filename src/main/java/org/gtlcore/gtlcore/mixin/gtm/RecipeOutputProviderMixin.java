@@ -1,10 +1,11 @@
 package org.gtlcore.gtlcore.mixin.gtm;
 
+import org.gtlcore.gtlcore.utils.GTLUtil;
+
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.recipe.RecipeHelper;
 import com.gregtechceu.gtceu.integration.jade.provider.CapabilityBlockProvider;
 import com.gregtechceu.gtceu.integration.jade.provider.RecipeOutputProvider;
-import com.gregtechceu.gtceu.utils.GTUtil;
 
 import com.lowdragmc.lowdraglib.side.fluid.FluidStack;
 
@@ -20,14 +21,16 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.config.IPluginConfig;
+import snownee.jade.api.ui.IElementHelper;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 /**
  * @author EasterFG on 2025/3/8
@@ -38,8 +41,8 @@ public abstract class RecipeOutputProviderMixin extends CapabilityBlockProvider<
     @Shadow(remap = false)
     protected abstract void addFluidTooltips(ITooltip iTooltip, List<FluidStack> outputFluids);
 
-    @Shadow(remap = false)
-    protected abstract void addItemTooltips(ITooltip iTooltip, List<ItemStack> outputItems);
+    @Shadow
+    protected abstract Component getItemName(ItemStack stack);
 
     protected RecipeOutputProviderMixin(ResourceLocation uid) {
         super(uid);
@@ -51,19 +54,29 @@ public abstract class RecipeOutputProviderMixin extends CapabilityBlockProvider<
             data.putBoolean("Working", recipeLogic.isWorking());
             var recipe = recipeLogic.getLastRecipe();
             if (recipe != null) {
-                Set<String> cache = new HashSet<>();
-                int count = 0;
+                Map<String, CompoundTag> cache = new HashMap<>();
+                // int count = 0;
                 ListTag itemTags = new ListTag();
                 for (var stack : RecipeHelper.getOutputItems(recipe)) {
                     if (stack != null && !stack.isEmpty()) {
-                        var itemTag = new CompoundTag();
-
-                        GTUtil.saveItemStack(stack, itemTag);
-                        String id = itemTag.getString("id");
-                        if (cache.add(id)) {
-                            itemTags.add(itemTag);
+                        String sid = GTLUtil.getItemId(stack.getItem());
+                        if (cache.containsKey(sid)) {
+                            CompoundTag tag = cache.get(sid);
+                            if (tag != null) {
+                                long amount = tag.getLong("Count");
+                                if (amount > 0) {
+                                    tag.putLong("Count", amount + stack.getCount());
+                                }
+                            }
                         } else {
-                            count++;
+                            var itemTag = new CompoundTag();
+                            itemTag.putString("id", sid);
+                            itemTag.putLong("Count", stack.getCount());
+                            if (stack.getTag() != null) {
+                                itemTag.put("tag", stack.getTag().copy());
+                            }
+                            cache.put(sid, itemTag);
+                            itemTags.add(itemTag);
                         }
                     }
                 }
@@ -73,20 +86,32 @@ public abstract class RecipeOutputProviderMixin extends CapabilityBlockProvider<
                 ListTag fluidTags = new ListTag();
                 for (var stack : RecipeHelper.getOutputFluids(recipe)) {
                     if (stack != null && !stack.isEmpty()) {
-                        var fluidTag = new CompoundTag();
-                        stack.saveToTag(fluidTag);
-                        String id = fluidTag.getString("FluidName");
-                        if (cache.add(id)) {
-                            fluidTags.add(fluidTag);
+                        var fid = GTLUtil.getFluidId(stack.getFluid());
+                        if (cache.containsKey(fid)) {
+                            CompoundTag tag = cache.get(fid);
+                            if (tag != null) {
+                                long amount = tag.getLong("Amount");
+                                if (amount > 0) {
+                                    tag.putLong("Amount", amount + stack.getAmount());
+                                }
+                            }
                         } else {
-                            count++;
+                            var fluidTag = new CompoundTag();
+                            fluidTag.putString("FluidName", fid);
+                            fluidTag.putLong("Amount", stack.getAmount());
+
+                            if (stack.getTag() != null) {
+                                fluidTag.put("Tag", stack.getTag().copy());
+                            }
+                            cache.put(fid, fluidTag);
+                            fluidTags.add(fluidTag);
                         }
                     }
                 }
                 if (!fluidTags.isEmpty()) {
                     data.put("OutputFluids", fluidTags);
                 }
-                data.putInt("ExtraOutput", count);
+                // data.putInt("ExtraOutput", count);
             }
         }
     }
@@ -95,17 +120,12 @@ public abstract class RecipeOutputProviderMixin extends CapabilityBlockProvider<
     protected void addTooltip(CompoundTag capData, ITooltip tooltip, Player player, BlockAccessor block,
                               BlockEntity blockEntity, IPluginConfig config) {
         if (capData.getBoolean("Working")) {
-            List<ItemStack> outputItems = new ArrayList<>();
+            List<CompoundTag> outputItems = new ArrayList<>();
             if (capData.contains("OutputItems", Tag.TAG_LIST)) {
                 ListTag itemTags = capData.getList("OutputItems", Tag.TAG_COMPOUND);
-                if (!itemTags.isEmpty()) {
-                    for (Tag tag : itemTags) {
-                        if (tag instanceof CompoundTag tCompoundTag) {
-                            var stack = GTUtil.loadItemStack(tCompoundTag);
-                            if (!stack.isEmpty()) {
-                                outputItems.add(stack);
-                            }
-                        }
+                for (Tag tag : itemTags) {
+                    if (tag instanceof CompoundTag tCompoundTag) {
+                        outputItems.add(tCompoundTag);
                     }
                 }
             }
@@ -124,11 +144,25 @@ public abstract class RecipeOutputProviderMixin extends CapabilityBlockProvider<
             if (!outputItems.isEmpty() || !outputFluids.isEmpty()) {
                 tooltip.add(Component.translatable("gtceu.top.recipe_output"));
             }
-            addItemTooltips(tooltip, outputItems);
+            gTLCore$addItemTooltips(tooltip, outputItems);
             addFluidTooltips(tooltip, outputFluids);
-            if (capData.getInt("ExtraOutput") > 0) {
-                tooltip.add(Component.translatable("gtceu.top.extra_output", capData.getInt("ExtraOutput"))
-                        .withStyle(ChatFormatting.GRAY));
+        }
+    }
+
+    @Unique
+    private void gTLCore$addItemTooltips(ITooltip iTooltip, List<CompoundTag> outputItems) {
+        IElementHelper helper = iTooltip.getElementHelper();
+        for (CompoundTag tag : outputItems) {
+            if (tag != null && !tag.isEmpty()) {
+                ItemStack stack = GTLUtil.loadItemStack(tag);
+                long count = tag.getLong("Count");
+                iTooltip.add(helper.smallItem(stack));
+                Component text = Component.literal(" ")
+                        .append(String.valueOf(count))
+                        .append("× ")
+                        .append(getItemName(stack))
+                        .withStyle(ChatFormatting.WHITE);
+                iTooltip.append(text);
             }
         }
     }
