@@ -221,7 +221,7 @@ public class TagFilterMEStockBusPartMachine extends MEInputBusPartMachine {
 
         @Override
         public IGuiTexture getIcon() {
-            return GuiTextures.BUTTON_BLACKLIST;
+            return GuiTextures.BUTTON_BLACKLIST.getSubTexture(0, 0, 20, 20);
         }
 
         @Override
