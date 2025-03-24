@@ -42,6 +42,8 @@ public class TemperatureSensorPartMachine extends TieredPartMachine {
     @DescSynced
     protected int max;
 
+    private static int MAX_TEMP = 16000;
+
     @Getter
     @Persisted
     protected int redStoneSignalOutput = 0;
@@ -58,7 +60,7 @@ public class TemperatureSensorPartMachine extends TieredPartMachine {
                 List.of(LocalizationUtils.format("最大温度"))));
 
         group.addWidget(new TextFieldWidget(80, 35, 85, 18, () -> toText(max),
-                stringValue -> setMax(Mth.clamp(fromText(stringValue), 1, 10000))).setNumbersOnly(1, 10000));
+                stringValue -> setMax(Mth.clamp(fromText(stringValue), 1, MAX_TEMP))).setNumbersOnly(1, MAX_TEMP));
 
         return group;
     }

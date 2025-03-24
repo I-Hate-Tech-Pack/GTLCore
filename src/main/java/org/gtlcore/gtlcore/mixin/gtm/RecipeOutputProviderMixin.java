@@ -41,7 +41,7 @@ public abstract class RecipeOutputProviderMixin extends CapabilityBlockProvider<
     @Shadow(remap = false)
     protected abstract void addFluidTooltips(ITooltip iTooltip, List<FluidStack> outputFluids);
 
-    @Shadow
+    @Shadow(remap = false)
     protected abstract Component getItemName(ItemStack stack);
 
     protected RecipeOutputProviderMixin(ResourceLocation uid) {

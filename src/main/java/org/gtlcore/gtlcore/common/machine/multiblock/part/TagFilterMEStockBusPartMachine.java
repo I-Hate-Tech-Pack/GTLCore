@@ -102,7 +102,7 @@ public class TagFilterMEStockBusPartMachine extends MEInputBusPartMachine {
     @Override
     public void autoIO() {
         super.autoIO();
-        if (getOffsetTimer() % 100 == 0) {
+        if (getOffsetTimer() % 50 == 0) {
             refreshList();
             syncME();
         }

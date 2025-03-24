@@ -2,6 +2,7 @@ package org.gtlcore.gtlcore.common.machine.trait;
 
 import org.gtlcore.gtlcore.common.machine.multiblock.electric.AdvancedInfiniteDrillMachine;
 
+import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.data.worldgen.bedrockfluid.BedrockFluidVeinSavedData;
 import com.gregtechceu.gtceu.api.data.worldgen.bedrockfluid.FluidVeinWorldEntry;
@@ -82,42 +83,17 @@ public class AdvancedInfiniteDrillLogic extends RecipeLogic {
             long total = veinFluids.values().stream().mapToLong(Long::longValue).sum();
             var recipe = GTRecipeBuilder.ofRaw()
                     .duration(MAX_PROGRESS)
-                    .EUt(20000 + total)
+                    .EUt(GTValues.V[9] + total)
                     .outputFluids(veinFluids.entrySet().stream()
                             .map(entry -> FluidStack.create(entry.getKey(), entry.getValue()))
                             .toArray(FluidStack[]::new))
                     .buildRawRecipe();
-            recipe = recipe.copy(new ContentModifier(getParallel(),
-                    efficiency(getMachine().getRate() * 500)), false);
+            recipe = recipe.copy(ContentModifier.multiplier(getMachine().getRate()), false);
             if (recipe.matchRecipe(getMachine()).isSuccess() && recipe.matchTickRecipe(getMachine()).isSuccess()) {
                 return recipe;
             }
         }
         return null;
-    }
-
-    public long getParallel() {
-        AdvancedInfiniteDrillMachine drill = getMachine();
-        var currentHeat = drill.getCurrentHeat();
-        var heat = drill.getRate();
-        var efficiency = efficiency(currentHeat);
-        return (long) efficiency * heat;
-    }
-
-    /**
-     * 温度倍率计算
-     *
-     * @param heat 当前温度
-     * @return 倍率
-     */
-    private int efficiency(int heat) {
-        if (heat < 6000) {
-            return 2;
-        } else if (heat < 8000) {
-            return 4;
-        } else {
-            return 8;
-        }
     }
 
     private long getFluidToProduce(FluidVeinWorldEntry entry) {
