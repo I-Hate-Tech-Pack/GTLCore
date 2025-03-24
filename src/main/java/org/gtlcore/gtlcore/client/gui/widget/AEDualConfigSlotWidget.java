@@ -77,8 +77,13 @@ public class AEDualConfigSlotWidget extends Widget implements IGhostItemTarget, 
             if (mouseOverConfig(mouseX, mouseY)) {
                 List<Component> hoverStringList = new ArrayList<>();
                 hoverStringList.add(Component.translatable("gtceu.gui.config_slot"));
-                hoverStringList.add(Component.translatable("gtceu.gui.config_slot.set_only"));
-                hoverStringList.add(Component.translatable("gtceu.gui.config_slot.remove"));
+                if (this.parentWidget.isAutoPull()) {
+                    hoverStringList.add(Component.translatable("gtceu.gui.config_slot.auto_pull_managed"));
+                } else {
+                    hoverStringList.add(Component.translatable("gtceu.gui.config_slot.set_only"));
+                    hoverStringList.add(Component.translatable("gtceu.gui.config_slot.remove"));
+                    hoverStringList.add(Component.translatable("gtceu.gui.config_slot.remove"));
+                }
                 graphics.renderTooltip(Minecraft.getInstance().font, hoverStringList, Optional.empty(), mouseX, mouseY);
             }
         } else {
@@ -174,14 +179,23 @@ public class AEDualConfigSlotWidget extends Widget implements IGhostItemTarget, 
 
     @OnlyIn(Dist.CLIENT)
     private void drawSlots(GuiGraphics graphics, int mouseX, int mouseY, int x, int y) {
-        GuiTextures.SLOT.draw(graphics, mouseX, mouseY, x, y, 18, 18);
-        GuiTextures.CONFIG_ARROW_DARK.draw(graphics, mouseX, mouseY, x, y, 18, 18);
+        if (parentWidget.isAutoPull()) {
+            GuiTextures.SLOT_DARK.draw(graphics, mouseX, mouseY, x, y, 18, 18);
+            GuiTextures.CONFIG_ARROW_DARK.draw(graphics, mouseX, mouseY, x, y, 18, 18);
+        } else {
+            GuiTextures.FLUID_SLOT.draw(graphics, mouseX, mouseY, x, y, 18, 18);
+            GuiTextures.CONFIG_ARROW.draw(graphics, mouseX, mouseY, x, y, 18, 18);
+        }
         GuiTextures.SLOT_DARK.draw(graphics, mouseX, mouseY, x, y + 18, 18, 18);
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (mouseOverConfig(mouseX, mouseY)) {
+            if (parentWidget.isAutoPull()) {
+                return false;
+            }
+
             if (button == 1) {
                 writeClientAction(REMOVE_ID, buf -> {});
             } else if (button == 0) {
@@ -214,7 +228,7 @@ public class AEDualConfigSlotWidget extends Widget implements IGhostItemTarget, 
             var stack = GenericStack.fromItemStack(item);
             if (isStackValidForSlot(stack)) return;
             // item set
-            this.parentWidget.getItemConfig(index).setConfig(stack);
+            this.parentWidget.setItemConfig(index, stack);
             if (!item.isEmpty()) {
                 writeUpdateInfo(ITEM_UPDATE_ID, buf -> buf.writeItem(item));
             }
@@ -224,7 +238,7 @@ public class AEDualConfigSlotWidget extends Widget implements IGhostItemTarget, 
             FluidStack fluid = FluidStack.readFromBuf(buffer);
             var stack = AEUtil.fromFluidStack(fluid);
             if (isStackValidForSlot(stack)) return;
-            this.parentWidget.getFluidConfig(index).setConfig(stack);
+            this.parentWidget.setFluidConfig(index, stack);
             if (fluid != FluidStack.empty()) {
                 writeUpdateInfo(FLUID_UPDATE_ID, fluid::writeToBuf);
             }
@@ -242,12 +256,12 @@ public class AEDualConfigSlotWidget extends Widget implements IGhostItemTarget, 
         }
         if (id == ITEM_UPDATE_ID) {
             ItemStack item = buffer.readItem();
-            this.parentWidget.getItemConfig(index).setConfig(new GenericStack(AEItemKey.of(item.getItem(), item.getTag()), item.getCount()));
+            this.parentWidget.setItemConfig(index, new GenericStack(AEItemKey.of(item.getItem(), item.getTag()), item.getCount()));
         }
         if (id == FLUID_UPDATE_ID) {
             FluidStack fluid = FluidStack.create(BuiltInRegistries.FLUID.get(buffer.readResourceLocation()),
                     buffer.readVarLong());
-            this.parentWidget.getFluidConfig(index).setConfig(new GenericStack(AEFluidKey.of(fluid.getFluid()), fluid.getAmount()));
+            this.parentWidget.setFluidConfig(index, new GenericStack(AEFluidKey.of(fluid.getFluid()), fluid.getAmount()));
         }
     }
 

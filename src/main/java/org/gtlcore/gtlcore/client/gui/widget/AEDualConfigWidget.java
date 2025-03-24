@@ -76,6 +76,10 @@ public class AEDualConfigWidget extends WidgetGroup {
         machine.setPage(page);
     }
 
+    protected boolean isAutoPull() {
+        return aeFluid.isAutoPull() || aeItem.isAutoPull();
+    }
+
     private IConfigurableSlot[] marge() {
         ExportOnlyAEItemSlot[] itemSlots = aeItem.getInventory();
         ExportOnlyAEFluidSlot[] fluidSlots = aeFluid.getInventory();
@@ -177,6 +181,22 @@ public class AEDualConfigWidget extends WidgetGroup {
     public boolean hasStackInConfig(GenericStack stack) {
         return aeItem.hasStackInConfig(stack, true) ||
                 aeFluid.hasStackInConfig(stack, true);
+    }
+
+    public final void setItemConfig(int index, GenericStack stack) {
+        var fluidConfig = getFluidConfig(index);
+        if (fluidConfig != null) {
+            fluidConfig.setConfig(null);
+        }
+        getItemConfig(index).setConfig(stack);
+    }
+
+    public final void setFluidConfig(int index, GenericStack stack) {
+        var itemConfig = getItemConfig(index);
+        if (itemConfig != null) {
+            itemConfig.setConfig(null);
+        }
+        getFluidConfig(index).setConfig(stack);
     }
 
     public final IConfigurableSlot getItemConfig(int index) {
