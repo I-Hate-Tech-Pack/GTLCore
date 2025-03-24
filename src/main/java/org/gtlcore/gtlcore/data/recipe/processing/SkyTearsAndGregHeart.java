@@ -338,7 +338,7 @@ public class SkyTearsAndGregHeart {
                         int fluid_output = (m == 4 ? 2147483647 : skyFluid_n[skyDMap[i][k]] * skyDrill_n[m]);
                         FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1) + "_" + (m + 1))
                                 .notConsumable(skyFragments[i])
-                                .chancedInput(skyDrill[m], 100 - (m * 20), 0)
+                                .chancedInput(skyDrill[m], 100 - (m * 10), 0)
                                 .chancedOutput(skyFragments[i], 50, 0)
                                 .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
                                 .outputFluids(skyFluid[skyDMap[i][k]].getFluid(fluid_output))
@@ -1043,7 +1043,7 @@ public class SkyTearsAndGregHeart {
                     .inputItems(new ItemStack(Registries.getItem("kubejs:cosmic_fabric"), 32))
                     .inputItems(foil, Shirabon, 64)
                     .inputItems(new ItemStack(Registries.getItem("kubejs:chain_command_block_core"), 8))
-                    .inputFluids(Miracle.getFluid(10000))
+                    .inputFluids(Miracle.getFluid(1000000))
                     .inputFluids(Infinity.getFluid(1000000))
                     .inputFluids(PrimordialMatter.getFluid(1000000))
                     .inputFluids(SuperMutatedLivingSolder.getFluid(1000000))
