@@ -98,8 +98,9 @@ public class WirelessOpticalDataHatchMachine extends MultiblockPartMachine imple
             } else {
                 Level level = getLevel();
                 if (level == null || transmitterPos == null) return false;
-                WirelessOpticalDataHatchMachine machine = (WirelessOpticalDataHatchMachine) MetaMachine.getMachine(level, transmitterPos);
-                return machine != null && machine.isRecipeAvailable(recipe, seen);
+                if (MetaMachine.getMachine(level, transmitterPos) instanceof WirelessOpticalDataHatchMachine machine) {
+                    return machine.isRecipeAvailable(recipe, seen);
+                }
             }
         }
         return false;
