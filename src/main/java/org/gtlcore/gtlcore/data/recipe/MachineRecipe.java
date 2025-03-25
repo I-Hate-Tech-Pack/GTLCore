@@ -619,8 +619,9 @@ public class MachineRecipe {
 
         ASSEMBLER_RECIPES
                 .recipeBuilder(GTLCore.id("heat_sensor"))
-                .inputItems(GTAEMachines.STOCKING_IMPORT_BUS_ME)
-                .inputItems(GTAEMachines.STOCKING_IMPORT_HATCH_ME)
+                .inputItems(GTAEMachines.STOCKING_IMPORT_BUS_ME, 2)
+                .inputItems(GTAEMachines.STOCKING_IMPORT_HATCH_ME, 2)
+                .inputItems(CIRCUIT.getIngredient(IV))
                 .inputFluids(GTMaterials.SolderingAlloy.getFluid(1440))
                 .outputItems(GTLMachines.ME_DUAL_HATCH_STOCK_PART_MACHINE)
                 .duration(200).EUt(VA[EV])

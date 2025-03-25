@@ -2119,7 +2119,7 @@ public class AdvancedMultiBlockMachine {
             .tooltips(Component.translatable("gtceu.machine.advanced_infinite_driller.drilled_fluid.tooltip.0"))
             .tooltips(Component.translatable("gtceu.multiblock.laser.tooltip"))
             .tooltipBuilder((item, list) -> {
-                for (int i = 1; i <= 10; i++) {
+                for (int i = 1; i <= 11; i++) {
                     list.add(Component.translatable("gtceu.machine.advanced_infinite_driller.drilled_fluid.tooltip." + i));
                 }
             })
@@ -2153,7 +2153,7 @@ public class AdvancedMultiBlockMachine {
                     .where("#", controller(blocks(definition.get())))
                     .where("I", blocks(Registries.getBlock("gtceu:filter_casing")))
                     .where("G", blocks(Registries.getBlock("kubejs:dimensional_bridge_casing")))
-                    .where("N", blocks(Registries.getBlock("kubejs:naquadriatictaranium_coil_block")))
+                    .where("N", Predicates.heatingCoils())
                     .where("M", blocks(Registries.getBlock("kubejs:neutronium_gearbox")))
                     .where("L", blocks(Registries.getBlock("gtceu:vanadium_block")))
                     .where("B", blocks(Registries.getBlock("gtlcore:hyper_core")))

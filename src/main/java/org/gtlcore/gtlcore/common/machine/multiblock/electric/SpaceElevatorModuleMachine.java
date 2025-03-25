@@ -63,9 +63,14 @@ public class SpaceElevatorModuleMachine extends WorkableElectricMultiblockMachin
                         i.offset(0, 2, -3) };
                 for (BlockPos j : coordinatess) {
                     RecipeLogic logic = GTCapabilityHelper.getRecipeLogic(level, j, null);
-                    if (logic != null && logic.getMachine().getDefinition() == AdvancedMultiBlockMachine.SPACE_ELEVATOR && logic.isWorking() && logic.getProgress() > 80) {
-                        SpaceElevatorTier = ((SpaceElevatorMachine) logic.machine).getTier() - GTValues.ZPM;
-                        ModuleTier = ((SpaceElevatorMachine) logic.machine).getCasingTier();
+                    if (logic != null && logic.getMachine().getDefinition() == AdvancedMultiBlockMachine.SPACE_ELEVATOR) {
+                        if (logic.isWorking() && logic.getProgress() > 80) {
+                            SpaceElevatorTier = ((SpaceElevatorMachine) logic.machine).getTier() - GTValues.ZPM;
+                            ModuleTier = ((SpaceElevatorMachine) logic.machine).getCasingTier();
+                        } else if (!logic.isWorking()) {
+                            SpaceElevatorTier = 0;
+                            ModuleTier = 0;
+                        }
                     }
                 }
             }

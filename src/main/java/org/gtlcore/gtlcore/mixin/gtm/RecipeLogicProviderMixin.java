@@ -15,6 +15,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.config.IPluginConfig;
@@ -24,6 +25,25 @@ import snownee.jade.api.config.IPluginConfig;
  */
 @Mixin(RecipeLogicProvider.class)
 public abstract class RecipeLogicProviderMixin extends CapabilityBlockProvider<RecipeLogic> {
+
+    @Unique
+    private static final ChatFormatting[] GTL_CORE$VC = {
+            ChatFormatting.DARK_GRAY,
+            ChatFormatting.GRAY,
+            ChatFormatting.AQUA,
+            ChatFormatting.GOLD,
+            ChatFormatting.DARK_PURPLE,
+            ChatFormatting.BLUE,
+            ChatFormatting.LIGHT_PURPLE,
+            ChatFormatting.RED,
+            ChatFormatting.DARK_AQUA,
+            ChatFormatting.DARK_RED,
+            ChatFormatting.GREEN,
+            ChatFormatting.DARK_GREEN,
+            ChatFormatting.YELLOW,
+            ChatFormatting.BLUE,
+            ChatFormatting.RED
+    };
 
     protected RecipeLogicProviderMixin(ResourceLocation uid) {
         super(uid);
@@ -50,7 +70,7 @@ public abstract class RecipeLogicProviderMixin extends CapabilityBlockProvider<R
                                                 .translatable("gtceu.top.electricity",
                                                         FormattingUtil.formatNumber2Places(absEUt / ((float) GTValues.V[tier])),
                                                         GTValues.VNF[tier])
-                                                .withStyle(style -> style.withColor(GTValues.VC[tier])))
+                                                .withStyle(style -> style.withColor(GTL_CORE$VC[tier])))
                                         .append(Component.literal(")").withStyle(ChatFormatting.GREEN))));
 
                 if (EUt > 0) {

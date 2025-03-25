@@ -14,6 +14,7 @@ import com.gregtechceu.gtceu.api.data.chemical.material.properties.ToolProperty;
 import com.gregtechceu.gtceu.api.fluids.FluidBuilder;
 import com.gregtechceu.gtceu.api.fluids.attribute.FluidAttributes;
 import com.gregtechceu.gtceu.api.fluids.store.FluidStorageKeys;
+import com.gregtechceu.gtceu.api.item.tool.GTToolType;
 
 import static com.gregtechceu.gtceu.api.data.chemical.material.info.MaterialFlags.*;
 import static com.gregtechceu.gtceu.api.data.chemical.material.info.MaterialIconSet.*;
@@ -232,6 +233,7 @@ public class MaterialBuilder {
                 .element(GTLElements.VIBRANIUM)
                 .color(0xff0000)
                 .iconSet(METALLIC)
+                .toolStats(ToolProperty.Builder.of(1.0F, 1.0F, 100, 10, GTToolType.DRILL_LV).build())
                 .flags(GTLMaterialFlags.GENERATE_NANOSWARM, GENERATE_ROTOR, GENERATE_FRAME)
                 .buildAndRegister();
 
