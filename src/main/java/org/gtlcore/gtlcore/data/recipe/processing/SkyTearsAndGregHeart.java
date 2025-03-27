@@ -24,7 +24,8 @@ import earth.terrarium.adastra.common.registry.ModItems;
 
 import java.util.function.Consumer;
 
-import static com.gregtechceu.gtceu.api.GTValues.*;
+import static com.gregtechceu.gtceu.api.GTValues.ULV;
+import static com.gregtechceu.gtceu.api.GTValues.VEX;
 import static com.gregtechceu.gtceu.api.data.tag.TagPrefix.*;
 import static com.gregtechceu.gtceu.common.data.GTMaterials.*;
 import static com.gregtechceu.gtceu.common.data.GTRecipeTypes.DISTILLATION_RECIPES;
@@ -37,281 +38,276 @@ import static org.gtlcore.gtlcore.common.data.machines.MultiBlockMachineB.LARGE_
 
 public class SkyTearsAndGregHeart {
 
+    static final ItemStack[] skyFragments = {
+            WORLD_FRAGMENTS_OVERWORLD.asStack(1),
+            WORLD_FRAGMENTS_NETHER.asStack(1),
+            WORLD_FRAGMENTS_END.asStack(1),
+            WORLD_FRAGMENTS_REACTOR.asStack(1),
+
+            WORLD_FRAGMENTS_MOON.asStack(1),
+            WORLD_FRAGMENTS_MARS.asStack(1),
+            WORLD_FRAGMENTS_VENUS.asStack(1),
+            WORLD_FRAGMENTS_MERCURY.asStack(1),
+
+            WORLD_FRAGMENTS_CERES.asStack(1),
+            WORLD_FRAGMENTS_IO.asStack(1),
+            WORLD_FRAGMENTS_GANYMEDE.asStack(1),
+            WORLD_FRAGMENTS_PLUTO.asStack(1),
+
+            WORLD_FRAGMENTS_ENCELADUS.asStack(1),
+            WORLD_FRAGMENTS_TITAN.asStack(1),
+            WORLD_FRAGMENTS_GLACIO.asStack(1),
+            WORLD_FRAGMENTS_BARNARDA.asStack(1)
+    };
+
+    static final Material[][] skyOres = {
+            { Goethite, YellowLimonite, Hematite, Malachite },// 铁矿脉 0
+            { Soapstone, Talc, GlauconiteSand, Pentlandite },// 皂滑矿脉
+            { Grossular, Spessartine, Pyrolusite, Tantalite },// 主世界锰矿脉
+            { Chalcopyrite, Zeolite, Cassiterite, Realgar },// 铜锡矿脉
+            { Chalcopyrite, Iron, Pyrite, Copper },// 铜矿脉
+            { Galena, Silver, Lead, Lead },// 方铅矿脉
+            { Tin, Tin, Cassiterite, Cassiterite },// 锡石矿脉
+            { Redstone, Ruby, Cinnabar, Cinnabar },// 红石矿脉
+            { Apatite, Apatite, TricalciumPhosphate, TricalciumPhosphate },// 磷灰石矿脉
+            { Graphite, Diamond, Coal, Coal },// 钻石矿脉
+
+            { Garnierite, Nickel, Cobaltite, Pentlandite },// 镍矿脉 10
+            { Bentonite, Magnetite, Olivine, GlauconiteSand },// 橄榄石矿脉
+            { Almandine, Pyrope, Sapphire, GreenSapphire },// 蓝宝石矿脉
+            { Coal, Coal, Coal, Coal },// 煤炭矿脉
+            { Magnetite, VanadiumMagnetite, Gold, Gold },// 磁铁矿脉
+            { Lazurite, Sodalite, Lapis, Calcite },// 青金石矿脉
+            { Kyanite, Mica, Pollucite, Pollucite },// 云母矿脉
+            { GarnetRed, GarnetYellow, Amethyst, Opal },// 石榴石矿脉
+            { BasalticMineralSand, GraniticMineralSand, FullersEarth, Gypsum },// 矿砂矿脉
+            { RockSalt, Salt, Lepidolite, Spodumene },// 盐矿脉
+
+            { CassiteriteSand, GarnetSand, Asbestos, Diatomite },// 锡石榴石矿脉 20
+            { Oilsands, Oilsands, Oilsands, Oilsands },// 油砂矿脉
+            { Bastnasite, Bastnasite, Monazite, Neodymium },// 独居石矿脉
+            { Saltpeter, Diatomite, Electrotine, Alunite },// 硝石矿脉
+            { Beryllium, Beryllium, Emerald, Emerald },// 铍矿脉
+            { Grossular, Pyrolusite, Tantalite, Tantalite },// 锰矿脉
+            { Wulfenite, Molybdenite, Molybdenum, Powellite },// 钼矿脉
+            { Quartzite, CertusQuartz, Barite, Barite },// 赛特斯石英
+            { Tetrahedrite, Tetrahedrite, Copper, Stibnite },// 黝铜矿脉
+            { Goethite, YellowLimonite, Hematite, Gold },// 带状铁矿脉
+
+            { BlueTopaz, Topaz, Chalcocite, Bornite },// 下界黄玉矿脉 30
+            { NetherQuartz, NetherQuartz, Quartzite, Quartzite },// 下界石英矿脉
+            { Sulfur, Pyrite, Sphalerite, Sphalerite },// 硫矿脉
+            { Naquadah, Naquadah, Plutonium239, Plutonium239 },// 硅岩矿脉
+            { Scheelite, Tungstate, Lithium, Lithium },// 白钨矿脉
+            { Bauxite, Ilmenite, Aluminium, Aluminium },// 铝土矿脉
+            { Bornite, Cooperite, Platinum, Palladium },// 谢尔顿矿脉
+            { Pitchblende, Pitchblende, Uraninite, Uraninite },// 沥青铀矿脉
+            { NetherQuartz, Barite, Quartzite, Quartzite },// 石英岩矿脉
+            { BlueTopaz, BlueTopaz, Topaz, Topaz },// 黄玉矿脉
+
+            { Copper, Copper, Stibnite, Stibnite },// 辉锑矿脉 40
+            { Uraninite, Thorium, Plutonium239, Plutonium239 },// 钚矿脉
+            { Uraninite, Pitchblende, Thorium, Thorium },// 铀矿脉
+            { Apatite, TricalciumPhosphate, Pyrochlore, Pyrochlore },// 磷矿脉
+            { Bentonite, Magnetite, Olivine, GlauconiteSand },
+            { Magnesite, Magnesite, Desh, Desh },// 戴斯矿脉
+            { Cobalt, Cobalt, Calorite, Magnesite },// 耐热矿脉
+            { Gold, Gold, Ostrum, Ostrum },// 紫金矿脉
+            { Trona, Trona, Cooperite, Celestine },// 天青石矿脉
+            { Zircon, Grossular, Pyrolusite, Tantalite }// 锆石矿脉
+
+    };
+
+    // sky_ores_number(n)
+    static final int[][] skyOres_n = {
+            { 64, 24, 24, 16, 800 },// 铁矿脉 0
+            { 48, 32, 32, 16, 100 },// 皂滑矿脉
+            { 48, 32, 32, 16, 150 },// 主世界锰矿脉
+            { 64, 24, 24, 16, 500 },// 铜锡矿脉
+            { 64, 24, 24, 16, 800 },// 铜矿脉
+            { 64, 48, 8, 8, 100 },// 方铅矿脉
+            { 64, 16, 32, 16, 800 },// 锡石矿脉
+            { 64, 48, 8, 8, 120 },// 红石矿脉
+            { 64, 16, 32, 16, 100 },// 磷灰石矿脉
+            { 64, 48, 8, 8, 100 },// 钻石矿脉
+
+            { 48, 32, 32, 16, 100 },// 镍矿脉 10
+            { 48, 32, 32, 16, 50 },// 橄榄石矿脉
+            { 48, 32, 32, 16, 150 },// 蓝宝石矿脉
+            { 32, 32, 32, 32, 200 },// 煤炭矿脉
+            { 64, 48, 8, 8, 120 },// 磁铁矿脉
+            { 48, 32, 32, 16, 300 },// 青金石矿脉
+            { 64, 48, 8, 8, 50 },// 云母矿脉
+            { 48, 32, 32, 16, 300 },// 石榴石矿脉
+            { 48, 32, 32, 16, 160 },// 矿砂矿脉
+            { 48, 32, 32, 16, 100 },// 盐矿脉
+
+            { 48, 32, 32, 16, 320 },// 锡石榴石矿脉 20
+            { 64, 48, 8, 8, 120 },// 油砂矿脉
+            { 36, 36, 28, 28, 100 },// 独居石矿脉
+            { 36, 36, 36, 20, 300 },// 硝石矿脉
+            { 38, 38, 26, 26, 250 },// 铍矿脉
+            { 64, 48, 8, 8, 150 },// 锰矿脉
+            { 64, 32, 16, 16, 50 },// 钼矿脉
+            { 64, 48, 8, 8, 100 },// 赛特斯石英
+            { 36, 36, 36, 20, 800 },// 黝铜矿脉
+            { 48, 32, 32, 16, 300 },// 带状铁矿脉
+
+            { 48, 32, 32, 16, 175 },// 下界黄玉矿脉 30
+            { 48, 48, 16, 16, 160 },// 下界石英矿脉
+            { 64, 48, 8, 8, 500 },// 硫矿脉
+            { 48, 48, 16, 16, 100 },// 硅岩矿脉
+            { 64, 48, 8, 8, 140 },// 白钨矿脉
+            { 48, 48, 16, 16, 120 },// 铝土矿脉
+            { 48, 32, 32, 16, 60 },// 谢尔顿矿脉
+            { 64, 16, 32, 16, 75 },// 沥青铀矿脉
+            { 52, 38, 22, 16, 120 },// 石英岩矿脉
+            { 32, 32, 32, 32, 100 },// 黄玉矿脉
+
+            { 32, 32, 32, 32, 100 },// 辉锑矿脉 40
+            { 64, 48, 8, 8, 400 },// 钚矿脉
+            { 64, 48, 8, 8, 400 },// 铀矿脉
+            { 54, 54, 8, 8, 100 },// 磷矿脉
+            { 26, 26, 50, 26, 75 },// 橄榄石矿脉
+            { 42, 22, 42, 22, 60 },// 戴斯矿脉
+            { 32, 32, 32, 32, 120 },// 耐热矿脉
+            { 42, 22, 42, 22, 100 },// 紫金矿脉
+            { 32, 32, 32, 32, 200 },// 天青石矿脉
+            { 48, 32, 24, 24, 100 }// 锆石矿脉
+
+    };
+
+    // sky_fluid(m)
+    static final Material[] skyFluid = {
+            SaltWater,// 盐水矿藏 0
+            OilHeavy,// 重油矿藏
+            RawOil,// 原油矿藏
+            Oil,// 石油矿藏
+            OilLight,// 轻油矿藏
+            NaturalGas,// 天然气矿藏
+            Lava,// 熔岩矿藏
+            NaturalGas,// 下界天然气矿藏
+            Helium3,// 氦-3 矿藏
+            Helium,// 氦矿藏
+
+            Radon,// 氡矿藏 10
+            SulfuricAcid,// 硫酸矿藏
+            Deuterium,// 氘矿藏
+            Neon,// 氖矿藏
+            Krypton,// 氪矿藏
+            Radon,// 氡矿藏
+            Xenon,// 氙矿藏
+            CoalGas,// 煤气矿藏
+            HydrochloricAcid,// 盐酸矿藏
+            NitricAcid,// 硝酸矿藏
+
+            Chlorine,// 氯矿藏 20
+            Fluorine,// 氟矿藏
+            Benzene,// 苯矿藏
+            Methane,// 甲烷矿藏
+            CharcoalByproducts,// 木炭副产矿藏
+            UnknowWater// 不明液体矿藏
+
+    };
+
+    // sky_fluid
+    static final int[] skyFluid_n = {
+            1000,// 盐水矿藏 0
+            2000,// 重油矿藏
+            3000,// 原油矿藏
+            3000,// 石油矿藏
+            3000,// 轻油矿藏
+            1750,// 天然气矿藏
+            2500,// 熔岩矿藏
+            3000,// 下界天然气矿藏
+            1800,// 氦-3 矿藏
+            3000,// 氦矿藏
+
+            800,// 氡矿藏 10
+            2500,// 硫酸矿藏
+            3000,// 氘矿藏
+            2500,// 氖矿藏
+            2500,// 氪矿藏
+            2500,// 氡矿藏
+            2500,// 氙矿藏
+            3000,// 煤气矿藏
+            3500,// 盐酸矿藏
+            3000,// 硝酸矿藏
+
+            4200,// 氯矿藏 20
+            3200,// 氟矿藏
+            1600,// 苯矿藏
+            2500,// 甲烷矿藏
+            2600,// 木炭副产矿藏
+            600 // 不明液体矿藏
+
+    };
+
+    // sky_digging_number()
+    static final int[][] skyDNumber = {
+            { 22, 6 },
+            { 12, 2 },
+            { 6, 0 },
+            { 8, 0 },
+
+            { 4, 2 },
+            { 3, 1 },
+            { 3, 1 },
+            { 2, 1 },
+
+            { 4, 4 },
+            { 4, 1 },
+            { 5, 1 },
+            { 5, 1 },
+
+            { 3, 2 },
+            { 4, 3 },
+            { 9, 0 },
+            { 7, 1 }
+    };
+
+    // sky_digging_mapping
+    static final int[][] skyDMap = {
+            { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 0, 1, 2, 3, 4, 5 },
+            { 22, 7, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 6, 7 },
+            { 33, 14, 34, 35, 36, 37 },
+            { 39, 38, 24, 23, 27, 32, 40, 26 },
+
+            { 41, 35, 22, 42, 8, 9 },
+            { 36, 34, 43, 10 },
+            { 44, 32, 45, 11 },
+            { 46, 10, 12 },
+
+            { 27, 26, 22, 47, 13, 14, 15, 16 },
+            { 48, 33, 44, 32, 17 },
+            { 39, 38, 35, 32, 49, 18 },
+            { 41, 33, 40, 10, 42, 19 },
+
+            { 36, 44, 43, 20, 21 },
+            { 23, 49, 45, 42, 22, 23, 24 },
+            { 23, 32, 26, 48, 22, 36, 34, 46, 47 },
+            { 41, 39, 27, 33, 34, 32, 43, 25 }
+    };
+
+    // sky_fluid_tool_head_drill
+    static ItemStack[] skyDrill = {
+            ChemicalHelper.get(toolHeadDrill, Steel, 1),
+            ChemicalHelper.get(toolHeadDrill, Titanium, 1),
+            ChemicalHelper.get(toolHeadDrill, NaquadahAlloy, 1),
+            ChemicalHelper.get(toolHeadDrill, Neutronium, 1),
+            new ItemStack(Registries.getBlock("kubejs:machine_casing_grinding_head"), 1)
+    };
+
+    //
+    static int[] skyDrill_n = {
+            1,
+            16,
+            128,
+            1024
+    };
+
     public static void init(Consumer<FinishedRecipe> provider) {
-        // 空岛特供配方
-
-        // sky_fragments(i)
-        ItemStack[] skyFragments = {
-                WORLD_FRAGMENTS_OVERWORLD.asStack(1),
-                WORLD_FRAGMENTS_NETHER.asStack(1),
-                WORLD_FRAGMENTS_END.asStack(1),
-                WORLD_FRAGMENTS_REACTOR.asStack(1),
-
-                WORLD_FRAGMENTS_MOON.asStack(1),
-                WORLD_FRAGMENTS_MARS.asStack(1),
-                WORLD_FRAGMENTS_VENUS.asStack(1),
-                WORLD_FRAGMENTS_MERCURY.asStack(1),
-
-                WORLD_FRAGMENTS_CERES.asStack(1),
-                WORLD_FRAGMENTS_IO.asStack(1),
-                WORLD_FRAGMENTS_GANYMEDE.asStack(1),
-                WORLD_FRAGMENTS_PLUTO.asStack(1),
-
-                WORLD_FRAGMENTS_ENCELADUS.asStack(1),
-                WORLD_FRAGMENTS_TITAN.asStack(1),
-                WORLD_FRAGMENTS_GLACIO.asStack(1),
-                WORLD_FRAGMENTS_BARNARDA.asStack(1)
-        };
-
         if (ConfigHolder.INSTANCE.enableSkyBlokeMode) {
-
-            // sky_ores(n)
-            Material[][] skyOres = {
-                    { Goethite, YellowLimonite, Hematite, Malachite },// 铁矿脉 0
-                    { Soapstone, Talc, GlauconiteSand, Pentlandite },// 皂滑矿脉
-                    { Grossular, Spessartine, Pyrolusite, Tantalite },// 主世界锰矿脉
-                    { Chalcopyrite, Zeolite, Cassiterite, Realgar },// 铜锡矿脉
-                    { Chalcopyrite, Iron, Pyrite, Copper },// 铜矿脉
-                    { Galena, Silver, Lead, Lead },// 方铅矿脉
-                    { Tin, Tin, Cassiterite, Cassiterite },// 锡石矿脉
-                    { Redstone, Ruby, Cinnabar, Cinnabar },// 红石矿脉
-                    { Apatite, Apatite, TricalciumPhosphate, TricalciumPhosphate },// 磷灰石矿脉
-                    { Graphite, Diamond, Coal, Coal },// 钻石矿脉
-
-                    { Garnierite, Nickel, Cobaltite, Pentlandite },// 镍矿脉 10
-                    { Bentonite, Magnetite, Olivine, GlauconiteSand },// 橄榄石矿脉
-                    { Almandine, Pyrope, Sapphire, GreenSapphire },// 蓝宝石矿脉
-                    { Coal, Coal, Coal, Coal },// 煤炭矿脉
-                    { Magnetite, VanadiumMagnetite, Gold, Gold },// 磁铁矿脉
-                    { Lazurite, Sodalite, Lapis, Calcite },// 青金石矿脉
-                    { Kyanite, Mica, Pollucite, Pollucite },// 云母矿脉
-                    { GarnetRed, GarnetYellow, Amethyst, Opal },// 石榴石矿脉
-                    { BasalticMineralSand, GraniticMineralSand, FullersEarth, Gypsum },// 矿砂矿脉
-                    { RockSalt, Salt, Lepidolite, Spodumene },// 盐矿脉
-
-                    { CassiteriteSand, GarnetSand, Asbestos, Diatomite },// 锡石榴石矿脉 20
-                    { Oilsands, Oilsands, Oilsands, Oilsands },// 油砂矿脉
-                    { Bastnasite, Bastnasite, Monazite, Neodymium },// 独居石矿脉
-                    { Saltpeter, Diatomite, Electrotine, Alunite },// 硝石矿脉
-                    { Beryllium, Beryllium, Emerald, Emerald },// 铍矿脉
-                    { Grossular, Pyrolusite, Tantalite, Tantalite },// 锰矿脉
-                    { Wulfenite, Molybdenite, Molybdenum, Powellite },// 钼矿脉
-                    { Quartzite, CertusQuartz, Barite, Barite },// 赛特斯石英
-                    { Tetrahedrite, Tetrahedrite, Copper, Stibnite },// 黝铜矿脉
-                    { Goethite, YellowLimonite, Hematite, Gold },// 带状铁矿脉
-
-                    { BlueTopaz, Topaz, Chalcocite, Bornite },// 下界黄玉矿脉 30
-                    { NetherQuartz, NetherQuartz, Quartzite, Quartzite },// 下界石英矿脉
-                    { Sulfur, Pyrite, Sphalerite, Sphalerite },// 硫矿脉
-                    { Naquadah, Naquadah, Plutonium239, Plutonium239 },// 硅岩矿脉
-                    { Scheelite, Tungstate, Lithium, Lithium },// 白钨矿脉
-                    { Bauxite, Ilmenite, Aluminium, Aluminium },// 铝土矿脉
-                    { Bornite, Cooperite, Platinum, Palladium },// 谢尔顿矿脉
-                    { Pitchblende, Pitchblende, Uraninite, Uraninite },// 沥青铀矿脉
-                    { NetherQuartz, Barite, Quartzite, Quartzite },// 石英岩矿脉
-                    { BlueTopaz, BlueTopaz, Topaz, Topaz },// 黄玉矿脉
-
-                    { Copper, Copper, Stibnite, Stibnite },// 辉锑矿脉 40
-                    { Uraninite, Thorium, Plutonium239, Plutonium239 },// 钚矿脉
-                    { Uraninite, Pitchblende, Thorium, Thorium },// 铀矿脉
-                    { Apatite, TricalciumPhosphate, Pyrochlore, Pyrochlore },// 磷矿脉
-                    { Bentonite, Magnetite, Olivine, GlauconiteSand },
-                    { Magnesite, Magnesite, Desh, Desh },// 戴斯矿脉
-                    { Cobalt, Cobalt, Calorite, Magnesite },// 耐热矿脉
-                    { Gold, Gold, Ostrum, Ostrum },// 紫金矿脉
-                    { Trona, Trona, Cooperite, Celestine },// 天青石矿脉
-                    { Zircon, Grossular, Pyrolusite, Tantalite }// 锆石矿脉
-
-            };
-
-            // sky_ores_number(n)
-            int[][] skyOres_n = {
-                    { 64, 24, 24, 16, 800 },// 铁矿脉 0
-                    { 48, 32, 32, 16, 100 },// 皂滑矿脉
-                    { 48, 32, 32, 16, 150 },// 主世界锰矿脉
-                    { 64, 24, 24, 16, 500 },// 铜锡矿脉
-                    { 64, 24, 24, 16, 800 },// 铜矿脉
-                    { 64, 48, 8, 8, 100 },// 方铅矿脉
-                    { 64, 16, 32, 16, 800 },// 锡石矿脉
-                    { 64, 48, 8, 8, 120 },// 红石矿脉
-                    { 64, 16, 32, 16, 100 },// 磷灰石矿脉
-                    { 64, 48, 8, 8, 100 },// 钻石矿脉
-
-                    { 48, 32, 32, 16, 100 },// 镍矿脉 10
-                    { 48, 32, 32, 16, 50 },// 橄榄石矿脉
-                    { 48, 32, 32, 16, 150 },// 蓝宝石矿脉
-                    { 32, 32, 32, 32, 200 },// 煤炭矿脉
-                    { 64, 48, 8, 8, 120 },// 磁铁矿脉
-                    { 48, 32, 32, 16, 300 },// 青金石矿脉
-                    { 64, 48, 8, 8, 50 },// 云母矿脉
-                    { 48, 32, 32, 16, 300 },// 石榴石矿脉
-                    { 48, 32, 32, 16, 160 },// 矿砂矿脉
-                    { 48, 32, 32, 16, 100 },// 盐矿脉
-
-                    { 48, 32, 32, 16, 320 },// 锡石榴石矿脉 20
-                    { 64, 48, 8, 8, 120 },// 油砂矿脉
-                    { 36, 36, 28, 28, 100 },// 独居石矿脉
-                    { 36, 36, 36, 20, 300 },// 硝石矿脉
-                    { 38, 38, 26, 26, 250 },// 铍矿脉
-                    { 64, 48, 8, 8, 150 },// 锰矿脉
-                    { 64, 32, 16, 16, 50 },// 钼矿脉
-                    { 64, 48, 8, 8, 100 },// 赛特斯石英
-                    { 36, 36, 36, 20, 800 },// 黝铜矿脉
-                    { 48, 32, 32, 16, 300 },// 带状铁矿脉
-
-                    { 48, 32, 32, 16, 175 },// 下界黄玉矿脉 30
-                    { 48, 48, 16, 16, 160 },// 下界石英矿脉
-                    { 64, 48, 8, 8, 500 },// 硫矿脉
-                    { 48, 48, 16, 16, 100 },// 硅岩矿脉
-                    { 64, 48, 8, 8, 140 },// 白钨矿脉
-                    { 48, 48, 16, 16, 120 },// 铝土矿脉
-                    { 48, 32, 32, 16, 60 },// 谢尔顿矿脉
-                    { 64, 16, 32, 16, 75 },// 沥青铀矿脉
-                    { 52, 38, 22, 16, 120 },// 石英岩矿脉
-                    { 32, 32, 32, 32, 100 },// 黄玉矿脉
-
-                    { 32, 32, 32, 32, 100 },// 辉锑矿脉 40
-                    { 64, 48, 8, 8, 400 },// 钚矿脉
-                    { 64, 48, 8, 8, 400 },// 铀矿脉
-                    { 54, 54, 8, 8, 100 },// 磷矿脉
-                    { 26, 26, 50, 26, 75 },// 橄榄石矿脉
-                    { 42, 22, 42, 22, 60 },// 戴斯矿脉
-                    { 32, 32, 32, 32, 120 },// 耐热矿脉
-                    { 42, 22, 42, 22, 100 },// 紫金矿脉
-                    { 32, 32, 32, 32, 200 },// 天青石矿脉
-                    { 48, 32, 24, 24, 100 }// 锆石矿脉
-
-            };
-
-            // sky_fluid(m)
-            Material[] skyFluid = {
-                    SaltWater,// 盐水矿藏 0
-                    OilHeavy,// 重油矿藏
-                    RawOil,// 原油矿藏
-                    Oil,// 石油矿藏
-                    OilLight,// 轻油矿藏
-                    NaturalGas,// 天然气矿藏
-                    Lava,// 熔岩矿藏
-                    NaturalGas,// 下界天然气矿藏
-                    Helium3,// 氦-3 矿藏
-                    Helium,// 氦矿藏
-
-                    Radon,// 氡矿藏 10
-                    SulfuricAcid,// 硫酸矿藏
-                    Deuterium,// 氘矿藏
-                    Neon,// 氖矿藏
-                    Krypton,// 氪矿藏
-                    Radon,// 氡矿藏
-                    Xenon,// 氙矿藏
-                    CoalGas,// 煤气矿藏
-                    HydrochloricAcid,// 盐酸矿藏
-                    NitricAcid,// 硝酸矿藏
-
-                    Chlorine,// 氯矿藏 20
-                    Fluorine,// 氟矿藏
-                    Benzene,// 苯矿藏
-                    Methane,// 甲烷矿藏
-                    CharcoalByproducts,// 木炭副产矿藏
-                    UnknowWater// 不明液体矿藏
-
-            };
-
-            // sky_fluid
-            int[] skyFluid_n = {
-                    1000,// 盐水矿藏 0
-                    2000,// 重油矿藏
-                    3000,// 原油矿藏
-                    3000,// 石油矿藏
-                    3000,// 轻油矿藏
-                    1750,// 天然气矿藏
-                    2500,// 熔岩矿藏
-                    3000,// 下界天然气矿藏
-                    1800,// 氦-3 矿藏
-                    3000,// 氦矿藏
-
-                    800,// 氡矿藏 10
-                    2500,// 硫酸矿藏
-                    3000,// 氘矿藏
-                    2500,// 氖矿藏
-                    2500,// 氪矿藏
-                    2500,// 氡矿藏
-                    2500,// 氙矿藏
-                    3000,// 煤气矿藏
-                    3500,// 盐酸矿藏
-                    3000,// 硝酸矿藏
-
-                    4200,// 氯矿藏 20
-                    3200,// 氟矿藏
-                    1600,// 苯矿藏
-                    2500,// 甲烷矿藏
-                    2600,// 木炭副产矿藏
-                    600 // 不明液体矿藏
-
-            };
-
-            // sky_digging_number()
-            int[][] skyDNumber = {
-                    { 22, 6 },
-                    { 12, 2 },
-                    { 6, 0 },
-                    { 8, 0 },
-
-                    { 4, 2 },
-                    { 3, 1 },
-                    { 3, 1 },
-                    { 2, 1 },
-
-                    { 4, 4 },
-                    { 4, 1 },
-                    { 5, 1 },
-                    { 5, 1 },
-
-                    { 3, 2 },
-                    { 4, 3 },
-                    { 9, 0 },
-                    { 7, 1 }
-            };
-
-            // sky_digging_mapping
-            int[][] skyDMap = {
-                    { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 0, 1, 2, 3, 4, 5 },
-                    { 22, 7, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 6, 7 },
-                    { 33, 14, 34, 35, 36, 37 },
-                    { 39, 38, 24, 23, 27, 32, 40, 26 },
-
-                    { 41, 35, 22, 42, 8, 9 },
-                    { 36, 34, 43, 10 },
-                    { 44, 32, 45, 11 },
-                    { 46, 10, 12 },
-
-                    { 27, 26, 22, 47, 13, 14, 15, 16 },
-                    { 48, 33, 44, 32, 17 },
-                    { 39, 38, 35, 32, 49, 18 },
-                    { 41, 33, 40, 10, 42, 19 },
-
-                    { 36, 44, 43, 20, 21 },
-                    { 23, 49, 45, 42, 22, 23, 24 },
-                    { 23, 32, 26, 48, 22, 36, 34, 46, 47 },
-                    { 41, 39, 27, 33, 34, 32, 43, 25 }
-            };
-
-            // sky_fluid_tool_head_drill
-            ItemStack[] skyDrill = {
-                    ChemicalHelper.get(toolHeadDrill, Steel, 1),
-                    ChemicalHelper.get(toolHeadDrill, Titanium, 1),
-                    ChemicalHelper.get(toolHeadDrill, NaquadahAlloy, 1),
-                    ChemicalHelper.get(toolHeadDrill, Neutronium, 1),
-                    new ItemStack(Registries.getBlock("kubejs:machine_casing_grinding_head"), 1)
-            };
-
-            //
-            int[] skyDrill_n = {
-                    1,
-                    16,
-                    128,
-                    1024
-            };
-
             VanillaRecipeHelper.addShapedRecipe(provider,
                     GTLCore.id("make_fragment_world_collection_machine"), GTLMachines.FRAGMENT_WORLD_COLLECTION_MACHINE[ULV].asStack(),
                     "WNW", "PCQ", "XNX",
@@ -335,7 +331,7 @@ public class SkyTearsAndGregHeart {
                 for (int k = skyDNumber[i][0]; k < (skyDNumber[i][0] + skyDNumber[i][1]); k++) {
                     int circuit = (i == 0 ? (k + 2) : (k + 1));
                     for (int m = 0; m < 5; m++) {
-                        int fluid_output = (m == 4 ? 2147483647 : skyFluid_n[skyDMap[i][k]] * skyDrill_n[m]);
+                        int fluid_output = (m == 4 ? Integer.MAX_VALUE : skyFluid_n[skyDMap[i][k]] * skyDrill_n[m]);
                         FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1) + "_" + (m + 1))
                                 .notConsumable(skyFragments[i])
                                 .chancedInput(skyDrill[m], 100 - (m * 10), 0)
@@ -350,315 +346,53 @@ public class SkyTearsAndGregHeart {
                 }
             }
 
-            {
-                int i = 0;
-                for (int k = 0; k < skyDNumber[i][0]; k++) {
-                    FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1))
+            for (int i = 0; i < skyDNumber.length; i++) {
+                for (int j = 0; j < skyDNumber[i][0]; j++) {
+                    var build = FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (j + 1));
+                    // base append
+                    build
                             .notConsumable(skyFragments[i])
                             .chancedOutput(skyFragments[i], 50, 0)
                             .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][0], skyOres_n[skyDMap[i][k]][0])
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][1], skyOres_n[skyDMap[i][k]][1])
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][2], skyOres_n[skyDMap[i][k]][2])
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][3], skyOres_n[skyDMap[i][k]][3])
-                            .outputItems(Blocks.STONE.asItem(), 32)
-                            .outputItems(dust, Stone, 32)
-                            .outputItems(Blocks.DEEPSLATE.asItem(), 32)
-                            .outputItems(dust, Deepslate, 32)
-                            .circuitMeta(k + 2)
-                            .duration(24000 / skyOres_n[skyDMap[i][k]][4])
+                            .outputItems(rawOre, skyOres[skyDMap[i][j]][0], skyOres_n[skyDMap[i][j]][0])
+                            .outputItems(rawOre, skyOres[skyDMap[i][j]][1], skyOres_n[skyDMap[i][j]][1])
+                            .outputItems(rawOre, skyOres[skyDMap[i][j]][2], skyOres_n[skyDMap[i][j]][2])
+                            .outputItems(rawOre, skyOres[skyDMap[i][j]][3], skyOres_n[skyDMap[i][j]][3])
                             .EUt(8)
-                            .save(provider);
-                }
-            }
-
-            {
-                int i = 1;
-                for (int k = 0; k < skyDNumber[i][0]; k++) {
-                    FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1))
-                            .notConsumable(skyFragments[i])
-                            .chancedOutput(skyFragments[i], 50, 0)
-                            .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][0], skyOres_n[skyDMap[i][k]][0])
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][1], skyOres_n[skyDMap[i][k]][1])
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][2], skyOres_n[skyDMap[i][k]][2])
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][3], skyOres_n[skyDMap[i][k]][3])
-                            .outputItems(Blocks.NETHERRACK.asItem(), 32)
-                            .outputItems(dust, Netherrack, 32)
-                            .outputItems(Blocks.BASALT.asItem(), 32)
-                            .outputItems(dust, Basalt, 32)
-                            .circuitMeta(k + 1)
-                            .duration(24000 / skyOres_n[skyDMap[i][k]][4])
-                            .EUt(8)
-                            .save(provider);
-                }
-            }
-
-            {
-                int i = 2;
-                for (int k = 0; k < skyDNumber[i][0]; k++) {
-                    FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1))
-                            .notConsumable(skyFragments[i])
-                            .chancedOutput(skyFragments[i], 50, 0)
-                            .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][0], skyOres_n[skyDMap[i][k]][0])
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][1], skyOres_n[skyDMap[i][k]][1])
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][2], skyOres_n[skyDMap[i][k]][2])
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][3], skyOres_n[skyDMap[i][k]][3])
-                            .outputItems(Blocks.END_STONE.asItem(), 64)
-                            .outputItems(dust, Endstone, 64)
-                            .circuitMeta(k + 1)
-                            .duration(24000 / skyOres_n[skyDMap[i][k]][4])
-                            .EUt(8)
-                            .save(provider);
-                }
-            }
-
-            {
-                int i = 3;
-                for (int k = 0; k < skyDNumber[i][0]; k++) {
-                    FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1))
-                            .notConsumable(skyFragments[i])
-                            .chancedOutput(skyFragments[i], 50, 0)
-                            .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][0], skyOres_n[skyDMap[i][k]][0])
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][1], skyOres_n[skyDMap[i][k]][1])
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][2], skyOres_n[skyDMap[i][k]][2])
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][3], skyOres_n[skyDMap[i][k]][3])
-                            .outputItems(Blocks.DIORITE.asItem(), 64)
-                            .outputItems(dust, Diorite, 64)
-                            .circuitMeta(k + 1)
-                            .duration(24000 / skyOres_n[skyDMap[i][k]][4])
-                            .EUt(8)
-                            .save(provider);
-                }
-            }
-
-            {
-                int i = 4;
-                for (int k = 0; k < skyDNumber[i][0]; k++) {
-                    FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1))
-                            .notConsumable(skyFragments[i])
-                            .chancedOutput(skyFragments[i], 50, 0)
-                            .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][0], skyOres_n[skyDMap[i][k]][0])
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][1], skyOres_n[skyDMap[i][k]][1])
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][2], skyOres_n[skyDMap[i][k]][2])
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][3], skyOres_n[skyDMap[i][k]][3])
-                            .outputItems(ModItems.MOON_STONE, 64)
-                            .circuitMeta(k + 1)
-                            .duration(24000 / skyOres_n[skyDMap[i][k]][4])
-                            .EUt(8)
-                            .save(provider);
-                }
-            }
-
-            {
-                int i = 5;
-                for (int k = 0; k < skyDNumber[i][0]; k++) {
-                    FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1))
-                            .notConsumable(skyFragments[i])
-                            .chancedOutput(skyFragments[i], 50, 0)
-                            .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][0], skyOres_n[skyDMap[i][k]][0])
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][1], skyOres_n[skyDMap[i][k]][1])
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][2], skyOres_n[skyDMap[i][k]][2])
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][3], skyOres_n[skyDMap[i][k]][3])
-                            .outputItems(ModItems.MARS_STONE, 64)
-                            .circuitMeta(k + 1)
-                            .duration(24000 / skyOres_n[skyDMap[i][k]][4])
-                            .EUt(8)
-                            .save(provider);
-                }
-            }
-
-            {
-                int i = 6;
-                for (int k = 0; k < skyDNumber[i][0]; k++) {
-                    FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1))
-                            .notConsumable(skyFragments[i])
-                            .chancedOutput(skyFragments[i], 50, 0)
-                            .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][0], skyOres_n[skyDMap[i][k]][0])
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][1], skyOres_n[skyDMap[i][k]][1])
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][2], skyOres_n[skyDMap[i][k]][2])
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][3], skyOres_n[skyDMap[i][k]][3])
-                            .outputItems(ModItems.VENUS_STONE, 64)
-                            .circuitMeta(k + 1)
-                            .duration(24000 / skyOres_n[skyDMap[i][k]][4])
-                            .EUt(8)
-                            .save(provider);
-                }
-            }
-
-            {
-                int i = 7;
-                for (int k = 0; k < skyDNumber[i][0]; k++) {
-                    FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1))
-                            .notConsumable(skyFragments[i])
-                            .chancedOutput(skyFragments[i], 50, 0)
-                            .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][0], skyOres_n[skyDMap[i][k]][0])
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][1], skyOres_n[skyDMap[i][k]][1])
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][2], skyOres_n[skyDMap[i][k]][2])
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][3], skyOres_n[skyDMap[i][k]][3])
-                            .outputItems(ModItems.MERCURY_STONE, 64)
-                            .circuitMeta(k + 1)
-                            .duration(24000 / skyOres_n[skyDMap[i][k]][4])
-                            .EUt(8)
-                            .save(provider);
-                }
-            }
-
-            {
-                int i = 8;
-                for (int k = 0; k < skyDNumber[i][0]; k++) {
-                    FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1))
-                            .notConsumable(skyFragments[i])
-                            .chancedOutput(skyFragments[i], 50, 0)
-                            .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][0], skyOres_n[skyDMap[i][k]][0])
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][1], skyOres_n[skyDMap[i][k]][1])
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][2], skyOres_n[skyDMap[i][k]][2])
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][3], skyOres_n[skyDMap[i][k]][3])
-                            .outputItems(new ItemStack(Registries.getBlock("kubejs:ceresstone"), 64))
-                            .circuitMeta(k + 1)
-                            .duration(24000 / skyOres_n[skyDMap[i][k]][4])
-                            .EUt(8)
-                            .save(provider);
-                }
-            }
-
-            {
-                int i = 9;
-                for (int k = 0; k < skyDNumber[i][0]; k++) {
-                    FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1))
-                            .notConsumable(skyFragments[i])
-                            .chancedOutput(skyFragments[i], 50, 0)
-                            .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][0], skyOres_n[skyDMap[i][k]][0])
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][1], skyOres_n[skyDMap[i][k]][1])
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][2], skyOres_n[skyDMap[i][k]][2])
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][3], skyOres_n[skyDMap[i][k]][3])
-                            .outputItems(new ItemStack(Registries.getBlock("kubejs:iostone"), 64))
-                            .circuitMeta(k + 1)
-                            .duration(24000 / skyOres_n[skyDMap[i][k]][4])
-                            .EUt(8)
-                            .save(provider);
-                }
-            }
-
-            {
-                int i = 10;
-                for (int k = 0; k < skyDNumber[i][0]; k++) {
-                    FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1))
-                            .notConsumable(skyFragments[i])
-                            .chancedOutput(skyFragments[i], 50, 0)
-                            .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][0], skyOres_n[skyDMap[i][k]][0])
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][1], skyOres_n[skyDMap[i][k]][1])
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][2], skyOres_n[skyDMap[i][k]][2])
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][3], skyOres_n[skyDMap[i][k]][3])
-                            .outputItems(new ItemStack(Registries.getBlock("kubejs:ganymedestone"), 64))
-                            .circuitMeta(k + 1)
-                            .duration(24000 / skyOres_n[skyDMap[i][k]][4])
-                            .EUt(8)
-                            .save(provider);
-                }
-            }
-
-            {
-                int i = 11;
-                for (int k = 0; k < skyDNumber[i][0]; k++) {
-                    FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1))
-                            .notConsumable(skyFragments[i])
-                            .chancedOutput(skyFragments[i], 50, 0)
-                            .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][0], skyOres_n[skyDMap[i][k]][0])
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][1], skyOres_n[skyDMap[i][k]][1])
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][2], skyOres_n[skyDMap[i][k]][2])
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][3], skyOres_n[skyDMap[i][k]][3])
-                            .outputItems(new ItemStack(Registries.getBlock("kubejs:plutostone"), 64))
-                            .circuitMeta(k + 1)
-                            .duration(24000 / skyOres_n[skyDMap[i][k]][4])
-                            .EUt(8)
-                            .save(provider);
-                }
-            }
-
-            {
-                int i = 12;
-                for (int k = 0; k < skyDNumber[i][0]; k++) {
-                    FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1))
-                            .notConsumable(skyFragments[i])
-                            .chancedOutput(skyFragments[i], 50, 0)
-                            .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][0], skyOres_n[skyDMap[i][k]][0])
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][1], skyOres_n[skyDMap[i][k]][1])
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][2], skyOres_n[skyDMap[i][k]][2])
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][3], skyOres_n[skyDMap[i][k]][3])
-                            .outputItems(new ItemStack(Registries.getBlock("kubejs:enceladusstone"), 64))
-                            .circuitMeta(k + 1)
-                            .duration(24000 / skyOres_n[skyDMap[i][k]][4])
-                            .EUt(8)
-                            .save(provider);
-                }
-            }
-
-            {
-                int i = 13;
-                for (int k = 0; k < skyDNumber[i][0]; k++) {
-                    FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1))
-                            .notConsumable(skyFragments[i])
-                            .chancedOutput(skyFragments[i], 50, 0)
-                            .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][0], skyOres_n[skyDMap[i][k]][0])
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][1], skyOres_n[skyDMap[i][k]][1])
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][2], skyOres_n[skyDMap[i][k]][2])
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][3], skyOres_n[skyDMap[i][k]][3])
-                            .outputItems(new ItemStack(Registries.getBlock("kubejs:titanstone"), 64))
-                            .circuitMeta(k + 1)
-                            .duration(24000 / skyOres_n[skyDMap[i][k]][4])
-                            .EUt(8)
-                            .save(provider);
-                }
-            }
-
-            {
-                int i = 14;
-                for (int k = 0; k < skyDNumber[i][0]; k++) {
-                    FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1))
-                            .notConsumable(skyFragments[i])
-                            .chancedOutput(skyFragments[i], 50, 0)
-                            .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][0], skyOres_n[skyDMap[i][k]][0])
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][1], skyOres_n[skyDMap[i][k]][1])
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][2], skyOres_n[skyDMap[i][k]][2])
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][3], skyOres_n[skyDMap[i][k]][3])
-                            .outputItems(ModItems.GLACIO_STONE, 64)
-                            .circuitMeta(k + 1)
-                            .duration(24000 / skyOres_n[skyDMap[i][k]][4])
-                            .EUt(8)
-                            .save(provider);
-                }
-            }
-
-            {
-                int i = 15;
-                for (int k = 0; k < skyDNumber[i][0]; k++) {
-                    FRAGMENT_WORLD_COLLECTION.recipeBuilder("sky_block_digging_" + (i + 1) + "_" + (k + 1))
-                            .notConsumable(skyFragments[i])
-                            .chancedOutput(skyFragments[i], 50, 0)
-                            .chancedOutput(MINING_CRYSTAL.asStack(1), 5, 5)
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][0], skyOres_n[skyDMap[i][k]][0])
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][1], skyOres_n[skyDMap[i][k]][1])
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][2], skyOres_n[skyDMap[i][k]][2])
-                            .outputItems(rawOre, skyOres[skyDMap[i][k]][3], skyOres_n[skyDMap[i][k]][3])
-                            .outputItems(Blocks.STONE.asItem(), 64)
-                            .circuitMeta(k + 1)
-                            .duration(24000 / skyOres_n[skyDMap[i][k]][4])
-                            .EUt(8)
-                            .save(provider);
+                            .duration(24000 / skyOres_n[skyDMap[i][j]][4])
+                            .circuitMeta(i == 0 ? j + 2 : j + 1);
+                    // o
+                    switch (i) {
+                        case 0 -> build
+                                .outputItems(Blocks.STONE.asItem(), 32)
+                                .outputItems(dust, Stone, 32)
+                                .outputItems(Blocks.DEEPSLATE.asItem(), 32)
+                                .outputItems(dust, Deepslate, 32);
+                        case 1 -> build
+                                .outputItems(Blocks.NETHERRACK.asItem(), 32)
+                                .outputItems(dust, Netherrack, 32)
+                                .outputItems(Blocks.BASALT.asItem(), 32)
+                                .outputItems(dust, Basalt, 32);
+                        case 2 -> build
+                                .outputItems(Blocks.END_STONE.asItem(), 64)
+                                .outputItems(dust, Endstone, 64);
+                        case 3 -> build
+                                .outputItems(Blocks.DIORITE.asItem(), 64)
+                                .outputItems(dust, Diorite, 64);
+                        case 4 -> build.outputItems(ModItems.MOON_STONE, 64);
+                        case 5 -> build.outputItems(ModItems.MARS_STONE, 64);
+                        case 6 -> build.outputItems(ModItems.VENUS_STONE, 64);
+                        case 7 -> build.outputItems(ModItems.MERCURY_STONE, 64);
+                        case 8 -> build.outputItems(new ItemStack(Registries.getBlock("kubejs:ceresstone"), 64));
+                        case 9 -> build.outputItems(new ItemStack(Registries.getBlock("kubejs:iostone"), 64));
+                        case 10 -> build.outputItems(new ItemStack(Registries.getBlock("kubejs:ganymedestone"), 64));
+                        case 11 -> build.outputItems(new ItemStack(Registries.getBlock("kubejs:plutostone"), 64));
+                        case 12 -> build.outputItems(new ItemStack(Registries.getBlock("kubejs:enceladusstone"), 64));
+                        case 13 -> build.outputItems(new ItemStack(Registries.getBlock("kubejs:titanstone"), 64));
+                        case 14 -> build.outputItems(ModItems.GLACIO_STONE, 64);
+                        case 15 -> build.outputItems(Blocks.STONE.asItem(), 64);
+                    }
+                    build.save(provider);
                 }
             }
 
@@ -776,7 +510,6 @@ public class SkyTearsAndGregHeart {
                         .duration(200)
                         .EUt(8)
                         .save(provider);
-
             }
 
             WORLD_DATA_SCANNER_RECIPES.recipeBuilder("sky_block_make_overworld_data")

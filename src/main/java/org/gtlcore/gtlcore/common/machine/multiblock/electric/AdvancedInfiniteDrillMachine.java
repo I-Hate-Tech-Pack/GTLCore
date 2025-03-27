@@ -1,5 +1,10 @@
 package org.gtlcore.gtlcore.common.machine.multiblock.electric;
 
+import org.gtlcore.gtlcore.common.data.GTLMaterials;
+import org.gtlcore.gtlcore.common.machine.multiblock.part.TemperatureSensorPartMachine;
+import org.gtlcore.gtlcore.common.machine.trait.AdvancedInfiniteDrillLogic;
+import org.gtlcore.gtlcore.utils.MachineIO;
+
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.block.ICoilType;
 import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
@@ -14,12 +19,13 @@ import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 import com.gregtechceu.gtceu.utils.GTUtil;
+
 import com.lowdragmc.lowdraglib.gui.util.ClickData;
 import com.lowdragmc.lowdraglib.gui.widget.ComponentPanelWidget;
 import com.lowdragmc.lowdraglib.side.fluid.FluidStack;
 import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
-import lombok.Getter;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.network.chat.Component;
@@ -27,15 +33,14 @@ import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import org.gtlcore.gtlcore.common.data.GTLMaterials;
-import org.gtlcore.gtlcore.common.machine.multiblock.part.TemperatureSensorPartMachine;
-import org.gtlcore.gtlcore.common.machine.trait.AdvancedInfiniteDrillLogic;
-import org.gtlcore.gtlcore.utils.MachineIO;
+
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 import java.util.Map;
+
+import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
  * @author EasterFG on 2024/10/26
