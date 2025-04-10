@@ -183,7 +183,11 @@
     "itemGroup.gtlcore.creative_tab": "格雷科技休闲版",
     "structure_writer.export_order": "导出顺序： C:%s  S:%s  A:%s",
     "structure_writer.structural_scale": "结构规模： X:%s  Y:%s  Z:%s",
-    "structure_detect.error": "在%s处需要:\n",
-    "structure_detect.error.2": "在%s处 ",
-    "structure_detect.tooltip.0": "右键多方快结构主方块即可"
+    "item.gtlcore.structure_detect.error.0": "需要在 %s:",
+    "item.gtlcore.structure_detect.error.1": "在 %s:",
+    "item.gtlcore.structure_detect.error.2": "[%s, %s, %s]-(%s)",
+    "item.gtlcore.structure_detect.error.3": "翻转的坐标",
+    "item.gtlcore.structure_detect.error.4": "正常坐标",
+    "item.gtlcore.structure_detect.tooltip.0": "潜行右键主方块以检测多方块结构",
+    "item.gtlcore.structure_detect.tooltip.1": "检测大型结构时可能会有延迟"
 }
