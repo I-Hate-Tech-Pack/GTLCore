@@ -28,15 +28,13 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.common.util.FakePlayer;
 
-import com.mojang.authlib.GameProfile;
+import appeng.util.Platform;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -49,14 +47,11 @@ public class SlaughterhouseMachine extends WorkableElectricMultiblockMachine {
 
     @Persisted
     private boolean isSpawn;
-    @Persisted
-    private final UUID uuid;
     private final String[] mobList1 = ConfigHolder.INSTANCE.mobList1;
     private final String[] mobList2 = ConfigHolder.INSTANCE.mobList2;
 
     public SlaughterhouseMachine(IMachineBlockEntity holder) {
         super(holder);
-        this.uuid = UUID.randomUUID();
     }
 
     @Override
@@ -65,9 +60,9 @@ public class SlaughterhouseMachine extends WorkableElectricMultiblockMachine {
     }
 
     private void getItem(ServerLevel level, BlockPos Pos) {
+        var fp = Platform.getFakePlayer(level, null);
         final DamageSource Source = new DamageSource(level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE)
-                .getHolderOrThrow(DamageTypes.GENERIC_KILL),
-                new FakePlayer(level, new GameProfile(uuid, "slaughterhouse")));
+                .getHolderOrThrow(DamageTypes.GENERIC_KILL), fp);
         List<Entity> entities = level.getEntitiesOfClass(Entity.class, new AABB(
                 Pos.getX() - 3,
                 Pos.getY() - 1,

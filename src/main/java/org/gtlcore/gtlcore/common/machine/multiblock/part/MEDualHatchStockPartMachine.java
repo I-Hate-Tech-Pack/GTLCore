@@ -3,15 +3,17 @@ package org.gtlcore.gtlcore.common.machine.multiblock.part;
 import org.gtlcore.gtlcore.api.gui.TurnsConfiguratorButton;
 import org.gtlcore.gtlcore.client.gui.widget.AEDualConfigWidget;
 
+import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.gui.fancy.ConfiguratorPanel;
 import com.gregtechceu.gtceu.api.gui.fancy.FancyMachineUIWidget;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
+import com.gregtechceu.gtceu.api.machine.feature.IDataStickInteractable;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableFluidTank;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
 import com.gregtechceu.gtceu.common.item.IntCircuitBehaviour;
-import com.gregtechceu.gtceu.integration.ae2.machine.MEInputBusPartMachine;
+import com.gregtechceu.gtceu.integration.ae2.machine.MEBusPartMachine;
 import com.gregtechceu.gtceu.integration.ae2.slot.*;
 import com.gregtechceu.gtceu.integration.ae2.utils.AEUtil;
 
@@ -31,6 +33,7 @@ import com.lowdragmc.lowdraglib.utils.Position;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -57,10 +60,10 @@ import javax.annotation.ParametersAreNonnullByDefault;
  */
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class MEDualHatchStockPartMachine extends MEInputBusPartMachine {
+public class MEDualHatchStockPartMachine extends MEBusPartMachine implements IDataStickInteractable {
 
     protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(MEDualHatchStockPartMachine.class,
-            MEInputBusPartMachine.MANAGED_FIELD_HOLDER);
+            MEBusPartMachine.MANAGED_FIELD_HOLDER);
 
     protected static final int CONFIG_SIZE = 64;
     protected static final int AUTO_PULL_OFF = 0;
@@ -88,7 +91,7 @@ public class MEDualHatchStockPartMachine extends MEInputBusPartMachine {
     private int autoPullMode;
 
     public MEDualHatchStockPartMachine(IMachineBlockEntity holder, Object... args) {
-        super(holder, args);
+        super(holder, IO.IN, args);
         fluidTank = createTank();
     }
 
@@ -110,7 +113,14 @@ public class MEDualHatchStockPartMachine extends MEInputBusPartMachine {
 
     @Override
     public void autoIO() {
-        super.autoIO();
+        if (!this.isWorkingEnabled()) return;
+        if (!shouldSyncME()) return;
+
+        if (updateMEStatus()) {
+            syncME();
+            updateInventorySubscription();
+        }
+
         if (autoPullMode != AUTO_PULL_OFF && getOffsetTimer() % 50 == 0) {
             refreshList();
             syncME();
@@ -166,12 +176,6 @@ public class MEDualHatchStockPartMachine extends MEInputBusPartMachine {
         aeFluidHandler.clearInventory(index);
     }
 
-    @Override
-    protected void flushInventory() {
-        // no-op
-    }
-
-    @Override
     protected void syncME() {
         IGrid grid = this.getMainNode().getGrid();
         if (grid == null) {
@@ -251,9 +255,24 @@ public class MEDualHatchStockPartMachine extends MEInputBusPartMachine {
     protected CompoundTag writeConfigToTag() {
         CompoundTag tag = new CompoundTag();
         tag.putInt("AutoPullMode", autoPullMode);
+        CompoundTag configStacks = new CompoundTag();
+        if (autoPullMode == 0) {
+            tag.put("ConfigStacks", configStacks);
+            for (int i = 0; i < CONFIG_SIZE; i++) {
+                var slot = this.aeItemHandler.getInventory()[i];
+                GenericStack config = slot.getConfig();
+                if (config == null) {
+                    config = this.aeFluidHandler.getInventory()[i].getConfig();
+                    if (config == null) {
+                        continue;
+                    }
+                }
+                CompoundTag stackTag = GenericStack.writeTag(config);
+                configStacks.put(Integer.toString(i), stackTag);
+            }
+        }
         tag.putByte("GhostCircuit",
                 (byte) IntCircuitBehaviour.getCircuitConfiguration(circuitInventory.getStackInSlot(0)));
-        tag.putInt("CurrentPage", page);
         return tag;
     }
 
@@ -263,13 +282,57 @@ public class MEDualHatchStockPartMachine extends MEInputBusPartMachine {
             this.setAutoPullMode(autoPullMode);
         }
 
+        if (tag.contains("ConfigStacks")) {
+            CompoundTag configStacks = tag.getCompound("ConfigStacks");
+            for (int i = 0; i < CONFIG_SIZE; i++) {
+                String key = Integer.toString(i);
+                if (configStacks.contains(key)) {
+                    CompoundTag configTag = configStacks.getCompound(key);
+                    var stack = GenericStack.readTag(configTag);
+                    if (stack != null) {
+                        if (stack.what() instanceof AEItemKey) {
+                            this.aeItemHandler.getInventory()[i].setConfig(stack);
+                        } else {
+                            this.aeFluidHandler.getInventory()[i].setConfig(stack);
+                        }
+                        continue;
+                    }
+                }
+                this.aeItemHandler.getInventory()[i].setConfig(null);
+                this.aeFluidHandler.getInventory()[i].setConfig(null);
+            }
+        }
+
         if (tag.contains("GhostCircuit")) {
             circuitInventory.setStackInSlot(0, IntCircuitBehaviour.stack(tag.getByte("GhostCircuit")));
         }
+    }
 
-        if (tag.contains("CurrentPage")) {
-            this.setPage(tag.getInt("CurrentPage"));
+    @Override
+    public InteractionResult onDataStickRightClick(Player player, ItemStack dataStick) {
+        CompoundTag tag = dataStick.getTag();
+        if (tag == null || !tag.contains("MEDualHatchStock")) {
+            return InteractionResult.PASS;
         }
+
+        if (!isRemote()) {
+            readConfigFromTag(tag.getCompound("MEDualHatchStock"));
+            this.updateInventorySubscription();
+            player.sendSystemMessage(Component.translatable("gtceu.machine.me.import_paste_settings"));
+        }
+        return InteractionResult.sidedSuccess(isRemote());
+    }
+
+    @Override
+    public boolean onDataStickLeftClick(Player player, ItemStack dataStick) {
+        if (!isRemote()) {
+            CompoundTag tag = new CompoundTag();
+            tag.put("MEDualHatchStock", writeConfigToTag());
+            dataStick.setTag(tag);
+            dataStick.setHoverName(Component.translatable("gtceu.machine.me.me_dual_hatch_stock.data_stick.name"));
+            player.sendSystemMessage(Component.translatable("gtceu.machine.me.import_copy_settings"));
+        }
+        return true;
     }
 
     private class ExportOnlyAEStockingItemList extends ExportOnlyAEItemList {

@@ -76,6 +76,7 @@
     "gtm.registry.GTRecipeTypeMixin",
     "gtmt.HugeBusPartMachineMixin",
     "gtmt.WirelessEnergyReceiveCoverMixin",
+    "ldlib.ItemStackTransferMixin",
     "travelanchors.EventListenerMixin"
   ],
   "injectors": {
