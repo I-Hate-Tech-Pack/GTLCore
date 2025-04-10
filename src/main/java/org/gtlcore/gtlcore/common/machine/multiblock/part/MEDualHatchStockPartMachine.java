@@ -1,13 +1,8 @@
 package org.gtlcore.gtlcore.common.machine.multiblock.part;
 
-import appeng.api.config.Actionable;
-import appeng.api.networking.IGrid;
-import appeng.api.networking.storage.IStorageService;
-import appeng.api.stacks.AEFluidKey;
-import appeng.api.stacks.AEItemKey;
-import appeng.api.stacks.AEKey;
-import appeng.api.stacks.GenericStack;
-import appeng.api.storage.MEStorage;
+import org.gtlcore.gtlcore.api.gui.TurnsConfiguratorButton;
+import org.gtlcore.gtlcore.client.gui.widget.AEDualConfigWidget;
+
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.gui.fancy.ConfiguratorPanel;
@@ -21,6 +16,7 @@ import com.gregtechceu.gtceu.common.item.IntCircuitBehaviour;
 import com.gregtechceu.gtceu.integration.ae2.machine.MEBusPartMachine;
 import com.gregtechceu.gtceu.integration.ae2.slot.*;
 import com.gregtechceu.gtceu.integration.ae2.utils.AEUtil;
+
 import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ItemStackTexture;
@@ -33,9 +29,7 @@ import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
 import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 import com.lowdragmc.lowdraglib.utils.Position;
-import it.unimi.dsi.fastutil.objects.Object2LongMap;
-import lombok.Getter;
-import lombok.Setter;
+
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -43,12 +37,23 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import org.gtlcore.gtlcore.api.gui.TurnsConfiguratorButton;
-import org.gtlcore.gtlcore.client.gui.widget.AEDualConfigWidget;
+
+import appeng.api.config.Actionable;
+import appeng.api.networking.IGrid;
+import appeng.api.networking.storage.IStorageService;
+import appeng.api.stacks.AEFluidKey;
+import appeng.api.stacks.AEItemKey;
+import appeng.api.stacks.AEKey;
+import appeng.api.stacks.GenericStack;
+import appeng.api.storage.MEStorage;
+import it.unimi.dsi.fastutil.objects.Object2LongMap;
+import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
+
+import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
  * @author EasterFG on 2025/3/2
