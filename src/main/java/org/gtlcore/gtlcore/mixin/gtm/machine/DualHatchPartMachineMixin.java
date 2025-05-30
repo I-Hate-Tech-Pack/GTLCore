@@ -32,22 +32,4 @@ public class DualHatchPartMachineMixin extends ItemBusPartMachine {
     public int getInventorySize() {
         return super.getInventorySize();
     }
-
-    /**
-     * @author mod_author
-     * @reason 不需要
-     */
-    @Overwrite(remap = false)
-    public boolean isDistinct() {
-        return super.isDistinct();
-    }
-
-    /**
-     * @author mod_author
-     * @reason 不需要
-     */
-    @Overwrite(remap = false)
-    public void setDistinct(boolean isDistinct) {
-        super.setDistinct(isDistinct);
-    }
 }
