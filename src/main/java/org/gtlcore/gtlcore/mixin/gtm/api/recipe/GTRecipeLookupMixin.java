@@ -20,11 +20,12 @@ import java.util.function.Predicate;
 @Mixin(GTRecipeLookup.class)
 public abstract class GTRecipeLookupMixin implements IDistinctMachine {
 
+    @Unique
     private IRecipeCapabilityHolder gtlcore$machine;
 
     /**
-     * @author
-     * @reason
+     * @author .
+     * @reason .
      */
     @Overwrite(remap = false)
     public @Nullable GTRecipe findRecipe(IRecipeCapabilityHolder holder) {
@@ -32,13 +33,14 @@ public abstract class GTRecipeLookupMixin implements IDistinctMachine {
     }
 
     /**
-     * @author
-     * @reason
+     * @author .
+     * @reason .
      */
     @Overwrite(remap = false)
     protected @Nullable List<List<AbstractMapIngredient>> prepareRecipeFind(@NotNull IRecipeCapabilityHolder holder) {
         this.gtlcore$machine = holder;
         if (holder instanceof IDistinctMachine iDistinctMachine) {
+            if (iDistinctMachine.getRecipeHandleParts().isEmpty()) return null;
             List<List<AbstractMapIngredient>> list = new ObjectArrayList<>(iDistinctMachine.getRecipeHandleParts().size());
             list.addAll(this.gtlcore$fromHolder(iDistinctMachine));
             if (list.isEmpty()) {
@@ -49,13 +51,14 @@ public abstract class GTRecipeLookupMixin implements IDistinctMachine {
         return null;
     }
 
+    @Unique
     protected @NotNull List<List<AbstractMapIngredient>> gtlcore$fromHolder(@NotNull IDistinctMachine r) {
         List<List<AbstractMapIngredient>> list;
         List<RecipeRunner.RecipeHandlePart> recipeHandleParts = r.getRecipeHandleParts();
         list = new ObjectArrayList<>(recipeHandleParts.size());
         for (var part : recipeHandleParts) {
             ObjectArrayList<AbstractMapIngredient> ingredients = new ObjectArrayList<>();
-            for (var it = part.getAllHandles().object2ObjectEntrySet().fastIterator(); it.hasNext();) {
+            for (var it = part.allHandles().object2ObjectEntrySet().fastIterator(); it.hasNext();) {
                 var next = it.next();
                 var cap = next.getKey();
                 for (var handler : next.getValue()) {
@@ -109,8 +112,8 @@ public abstract class GTRecipeLookupMixin implements IDistinctMachine {
     }
 
     /**
-     * @author
-     * @reason
+     * @author .
+     * @reason .
      */
     @Overwrite(remap = false)
     private GTRecipe recurseIngredientTreeFindRecipeCollisions(@NotNull List<List<AbstractMapIngredient>> ingredients,
@@ -142,6 +145,6 @@ public abstract class GTRecipeLookupMixin implements IDistinctMachine {
 
     @Shadow(remap = false)
     protected static @NotNull Map<AbstractMapIngredient, Either<GTRecipe, Branch>> determineRootNodes(@NotNull AbstractMapIngredient ingredient, @NotNull Branch branchMap) {
-        return null;
+        throw new RuntimeException();
     }
 }

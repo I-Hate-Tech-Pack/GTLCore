@@ -44,7 +44,7 @@ public class FluidRecipeCapabilityMixin {
             Object2LongOpenHashMap<FluidStack> ingredientStacks = new Object2LongOpenHashMap<>();
             if (iDistinctMachine.getRecipeHandleParts().isEmpty()) return 0;
             if (iDistinctMachine.getDistinctHatch() != null) {
-                List<IRecipeHandler<?>> distinctIMultiPart = iDistinctMachine.getDistinctHatch().getAllHandles().get(FluidRecipeCapability.CAP);
+                List<IRecipeHandler<?>> distinctIMultiPart = iDistinctMachine.getDistinctHatch().allHandles().get(FluidRecipeCapability.CAP);
                 for (IRecipeHandler<?> handler : distinctIMultiPart) {
                     for (Object o : handler.getContents()) {
                         if (o instanceof FluidStack fluidStack) {

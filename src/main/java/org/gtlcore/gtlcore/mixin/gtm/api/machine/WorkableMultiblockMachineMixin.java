@@ -9,6 +9,7 @@ import com.gregtechceu.gtceu.api.machine.feature.multiblock.IDistinctPart;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiPart;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableMultiblockMachine;
+import com.gregtechceu.gtceu.common.machine.multiblock.part.FluidHatchPartMachine;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -19,7 +20,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 @Mixin(WorkableMultiblockMachine.class)
 public abstract class WorkableMultiblockMachineMixin extends MultiblockControllerMachine implements IDistinctMachine {
@@ -28,7 +31,7 @@ public abstract class WorkableMultiblockMachineMixin extends MultiblockControlle
     private List<RecipeRunner.RecipeHandlePart> recipeHandleParts = new ObjectArrayList<>();
     @Getter
     @Setter
-    private RecipeRunner.RecipeHandlePart DistinctHatch;
+    private RecipeRunner.RecipeHandlePart distinctHatch;
 
     public WorkableMultiblockMachineMixin(IMachineBlockEntity holder) {
         super(holder);
@@ -37,9 +40,11 @@ public abstract class WorkableMultiblockMachineMixin extends MultiblockControlle
     @Inject(method = "onStructureFormed", at = @At(value = "INVOKE", target = "Lcom/gregtechceu/gtceu/api/machine/multiblock/MultiblockControllerMachine;onStructureFormed()V", shift = At.Shift.AFTER), remap = false)
     public void onStructureFormed(CallbackInfo ci) {
         this.recipeHandleParts.clear();
+
         Iterator<IMultiPart> parts = this.getParts().iterator();
-        Object2ObjectOpenHashMap<RecipeCapability<?>, List<IRecipeHandler<?>>> NodistinctParts = new Object2ObjectOpenHashMap<>();
-        labe1:
+        Object2ObjectOpenHashMap<RecipeCapability<?>, List<IRecipeHandler<?>>> noDistinctParts = new Object2ObjectOpenHashMap<>();
+
+        label1:
         while (parts.hasNext()) {
             IMultiPart part = parts.next();
             if (part instanceof IDistinctPart iDistinctPart) {
@@ -47,7 +52,7 @@ public abstract class WorkableMultiblockMachineMixin extends MultiblockControlle
                 List<IRecipeHandler<?>> itemPart = new ObjectArrayList<>();
                 List<IRecipeHandler<?>> fluidPart = new ObjectArrayList<>();
                 for (var v : iDistinctPart.getRecipeHandlers()) {
-                    if (v.getHandlerIO() != IO.IN) continue labe1;
+                    if (v.getHandlerIO() != IO.IN) continue label1;
                     else if (v.getCapability() instanceof ItemRecipeCapability) itemPart.add(v);
                     else if (v.getCapability() instanceof FluidRecipeCapability) fluidPart.add(v);
                 }
@@ -56,11 +61,24 @@ public abstract class WorkableMultiblockMachineMixin extends MultiblockControlle
                 if (iDistinctPart.isDistinct()) {
                     recipeHandleParts.add(new RecipeRunner.RecipeHandlePart(distinctParts));
                 } else {
-                    NodistinctParts.putAll(distinctParts);
+                    noDistinctParts.putAll(distinctParts);
+                }
+            } else if (part instanceof FluidHatchPartMachine fluid) {
+                List<IRecipeHandler<?>> fluidHandlers = new ArrayList<>();
+                // only fluid
+                for (var handler : fluid.getRecipeHandlers()) {
+                    if (handler.getHandlerIO() != IO.IN) continue label1;
+                    if (handler.getCapability() instanceof FluidRecipeCapability) {
+                        fluidHandlers.add(handler);
+                    }
+                }
+
+                if (!fluidHandlers.isEmpty()) {
+                    noDistinctParts.put(FluidRecipeCapability.CAP, fluidHandlers);
                 }
             }
         }
-        if (!NodistinctParts.isEmpty()) recipeHandleParts.add(new RecipeRunner.RecipeHandlePart(NodistinctParts));
+        if (!noDistinctParts.isEmpty()) recipeHandleParts.add(new RecipeRunner.RecipeHandlePart(noDistinctParts));
     }
 
     @Inject(method = "onPartUnload", at = @At(value = "INVOKE", target = "Ljava/util/List;clear()V", shift = At.Shift.AFTER), remap = false)

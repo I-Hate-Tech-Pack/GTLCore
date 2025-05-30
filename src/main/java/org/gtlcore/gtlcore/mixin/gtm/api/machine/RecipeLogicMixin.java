@@ -70,8 +70,8 @@ public abstract class RecipeLogicMixin {
     }
 
     /**
-     * @author
-     * @reason
+     * @author .
+     * @reason .
      */
     @Overwrite(remap = false)
     protected boolean handleRecipeIO(GTRecipe recipe, IO io) {
@@ -80,8 +80,8 @@ public abstract class RecipeLogicMixin {
     }
 
     /**
-     * @author
-     * @reason
+     * @author .
+     * @reason .
      */
     @Overwrite(remap = false)
     public void findAndHandleRecipe() {
@@ -100,8 +100,8 @@ public abstract class RecipeLogicMixin {
     }
 
     /**
-     * @author
-     * @reason
+     * @author .
+     * @reason .
      */
     @Overwrite(remap = false)
     public boolean checkMatchedRecipeAvailable(GTRecipe match) {
@@ -121,8 +121,8 @@ public abstract class RecipeLogicMixin {
     }
 
     /**
-     * @author
-     * @reason
+     * @author .
+     * @reason .
      */
     @Overwrite(remap = false)
     public void onRecipeFinish() {
@@ -154,8 +154,8 @@ public abstract class RecipeLogicMixin {
     }
 
     /**
-     * @author
-     * @reason
+     * @author .
+     * @reason .
      */
     @Overwrite(remap = false)
     public void setupRecipe(GTRecipe recipe) {
@@ -182,6 +182,7 @@ public abstract class RecipeLogicMixin {
         }
     }
 
+    @Unique
     private boolean gtlcore$checkLastRecipe(GTRecipe lastRecipe) {
         return RecipeRunnerHelper.matchRecipe(this.machine, lastRecipe) &&
                 lastRecipe.matchTickRecipe(this.machine).isSuccess() &&
