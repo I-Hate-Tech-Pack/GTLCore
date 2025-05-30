@@ -42,6 +42,7 @@
     "gtm.RecipeOutputProviderMixin",
     "gtm.RockBreakerConditionMixin",
     "gtm.TagPrefixItemMixin",
+    "gtm.api.machine.MetaMachineMixin",
     "gtm.api.machine.RecipeLogicMixin",
     "gtm.api.machine.WorkableMultiblockMachineMixin",
     "gtm.api.recipe.FluidRecipeCapabilityMixin",

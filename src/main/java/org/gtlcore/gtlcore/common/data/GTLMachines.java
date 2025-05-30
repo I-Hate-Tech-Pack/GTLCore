@@ -1,5 +1,6 @@
 package org.gtlcore.gtlcore.common.data;
 
+import org.gtlcore.gtlcore.api.machine.PerformanceMonitorMachine;
 import org.gtlcore.gtlcore.api.machine.multiblock.GTLPartAbility;
 import org.gtlcore.gtlcore.common.data.machines.*;
 import org.gtlcore.gtlcore.common.machine.generator.LightningRodMachine;
@@ -36,6 +37,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.world.item.ItemStack;
 
+import com.hepdd.gtmthings.GTMThings;
 import com.hepdd.gtmthings.common.registry.GTMTRegistration;
 import com.hepdd.gtmthings.data.CreativeModeTabs;
 import com.hepdd.gtmthings.data.WirelessMachines;
@@ -43,6 +45,7 @@ import com.hepdd.gtmthings.data.WirelessMachines;
 import java.util.List;
 import java.util.function.BiConsumer;
 
+import static com.gregtechceu.gtceu.api.GTValues.LV;
 import static com.gregtechceu.gtceu.api.GTValues.LuV;
 import static com.gregtechceu.gtceu.common.registry.GTRegistration.REGISTRATE;
 
@@ -454,6 +457,16 @@ public class GTLMachines {
             .tooltips(Component.translatable("gtceu.machine.wireless_data_receiver_hatch.tooltip.1"),
                     Component.translatable("gtceu.machine.wireless_data_receiver_hatch.tooltip.2"))
             .tier(LuV)
+            .register();
+
+    public static final MachineDefinition PERFORMANCE_MONITOR = REGISTRATE
+            .machine("performance_monitor", PerformanceMonitorMachine::new)
+            .rotationState(RotationState.NON_Y_AXIS)
+            .compassNodeSelf()
+            .workableTieredHullRenderer(GTMThings.id("block/machines/wireless_energy_monitor"))
+            .tier(LV)
+            .tooltips(Component.translatable("block.gtlcore.performance_monitor.tooltip"))
+            .tooltipBuilder(GTL_ADD)
             .register();
 
     public final static MachineDefinition[] HUGE_FLUID_IMPORT_HATCH = registerHugeFluidHatches("huge_input_hatch", "Huge Input Hatch", "fluid_hatch.import", "fluid_hatch.import", IO.IN, PartAbility.IMPORT_FLUIDS);

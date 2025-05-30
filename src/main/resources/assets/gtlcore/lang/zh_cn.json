@@ -161,5 +161,10 @@
     "structure_writer.structural_scale": "结构规模： X:%s  Y:%s  Z:%s",
     "structure_detect.error": "在%s处需要:\n",
     "structure_detect.error.2": "在%s处 ",
-    "structure_detect.tooltip.0": "右键多方快结构主方块即可"
+    "structure_detect.tooltip.0": "右键多方快结构主方块即可",
+    "gtlcore.me_any": "ME仓允许任意面连接",
+    "gtlcore.me_front": "ME仓只允许正面连接",
+    "config.jade.plugin_gtlcore.tick_time_provider": "[GTLCore] Tick时间",
+    "block.gtceu.performance_monitor": "性能监控器",
+    "block.gtlcore.performance_monitor.tooltip": "能监测全部机器2秒内的平均延迟，并支持高亮显示。"
 }
