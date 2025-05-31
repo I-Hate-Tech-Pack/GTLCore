@@ -20,11 +20,12 @@ import java.util.function.Predicate;
 @Mixin(GTRecipeLookup.class)
 public abstract class GTRecipeLookupMixin implements IDistinctMachine {
 
+    @Unique
     private IRecipeCapabilityHolder gtlcore$machine;
 
     /**
-     * @author
-     * @reason
+     * @author .
+     * @reason .
      */
     @Overwrite(remap = false)
     public @Nullable GTRecipe findRecipe(IRecipeCapabilityHolder holder) {
@@ -32,8 +33,8 @@ public abstract class GTRecipeLookupMixin implements IDistinctMachine {
     }
 
     /**
-     * @author
-     * @reason
+     * @author .
+     * @reason .
      */
     @Overwrite(remap = false)
     protected @Nullable List<List<AbstractMapIngredient>> prepareRecipeFind(@NotNull IRecipeCapabilityHolder holder) {
@@ -50,6 +51,7 @@ public abstract class GTRecipeLookupMixin implements IDistinctMachine {
         return null;
     }
 
+    @Unique
     protected @NotNull List<List<AbstractMapIngredient>> gtlcore$fromHolder(@NotNull IDistinctMachine r) {
         List<List<AbstractMapIngredient>> list;
         List<RecipeRunner.RecipeHandlePart> recipeHandleParts = r.getRecipeHandleParts().stream().filter(h -> h.io() == IO.IN).toList();
@@ -106,8 +108,8 @@ public abstract class GTRecipeLookupMixin implements IDistinctMachine {
     }
 
     /**
-     * @author
-     * @reason
+     * @author .
+     * @reason .
      */
     @Overwrite(remap = false)
     private GTRecipe recurseIngredientTreeFindRecipeCollisions(@NotNull List<List<AbstractMapIngredient>> ingredients,
@@ -139,6 +141,6 @@ public abstract class GTRecipeLookupMixin implements IDistinctMachine {
 
     @Shadow(remap = false)
     protected static @NotNull Map<AbstractMapIngredient, Either<GTRecipe, Branch>> determineRootNodes(@NotNull AbstractMapIngredient ingredient, @NotNull Branch branchMap) {
-        return null;
+        throw new RuntimeException();
     }
 }
