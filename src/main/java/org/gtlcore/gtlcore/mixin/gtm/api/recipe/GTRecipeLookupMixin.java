@@ -39,6 +39,7 @@ public abstract class GTRecipeLookupMixin implements IDistinctMachine {
     protected @Nullable List<List<AbstractMapIngredient>> prepareRecipeFind(@NotNull IRecipeCapabilityHolder holder) {
         this.gtlcore$machine = holder;
         if (holder instanceof IDistinctMachine iDistinctMachine) {
+            if (iDistinctMachine.getRecipeHandleParts().isEmpty()) return null;
             List<List<AbstractMapIngredient>> list = new ObjectArrayList<>(iDistinctMachine.getRecipeHandleParts().size());
             list.addAll(this.gtlcore$fromHolder(iDistinctMachine));
             if (list.isEmpty()) {
@@ -51,15 +52,14 @@ public abstract class GTRecipeLookupMixin implements IDistinctMachine {
 
     protected @NotNull List<List<AbstractMapIngredient>> gtlcore$fromHolder(@NotNull IDistinctMachine r) {
         List<List<AbstractMapIngredient>> list;
-        List<RecipeRunner.RecipeHandlePart> recipeHandleParts = r.getRecipeHandleParts();
+        List<RecipeRunner.RecipeHandlePart> recipeHandleParts = r.getRecipeHandleParts().stream().filter(h -> h.io() == IO.IN).toList();
         list = new ObjectArrayList<>(recipeHandleParts.size());
         for (var part : recipeHandleParts) {
             ObjectArrayList<AbstractMapIngredient> ingredients = new ObjectArrayList<>();
-            for (var it = part.getAllHandles().object2ObjectEntrySet().fastIterator(); it.hasNext();) {
+            for (var it = part.allHandles().object2ObjectEntrySet().fastIterator(); it.hasNext();) {
                 var next = it.next();
                 var cap = next.getKey();
                 for (var handler : next.getValue()) {
-                    if (handler.isProxy()) continue;
                     List<Object> compressed = cap.compressIngredients(handler.getContents());
                     for (Object content : compressed) {
                         ingredients.addAll(cap.convertToMapIngredient(content).stream().sorted(Comparator.comparing(i -> !i.isSpecialIngredient())).toList());
@@ -96,10 +96,7 @@ public abstract class GTRecipeLookupMixin implements IDistinctMachine {
             Either<GTRecipe, Branch> result = targetMap.get(o);
             if (result != null) {
                 GTRecipe r = result.map((potentialRecipe) -> canHandle.test(potentialRecipe) ? potentialRecipe : null,
-                        (potentialBranch) -> {
-                            ingredients.remove(o);
-                            return this.gtlcore$diveIngredientTreeFindRecipe(ingredients, potentialBranch, canHandle);
-                        });
+                        (potentialBranch) -> this.gtlcore$diveIngredientTreeFindRecipe(ingredients, potentialBranch, canHandle));
                 if (r != null) {
                     return r;
                 }
