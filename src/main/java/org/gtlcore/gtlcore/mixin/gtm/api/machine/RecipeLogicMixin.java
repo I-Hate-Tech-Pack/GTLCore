@@ -76,7 +76,7 @@ public abstract class RecipeLogicMixin {
     @Overwrite(remap = false)
     protected boolean handleRecipeIO(GTRecipe recipe, IO io) {
         if (!(this.machine.hasProxies() && io != IO.BOTH)) return false;
-        return RecipeRunnerHelper.handleRecipeIO(this.machine, recipe);
+        return RecipeRunnerHelper.handleRecipeInput(this.machine, recipe);
     }
 
     /**
@@ -168,7 +168,7 @@ public abstract class RecipeLogicMixin {
                 return;
             }
             recipe.preWorking(this.machine);
-            if (RecipeRunnerHelper.handleRecipeInput(this.machine, recipe)) {
+            if (this.handleRecipeIO(recipe, IO.IN)) {
                 if (this.lastRecipe != null && !recipe.equals(this.lastRecipe)) {
                     this.chanceCaches.clear();
                 }

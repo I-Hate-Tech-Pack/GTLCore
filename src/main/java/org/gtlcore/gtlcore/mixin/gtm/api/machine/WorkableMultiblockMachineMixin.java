@@ -67,12 +67,11 @@ public abstract class WorkableMultiblockMachineMixin extends MultiblockControlle
         Object2ObjectOpenHashMap<RecipeCapability<?>, List<IRecipeHandler<?>>> outputParts = new Object2ObjectOpenHashMap<>();
         while (parts.hasNext()) {
             IMultiPart part = parts.next();
-            if (part instanceof IDistinctPart iDistinctPart) {
-                Object2ObjectOpenHashMap<RecipeCapability<?>, List<IRecipeHandler<?>>> distinctParts = new Object2ObjectOpenHashMap<>();
+            if (part instanceof FluidHatchPartMachine || part instanceof IDistinctPart) {
                 List<IRecipeHandler<?>> itemPart = new ObjectArrayList<>();
                 List<IRecipeHandler<?>> fluidPart = new ObjectArrayList<>();
                 boolean isOutput = false;
-                for (var v : iDistinctPart.getRecipeHandlers()) {
+                for (var v : part.getRecipeHandlers()) {
                     if (!v.isProxy()) {
                         if (v.getHandlerIO() == IO.IN) {
                             if (v.getCapability() == ItemRecipeCapability.CAP) itemPart.add(v);
@@ -88,7 +87,8 @@ public abstract class WorkableMultiblockMachineMixin extends MultiblockControlle
                     outputParts.computeIfAbsent(ItemRecipeCapability.CAP, k -> new ArrayList<>()).addAll(itemPart);
                     outputParts.computeIfAbsent(FluidRecipeCapability.CAP, k -> new ArrayList<>()).addAll(fluidPart);
                 } else {
-                    if (iDistinctPart.isDistinct()) {
+                    if (part instanceof IDistinctPart iDistinctPart && iDistinctPart.isDistinct()) {
+                        Object2ObjectOpenHashMap<RecipeCapability<?>, List<IRecipeHandler<?>>> distinctParts = new Object2ObjectOpenHashMap<>();
                         distinctParts.put(ItemRecipeCapability.CAP, itemPart);
                         distinctParts.put(FluidRecipeCapability.CAP, fluidPart);
                         recipeHandleParts.add(new RecipeRunner.RecipeHandlePart(IO.IN, distinctParts));
@@ -96,24 +96,6 @@ public abstract class WorkableMultiblockMachineMixin extends MultiblockControlle
                         NodistinctParts.computeIfAbsent(ItemRecipeCapability.CAP, k -> new ArrayList<>()).addAll(itemPart);
                         NodistinctParts.computeIfAbsent(FluidRecipeCapability.CAP, k -> new ArrayList<>()).addAll(fluidPart);
                     }
-                }
-            } else if (part instanceof FluidHatchPartMachine fluid) {
-                List<IRecipeHandler<?>> fluidPart = new ObjectArrayList<>();
-                boolean isOutput = false;
-                for (var v : fluid.getRecipeHandlers()) {
-                    if (v.getHandlerIO() == IO.IN) {
-                        if (v.getCapability() == FluidRecipeCapability.CAP) fluidPart.add(v);
-                    } else if (v.getHandlerIO() == IO.OUT) {
-                        isOutput = true;
-                        if (v.getCapability() == FluidRecipeCapability.CAP) fluidPart.add(v);
-                    }
-                }
-                if (isOutput) {
-                    outputParts.computeIfAbsent(ItemRecipeCapability.CAP, k -> new ArrayList<>()).addAll(List.of());
-                    outputParts.computeIfAbsent(FluidRecipeCapability.CAP, k -> new ArrayList<>()).addAll(fluidPart);
-                } else {
-                    NodistinctParts.computeIfAbsent(ItemRecipeCapability.CAP, k -> new ArrayList<>()).addAll(List.of());
-                    NodistinctParts.computeIfAbsent(FluidRecipeCapability.CAP, k -> new ArrayList<>()).addAll(fluidPart);
                 }
             }
         }

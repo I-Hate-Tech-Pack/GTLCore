@@ -56,7 +56,7 @@ public class RecipeRunner {
 
     public GTRecipe.ActionResult handle(Map<RecipeCapability<?>, List<Content>> entry) {
         this.fillContent(entry);
-        if (this.recipeContent.isEmpty()) return GTRecipe.ActionResult.fail(null);
+        if (this.recipeContent.isEmpty()) return GTRecipe.ActionResult.SUCCESS;
         return this.handleContents();
     }
 
@@ -85,9 +85,10 @@ public class RecipeRunner {
                 int holderTier = holder.getChanceTier();
                 var cache = this.chanceCaches.get(cap);
                 chancedContents = logic.roll(chancedContents, function, recipeTier, holderTier, cache, recipe.parallels, cap);
-                if (chancedContents == null) return;
-                for (Content cont : chancedContents) {
-                    contentList.add(cont.content);
+                if (chancedContents != null) {
+                    for (Content cont : chancedContents) {
+                        contentList.add(cont.content);
+                    }
                 }
             }
             if (contentList.isEmpty()) recipeContent.remove(cap);
@@ -102,7 +103,7 @@ public class RecipeRunner {
         if (this.recipeContent.isEmpty()) return true;
         if (holder instanceof IDistinctMachine iDistinctMachine) {
             if (this.recipeHandlePart != null) {
-                var result = this.handleRecipe(this.recipeHandlePart, this.recipeHandlePart.io, true, false);
+                var result = this.handleRecipe(this.recipeHandlePart, IO.IN, simulated, !simulated);
                 return result.isEmpty();
             } else if (!iDistinctMachine.getRecipeHandleParts().isEmpty()) {
                 for (var recipeHandlePart : iDistinctMachine.getRecipeHandleParts().stream().filter(h -> h.io == capIO).toList()) {
@@ -145,7 +146,6 @@ public class RecipeRunner {
     public boolean simulatedHandle() {
         if (this.holder instanceof IDistinctMachine iDistinctMachine) {
             if (iDistinctMachine.getRecipeHandleParts().isEmpty()) return false;
-            List<RecipeHandlePart> recipeHandlingResultList = iDistinctMachine.getRecipeHandleParts().stream().filter(h -> h.io == IO.IN).toList();
             this.fillContent(this.recipe.inputs);
             List<Object> itemContent = this.recipeContent.computeIfAbsent(ItemRecipeCapability.CAP, k -> new ObjectArrayList<>());
             List<Object> fluidContent = this.recipeContent.computeIfAbsent(FluidRecipeCapability.CAP, k -> new ObjectArrayList<>());
@@ -153,6 +153,7 @@ public class RecipeRunner {
             if (this.recipeHandlePart != null) {
                 return this.recipeHandlePart.testRecipeHandle(iDistinctMachine, this.recipe, itemContent, fluidContent);
             }
+            List<RecipeHandlePart> recipeHandlingResultList = iDistinctMachine.getRecipeHandleParts().stream().filter(h -> h.io == IO.IN).toList();
             for (RecipeHandlePart recipeHandlePart : recipeHandlingResultList) {
                 if (recipeHandlePart.testRecipeHandle(iDistinctMachine, this.recipe, itemContent, fluidContent)) {
                     return true;
