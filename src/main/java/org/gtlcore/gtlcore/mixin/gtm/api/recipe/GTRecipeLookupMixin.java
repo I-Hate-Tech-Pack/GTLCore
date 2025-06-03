@@ -10,6 +10,7 @@ import com.gregtechceu.gtceu.api.machine.steam.SteamWorkableMachine;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.lookup.*;
 import com.gregtechceu.gtceu.common.machine.multiblock.electric.research.ResearchStationMachine;
+import com.gregtechceu.gtceu.common.machine.multiblock.primitive.PrimitiveWorkableMachine;
 
 import com.mojang.datafixers.util.Either;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -42,7 +43,8 @@ public abstract class GTRecipeLookupMixin implements IDistinctMachine {
     @Overwrite(remap = false)
     protected @Nullable List<List<AbstractMapIngredient>> prepareRecipeFind(@NotNull IRecipeCapabilityHolder holder) {
         this.gtlcore$machine = holder;
-        if (holder instanceof ResearchStationMachine || holder instanceof WorkableTieredMachine || holder instanceof SteamWorkableMachine) {
+        if (holder instanceof ResearchStationMachine || holder instanceof WorkableTieredMachine ||
+                holder instanceof SteamWorkableMachine || holder instanceof PrimitiveWorkableMachine) {
             List<List<AbstractMapIngredient>> list = new ObjectArrayList<>(2);
             list.addAll(fromHolder(holder));
             if (list.isEmpty()) return null;
@@ -90,9 +92,8 @@ public abstract class GTRecipeLookupMixin implements IDistinctMachine {
                                                               @NotNull Branch branchMap, @NotNull Predicate<GTRecipe> canHandle, int index, int count, long skip) {
         if (count == ingredients.size()) {
             return null;
-        } else if (this.gtlcore$machine instanceof ResearchStationMachine ||
-                this.gtlcore$machine instanceof WorkableTieredMachine ||
-                this.gtlcore$machine instanceof SteamWorkableMachine) {
+        } else if (this.gtlcore$machine instanceof ResearchStationMachine || this.gtlcore$machine instanceof WorkableTieredMachine ||
+                this.gtlcore$machine instanceof SteamWorkableMachine || this.gtlcore$machine instanceof PrimitiveWorkableMachine) {
                     for (AbstractMapIngredient obj : ingredients.get(index)) {
                         Map<AbstractMapIngredient, Either<GTRecipe, Branch>> targetMap = determineRootNodes(obj, branchMap);
                         Either<GTRecipe, Branch> result = targetMap.get(obj);
