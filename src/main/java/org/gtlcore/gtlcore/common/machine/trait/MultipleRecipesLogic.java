@@ -1,6 +1,7 @@
 package org.gtlcore.gtlcore.common.machine.trait;
 
 import org.gtlcore.gtlcore.api.machine.multiblock.ParallelMachine;
+import org.gtlcore.gtlcore.api.recipe.RecipeRunnerHelper;
 
 import com.gregtechceu.gtceu.api.capability.recipe.*;
 import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
@@ -49,7 +50,7 @@ public class MultipleRecipesLogic extends RecipeLogic {
         lastRecipe = null;
         var match = getRecipe();
         if (match != null) {
-            if (match.matchRecipe(this.machine).isSuccess()) {
+            if (RecipeRunnerHelper.matchRecipeOutput(machine, match)) {
                 setupRecipe(match);
             }
         }
@@ -78,7 +79,8 @@ public class MultipleRecipesLogic extends RecipeLogic {
                 continue;
             }
             input.inputs.putAll(match.inputs);
-            if (input.matchRecipe(machine).isSuccess() && input.handleRecipeIO(IO.IN, machine, getChanceCaches())) {
+            input.setId(match.id);
+            if (RecipeRunnerHelper.matchRecipeInput(machine, input) && RecipeRunnerHelper.handleRecipeInput(machine, input)) {
                 totalEu += match.duration * inputEUt;
                 List<Content> item = match.outputs.get(ItemRecipeCapability.CAP);
                 if (item != null) {
@@ -130,11 +132,11 @@ public class MultipleRecipesLogic extends RecipeLogic {
         machine.afterWorking();
         if (lastRecipe != null) {
             lastRecipe.postWorking(this.machine);
-            lastRecipe.handleRecipeIO(IO.OUT, this.machine, this.chanceCaches);
+            RecipeRunnerHelper.handleRecipeOutput(this.machine, lastRecipe);
         }
         var match = getRecipe();
         if (match != null) {
-            if (match.matchRecipe(this.machine).isSuccess()) {
+            if (RecipeRunnerHelper.matchRecipeOutput(machine, match)) {
                 setupRecipe(match);
                 return;
             }
