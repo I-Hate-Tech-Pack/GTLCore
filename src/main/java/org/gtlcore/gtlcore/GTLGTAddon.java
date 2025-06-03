@@ -3,7 +3,6 @@ package org.gtlcore.gtlcore;
 import org.gtlcore.gtlcore.api.data.tag.GTLTagPrefix;
 import org.gtlcore.gtlcore.api.registries.GTLRegistration;
 import org.gtlcore.gtlcore.common.data.*;
-import org.gtlcore.gtlcore.config.ConfigHolder;
 import org.gtlcore.gtlcore.data.recipe.*;
 import org.gtlcore.gtlcore.data.recipe.chemistry.MixerRecipes;
 import org.gtlcore.gtlcore.data.recipe.processing.Lanthanidetreatment;
@@ -76,9 +75,7 @@ public class GTLGTAddon implements IGTAddon {
         Lanthanidetreatment.init(provider);
         CircuitRecipes.init(provider);
         MixerRecipes.init(provider);
-        if (ConfigHolder.INSTANCE.enableSkyBlokeMode) {
-            SkyTearsAndGregHeart.init(provider);
-        }
+        SkyTearsAndGregHeart.init(provider);
     }
 
     @Override
