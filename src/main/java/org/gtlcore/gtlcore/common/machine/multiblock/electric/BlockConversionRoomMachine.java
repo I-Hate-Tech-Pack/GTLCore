@@ -145,8 +145,4 @@ public class BlockConversionRoomMachine extends StorageMachine {
         super.addDisplayText(textList);
         textList.add(Component.translatable("gtceu.machine.block_conversion_room.am", getConversionCount()));
     }
-
-    public static Collection<Block> getConversionBlock() {
-        return Collections.unmodifiableCollection(covRecipe.values());
-    }
 }

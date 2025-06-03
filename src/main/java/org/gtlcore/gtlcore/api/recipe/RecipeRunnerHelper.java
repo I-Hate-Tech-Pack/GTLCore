@@ -6,6 +6,7 @@ import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
 import com.gregtechceu.gtceu.api.machine.steam.SteamWorkableMachine;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.content.Content;
+import com.gregtechceu.gtceu.common.machine.multiblock.primitive.PrimitiveWorkableMachine;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 
@@ -44,7 +45,7 @@ public class RecipeRunnerHelper {
 
     public static GTRecipe.ActionResult handleRecipe(IO io, IRecipeCapabilityHolder holder, Map<RecipeCapability<?>, List<Content>> contents,
                                                      Map<RecipeCapability<?>, Object2IntMap<?>> chanceCaches, boolean isTick, GTRecipe recipe, boolean isSimulate) {
-        if (holder instanceof WorkableTieredMachine || holder instanceof SteamWorkableMachine) {
+        if (holder instanceof WorkableTieredMachine || holder instanceof SteamWorkableMachine || holder instanceof PrimitiveWorkableMachine) {
             if (isSimulate) return recipe.matchRecipe(holder);
             else return recipe.handleRecipe(io, holder, isTick, contents, chanceCaches) ? GTRecipe.ActionResult.SUCCESS : GTRecipe.ActionResult.fail(null);
         }
