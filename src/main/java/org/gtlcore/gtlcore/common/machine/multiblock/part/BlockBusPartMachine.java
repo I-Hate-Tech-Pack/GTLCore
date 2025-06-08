@@ -1,7 +1,5 @@
 package org.gtlcore.gtlcore.common.machine.multiblock.part;
 
-import org.gtlcore.gtlcore.common.machine.multiblock.electric.BlockConversionRoomMachine;
-
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
@@ -24,14 +22,9 @@ import net.minecraft.core.Direction;
 import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 
 import lombok.Getter;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.Collection;
-import java.util.function.Predicate;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -44,8 +37,6 @@ public class BlockBusPartMachine extends TieredIOPartMachine implements IMachine
             BlockBusPartMachine.class, TieredIOPartMachine.MANAGED_FIELD_HOLDER);
     @Persisted
     private final NotifiableItemStackHandler inventory;
-
-    private static final Collection<Block> CONVERSION_BLOCK = BlockConversionRoomMachine.getConversionBlock();
 
     protected TickableSubscription autoIOSubs;
 
@@ -134,16 +125,5 @@ public class BlockBusPartMachine extends TieredIOPartMachine implements IMachine
             }
             updateInventorySubscription();
         }
-    }
-
-    @Override
-    public Predicate<ItemStack> getItemCapFilter(@Nullable Direction side) {
-        // 忽略目标过滤器
-        return item -> {
-            if (item.getItem() instanceof BlockItem bi) {
-                return CONVERSION_BLOCK.contains(bi.getBlock());
-            }
-            return false;
-        };
     }
 }

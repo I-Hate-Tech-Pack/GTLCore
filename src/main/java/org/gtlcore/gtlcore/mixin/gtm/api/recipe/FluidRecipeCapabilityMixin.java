@@ -41,8 +41,8 @@ public class FluidRecipeCapabilityMixin {
     @Overwrite(remap = false)
     public int getMaxParallelRatio(IRecipeCapabilityHolder holder, GTRecipe recipe, int parallelAmount) {
         if (holder instanceof IDistinctMachine iDistinctMachine) {
-            Object2LongOpenHashMap<FluidStack> ingredientStacks = new Object2LongOpenHashMap<>();
             if (iDistinctMachine.getRecipeHandleParts().isEmpty()) return 0;
+            Object2LongOpenHashMap<FluidStack> ingredientStacks = new Object2LongOpenHashMap<>();
             if (iDistinctMachine.getDistinctHatch() != null) {
                 List<IRecipeHandler<?>> distinctIMultiPart = iDistinctMachine.getDistinctHatch().allHandles().get(FluidRecipeCapability.CAP);
                 for (IRecipeHandler<?> handler : distinctIMultiPart) {
@@ -55,7 +55,7 @@ public class FluidRecipeCapabilityMixin {
             } else {
                 Object2LongOpenHashMap<FluidStack> map = new Object2LongOpenHashMap<>();
                 for (var container : Objects.requireNonNullElseGet(holder.getCapabilitiesProxy().get(IO.IN, FluidRecipeCapability.CAP),
-                        Collections::<IRecipeHandler<?>>emptyList).stream().filter(handler -> !handler.isProxy()).toList()) {
+                        Collections::<IRecipeHandler<?>>emptyList).stream().toList()) {
                     Object2LongOpenHashMap<FluidStack> fluidMap = new Object2LongOpenHashMap<>();
                     for (Object object : container.getContents()) {
                         if (object instanceof FluidStack fluidStack) {

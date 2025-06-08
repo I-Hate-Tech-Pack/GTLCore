@@ -11,6 +11,8 @@ import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableMultiblockMachine;
 import com.gregtechceu.gtceu.common.machine.multiblock.part.FluidHatchPartMachine;
 
+import net.minecraft.resources.ResourceLocation;
+
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.Getter;
@@ -27,67 +29,77 @@ import java.util.List;
 @Mixin(WorkableMultiblockMachine.class)
 public abstract class WorkableMultiblockMachineMixin extends MultiblockControllerMachine implements IDistinctMachine {
 
+    @Setter
     @Getter
     private List<RecipeRunner.RecipeHandlePart> recipeHandleParts = new ObjectArrayList<>();
     @Getter
     @Setter
     private RecipeRunner.RecipeHandlePart distinctHatch;
+    @Getter
+    @Setter
+    private ResourceLocation recipeId;
 
     public WorkableMultiblockMachineMixin(IMachineBlockEntity holder) {
         super(holder);
     }
 
-    @Inject(method = "onStructureFormed", at = @At(value = "INVOKE", target = "Lcom/gregtechceu/gtceu/api/machine/multiblock/MultiblockControllerMachine;onStructureFormed()V", shift = At.Shift.AFTER), remap = false)
+    @Inject(method = "onStructureFormed", at = @At("TAIL"), remap = false)
     public void onStructureFormed(CallbackInfo ci) {
-        this.recipeHandleParts.clear();
-
-        Iterator<IMultiPart> parts = this.getParts().iterator();
-        Object2ObjectOpenHashMap<RecipeCapability<?>, List<IRecipeHandler<?>>> noDistinctParts = new Object2ObjectOpenHashMap<>();
-
-        label1:
-        while (parts.hasNext()) {
-            IMultiPart part = parts.next();
-            if (part instanceof IDistinctPart iDistinctPart) {
-                Object2ObjectOpenHashMap<RecipeCapability<?>, List<IRecipeHandler<?>>> distinctParts = new Object2ObjectOpenHashMap<>();
-                List<IRecipeHandler<?>> itemPart = new ObjectArrayList<>();
-                List<IRecipeHandler<?>> fluidPart = new ObjectArrayList<>();
-                for (var v : iDistinctPart.getRecipeHandlers()) {
-                    if (v.getHandlerIO() != IO.IN) continue label1;
-                    else if (v.getCapability() instanceof ItemRecipeCapability) itemPart.add(v);
-                    else if (v.getCapability() instanceof FluidRecipeCapability) fluidPart.add(v);
-                }
-                distinctParts.put(ItemRecipeCapability.CAP, itemPart);
-                distinctParts.put(FluidRecipeCapability.CAP, fluidPart);
-                if (iDistinctPart.isDistinct()) {
-                    recipeHandleParts.add(new RecipeRunner.RecipeHandlePart(distinctParts));
-                } else {
-                    noDistinctParts.putAll(distinctParts);
-                }
-            } else if (part instanceof FluidHatchPartMachine fluid) {
-                List<IRecipeHandler<?>> fluidHandlers = new ArrayList<>();
-                // only fluid
-                for (var handler : fluid.getRecipeHandlers()) {
-                    if (handler.getHandlerIO() != IO.IN) continue label1;
-                    if (handler.getCapability() instanceof FluidRecipeCapability) {
-                        fluidHandlers.add(handler);
-                    }
-                }
-
-                if (!fluidHandlers.isEmpty()) {
-                    noDistinctParts.put(FluidRecipeCapability.CAP, fluidHandlers);
-                }
-            }
-        }
-        if (!noDistinctParts.isEmpty()) recipeHandleParts.add(new RecipeRunner.RecipeHandlePart(noDistinctParts));
+        this.upDate();
     }
 
-    @Inject(method = "onPartUnload", at = @At(value = "INVOKE", target = "Ljava/util/List;clear()V", shift = At.Shift.AFTER), remap = false)
+    @Inject(method = "onStructureInvalid", at = @At("TAIL"), remap = false)
+    public void onStructureInvalid(CallbackInfo ci) {
+        this.recipeHandleParts.clear();
+    }
+
+    @Inject(method = "onPartUnload", at = @At("TAIL"), remap = false)
     public void onPartUnload(CallbackInfo ci) {
         this.recipeHandleParts.clear();
     }
 
-    @Inject(method = "onStructureInvalid", at = @At(value = "INVOKE", target = "Ljava/util/List;clear()V"), remap = false)
-    public void onStructureInvalid(CallbackInfo ci) {
-        this.recipeHandleParts.clear();
+    public void upDate() {
+        recipeHandleParts.clear();
+        distinctHatch = null;
+        recipeId = null;
+        Iterator<IMultiPart> parts = this.getParts().iterator();
+        Object2ObjectOpenHashMap<RecipeCapability<?>, List<IRecipeHandler<?>>> NodistinctParts = new Object2ObjectOpenHashMap<>();
+        Object2ObjectOpenHashMap<RecipeCapability<?>, List<IRecipeHandler<?>>> outputParts = new Object2ObjectOpenHashMap<>();
+        while (parts.hasNext()) {
+            IMultiPart part = parts.next();
+            if (part instanceof FluidHatchPartMachine || part instanceof IDistinctPart) {
+                List<IRecipeHandler<?>> itemPart = new ObjectArrayList<>();
+                List<IRecipeHandler<?>> fluidPart = new ObjectArrayList<>();
+                boolean isOutput = false;
+                for (var v : part.getRecipeHandlers()) {
+                    if (!v.isProxy()) {
+                        if (v.getHandlerIO() == IO.IN) {
+                            if (v.getCapability() == ItemRecipeCapability.CAP) itemPart.add(v);
+                            else if (v.getCapability() == FluidRecipeCapability.CAP) fluidPart.add(v);
+                        } else if (v.getHandlerIO() == IO.OUT) {
+                            isOutput = true;
+                            if (v.getCapability() == ItemRecipeCapability.CAP) itemPart.add(v);
+                            else if (v.getCapability() == FluidRecipeCapability.CAP) fluidPart.add(v);
+                        }
+                    }
+                }
+                if (isOutput) {
+                    outputParts.computeIfAbsent(ItemRecipeCapability.CAP, k -> new ArrayList<>()).addAll(itemPart);
+                    outputParts.computeIfAbsent(FluidRecipeCapability.CAP, k -> new ArrayList<>()).addAll(fluidPart);
+                } else {
+                    if (part instanceof IDistinctPart iDistinctPart && iDistinctPart.isDistinct()) {
+                        Object2ObjectOpenHashMap<RecipeCapability<?>, List<IRecipeHandler<?>>> distinctParts = new Object2ObjectOpenHashMap<>();
+                        distinctParts.put(ItemRecipeCapability.CAP, itemPart);
+                        distinctParts.put(FluidRecipeCapability.CAP, fluidPart);
+                        recipeHandleParts.add(new RecipeRunner.RecipeHandlePart(IO.IN, distinctParts));
+                    } else {
+                        NodistinctParts.computeIfAbsent(ItemRecipeCapability.CAP, k -> new ArrayList<>()).addAll(itemPart);
+                        NodistinctParts.computeIfAbsent(FluidRecipeCapability.CAP, k -> new ArrayList<>()).addAll(fluidPart);
+                    }
+                }
+            }
+        }
+        if (!NodistinctParts.isEmpty()) recipeHandleParts.add(new RecipeRunner.RecipeHandlePart(IO.IN, NodistinctParts));
+        if (!outputParts.isEmpty()) recipeHandleParts.add(new RecipeRunner.RecipeHandlePart(IO.OUT, outputParts));
     }
 }

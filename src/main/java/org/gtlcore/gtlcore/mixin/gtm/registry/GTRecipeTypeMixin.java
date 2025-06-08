@@ -35,8 +35,8 @@ public class GTRecipeTypeMixin {
     public ResourceLocation registryName;
 
     /**
-     * @author
-     * @reason
+     * @author .
+     * @reason .
      */
     @Overwrite(remap = false)
     public GTRecipeType onRecipeBuild(BiConsumer<GTRecipeBuilder, Consumer<FinishedRecipe>> onBuild) {
@@ -125,8 +125,8 @@ public class GTRecipeTypeMixin {
     }
 
     /**
-     * @author
-     * @reason
+     * @author .
+     * @reason .
      */
     @Overwrite(remap = false)
     public @Nullable Iterator<GTRecipe> searchFuelRecipe(IRecipeCapabilityHolder holder) {
@@ -134,8 +134,8 @@ public class GTRecipeTypeMixin {
     }
 
     /**
-     * @author
-     * @reason
+     * @author .
+     * @reason .
      */
     @Overwrite(remap = false)
     public Iterator<GTRecipe> searchRecipe(IRecipeCapabilityHolder holder) {

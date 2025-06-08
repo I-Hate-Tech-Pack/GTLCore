@@ -1,12 +1,12 @@
 package org.gtlcore.gtlcore.api.recipe;
 
-import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.capability.recipe.*;
+import com.gregtechceu.gtceu.api.machine.WorkableTieredMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
+import com.gregtechceu.gtceu.api.machine.steam.SteamWorkableMachine;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.content.Content;
-
-import net.minecraft.network.chat.Component;
+import com.gregtechceu.gtceu.common.machine.multiblock.primitive.PrimitiveWorkableMachine;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 
@@ -45,23 +45,15 @@ public class RecipeRunnerHelper {
 
     public static GTRecipe.ActionResult handleRecipe(IO io, IRecipeCapabilityHolder holder, Map<RecipeCapability<?>, List<Content>> contents,
                                                      Map<RecipeCapability<?>, Object2IntMap<?>> chanceCaches, boolean isTick, GTRecipe recipe, boolean isSimulate) {
+        if (holder instanceof WorkableTieredMachine || holder instanceof SteamWorkableMachine || holder instanceof PrimitiveWorkableMachine) {
+            if (isSimulate) return recipe.matchRecipe(holder);
+            else return recipe.handleRecipe(io, holder, isTick, contents, chanceCaches) ? GTRecipe.ActionResult.SUCCESS : GTRecipe.ActionResult.fail(null);
+        }
         RecipeRunner runner = new RecipeRunner(recipe, io, isTick, holder, chanceCaches, isSimulate);
-        if (isSimulate && io == IO.IN) {
-            return runner.simulatedHandle() ? GTRecipe.ActionResult.SUCCESS : GTRecipe.ActionResult.fail(null);
+        if (isSimulate && io == IO.IN) return runner.simulatedHandle() ? GTRecipe.ActionResult.SUCCESS : GTRecipe.ActionResult.fail(null);
+        if (runner.handle(contents).isSuccess()) {
+            return GTRecipe.ActionResult.SUCCESS;
         }
-        for (Map.Entry<RecipeCapability<?>, List<Content>> entry : contents.entrySet()) {
-            var result = runner.handle(entry);
-            if (result == null) {
-                continue;
-            }
-            if (result.result().content != null || !result.result().slots.isEmpty()) {
-                if (!isSimulate) {
-                    GTCEu.LOGGER.warn("IO {} Error while handling recipe {} outputs for {}", Component.translatable(io.tooltip).getString(), recipe, holder);
-                }
-                String key = "gtceu.recipe_logic.insufficient_" + (io == IO.IN ? "in" : "out");
-                return GTRecipe.ActionResult.fail(() -> Component.translatable(key).append(": ").append(result.capability().getName()));
-            }
-        }
-        return GTRecipe.ActionResult.SUCCESS;
+        return GTRecipe.ActionResult.fail(null);
     }
 }

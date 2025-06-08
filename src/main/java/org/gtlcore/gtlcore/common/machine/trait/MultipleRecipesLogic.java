@@ -50,7 +50,7 @@ public class MultipleRecipesLogic extends RecipeLogic {
         lastRecipe = null;
         var match = getRecipe();
         if (match != null) {
-            if (RecipeRunnerHelper.matchRecipe(machine, match)) {
+            if (RecipeRunnerHelper.matchRecipeOutput(machine, match)) {
                 setupRecipe(match);
             }
         }
@@ -79,6 +79,7 @@ public class MultipleRecipesLogic extends RecipeLogic {
                 continue;
             }
             input.inputs.putAll(match.inputs);
+            input.setId(match.id);
             if (RecipeRunnerHelper.matchRecipeInput(machine, input) && RecipeRunnerHelper.handleRecipeInput(machine, input)) {
                 totalEu += match.duration * inputEUt;
                 List<Content> item = match.outputs.get(ItemRecipeCapability.CAP);
@@ -135,7 +136,7 @@ public class MultipleRecipesLogic extends RecipeLogic {
         }
         var match = getRecipe();
         if (match != null) {
-            if (RecipeRunnerHelper.matchRecipe(machine, match)) {
+            if (RecipeRunnerHelper.matchRecipeOutput(machine, match)) {
                 setupRecipe(match);
                 return;
             }

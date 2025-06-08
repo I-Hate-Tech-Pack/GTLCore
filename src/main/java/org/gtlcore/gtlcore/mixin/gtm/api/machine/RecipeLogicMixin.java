@@ -62,7 +62,7 @@ public abstract class RecipeLogicMixin {
     public abstract RecipeLogic.Status getStatus();
 
     @Shadow(remap = false)
-    public abstract boolean handleFuelRecipe();
+    public abstract void setupRecipe(GTRecipe recipe);
 
     public RecipeLogicMixin(IRecipeLogicMachine machine, Map<RecipeCapability<?>, Object2IntMap<?>> chanceCaches) {
         this.machine = machine;
@@ -76,7 +76,7 @@ public abstract class RecipeLogicMixin {
     @Overwrite(remap = false)
     protected boolean handleRecipeIO(GTRecipe recipe, IO io) {
         if (!(this.machine.hasProxies() && io != IO.BOTH)) return false;
-        return RecipeRunnerHelper.handleRecipeIO(this.machine, recipe);
+        return RecipeRunnerHelper.handleRecipeInput(this.machine, recipe);
     }
 
     /**
@@ -149,35 +149,6 @@ public abstract class RecipeLogicMixin {
                 this.progress = 0;
                 this.duration = 0;
                 this.isActive = false;
-            }
-        }
-    }
-
-    /**
-     * @author .
-     * @reason .
-     */
-    @Overwrite(remap = false)
-    public void setupRecipe(GTRecipe recipe) {
-        if (this.handleFuelRecipe()) {
-            if (!this.machine.beforeWorking(recipe)) {
-                this.setStatus(RecipeLogic.Status.IDLE);
-                this.progress = 0;
-                this.duration = 0;
-                this.isActive = false;
-                return;
-            }
-            recipe.preWorking(this.machine);
-            if (RecipeRunnerHelper.handleRecipeInput(this.machine, recipe)) {
-                if (this.lastRecipe != null && !recipe.equals(this.lastRecipe)) {
-                    this.chanceCaches.clear();
-                }
-                this.recipeDirty = false;
-                this.lastRecipe = recipe;
-                this.setStatus(RecipeLogic.Status.WORKING);
-                this.progress = 0;
-                this.duration = recipe.duration;
-                this.isActive = true;
             }
         }
     }
