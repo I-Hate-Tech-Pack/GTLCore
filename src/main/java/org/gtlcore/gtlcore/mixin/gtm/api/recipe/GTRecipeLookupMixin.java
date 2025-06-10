@@ -131,32 +131,6 @@ public abstract class GTRecipeLookupMixin implements IDistinctMachine {
         return null;
     }
 
-    /**
-     * @author .
-     * @reason .
-     */
-    @Overwrite(remap = false)
-    private @Nullable GTRecipe recurseIngredientTreeFindRecipeCollisions(@NotNull List<List<AbstractMapIngredient>> ingredients,
-                                                                         @NotNull Branch branchMap, int index, int count, long skip,
-                                                                         @NotNull Set<GTRecipe> collidingRecipes) {
-        if (count == ingredients.size()) return null;
-        List<AbstractMapIngredient> ingredientList = ingredients.get(index);
-        Predicate<GTRecipe> canHandle = (recipex) -> !recipex.isFuel &&
-                RecipeRunnerHelper.matchRecipe(this.gtlcore$machine, recipex) && recipex.matchTickRecipe(this.gtlcore$machine).isSuccess();
-        for (AbstractMapIngredient obj : ingredientList) {
-            Map<AbstractMapIngredient, Either<GTRecipe, Branch>> targetMap = determineRootNodes(obj, branchMap);
-            Either<GTRecipe, Branch> result = targetMap.get(obj);
-            if (result != null) {
-                GTRecipe r = result.map(recipe -> canHandle.test(recipe) ? recipe : null,
-                        right -> diveIngredientTreeFindRecipeCollisions(ingredients, right, index, count, skip, collidingRecipes));
-                if (r != null) {
-                    collidingRecipes.add(r);
-                }
-            }
-        }
-        return null;
-    }
-
     @Shadow(remap = false)
     protected abstract @NotNull List<List<AbstractMapIngredient>> fromHolder(@NotNull IRecipeCapabilityHolder r);
 
@@ -167,9 +141,6 @@ public abstract class GTRecipeLookupMixin implements IDistinctMachine {
     private @Nullable GTRecipe diveIngredientTreeFindRecipe(@NotNull List<List<AbstractMapIngredient>> ingredients, @NotNull Branch map, @NotNull Predicate<GTRecipe> canHandle, int currentIndex, int count, long skip) {
         return null;
     }
-
-    @Shadow(remap = false)
-    protected abstract @Nullable GTRecipe diveIngredientTreeFindRecipeCollisions(@NotNull List<List<AbstractMapIngredient>> ingredients, @NotNull Branch map, int currentIndex, int count, long skip, @NotNull Set<GTRecipe> collidingRecipes);
 
     @Shadow(remap = false)
     protected static @NotNull Map<AbstractMapIngredient, Either<GTRecipe, Branch>> determineRootNodes(@NotNull AbstractMapIngredient ingredient, @NotNull Branch branchMap) {

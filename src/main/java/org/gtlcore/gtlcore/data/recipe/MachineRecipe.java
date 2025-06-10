@@ -756,6 +756,12 @@ public class MachineRecipe {
                         .CWUt(512))
                 .duration(400).EUt(V[UXV]).save(provider);
 
+        VanillaRecipeHelper.addShapedRecipe(provider, true, GTLCore.id("performance_monitor"), GTLMachines.PERFORMANCE_MONITOR.asStack(),
+                "AAA",
+                "ABA",
+                "AAA",
+                'B', GTItems.PORTABLE_SCANNER.asStack(), 'A', TagPrefix.plate, GTMaterials.Steel);
+
         // adv
         space_probe(GTLMaterials.Starlight, 2, 1000, 2, provider);
         space_probe(GTLMaterials.Starlight, 3, 10000, 2, provider);

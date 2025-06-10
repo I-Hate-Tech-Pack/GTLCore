@@ -10,6 +10,10 @@ import com.gregtechceu.gtceu.common.data.GTMaterials;
 import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
 import com.gregtechceu.gtceu.data.recipe.builder.GTRecipeBuilder;
 
+import com.lowdragmc.lowdraglib.utils.LocalizationUtils;
+
+import java.text.NumberFormat;
+
 public class RecipeModify {
 
     public static void init() {
@@ -43,5 +47,19 @@ public class RecipeModify {
             }
             recipe.save(provider);
         });
+
+        GTRecipeTypes.FUSION_RECIPES.getDataInfos().clear();
+        GTRecipeTypes.FUSION_RECIPES.addDataInfo((data) -> LocalizationUtils.format("gtceu.recipe.eu_to_starts",
+                NumberFormat.getCompactNumberInstance().format(data.getLong("eu_to_start") / 1000000),
+                getFusionTier(data.getLong("eu_to_start") / 1000000)));
+    }
+
+    private static String getFusionTier(long startEu) {
+        String tier = "I";
+        if (startEu > 1280L) tier = "V";
+        else if (startEu > 640L) tier = "IV";
+        else if (startEu > 320L) tier = "III";
+        else if (startEu > 160L) tier = "II";
+        return tier;
     }
 }
