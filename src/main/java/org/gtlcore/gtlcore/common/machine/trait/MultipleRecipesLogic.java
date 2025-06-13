@@ -80,7 +80,7 @@ public class MultipleRecipesLogic extends RecipeLogic {
             }
             input.inputs.putAll(match.inputs);
             input.setId(match.id);
-            if (RecipeRunnerHelper.matchRecipeInput(machine, input) && RecipeRunnerHelper.handleRecipeInput(machine, input)) {
+            if (RecipeRunnerHelper.matchRecipe(machine, input) && RecipeRunnerHelper.handleRecipeInput(machine, input)) {
                 totalEu += match.duration * inputEUt;
                 List<Content> item = match.outputs.get(ItemRecipeCapability.CAP);
                 if (item != null) {

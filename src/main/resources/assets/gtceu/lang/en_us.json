@@ -1647,5 +1647,6 @@
     "tagprefix.plutostone": "冥王星%s矿石",
     "tagprefix.titanstone": "土卫六%s矿石",
     "tagprefix.venus_stone": "金星石%s矿石",
-    "gtceu.recipe.eu_to_starts": "启动耗能：%sMEU(MK%s)"
+    "gtceu.recipe.eu_to_starts": "启动耗能：%sMEU(MK%s)",
+    "gtceu.multiblock.universal.distinct.all":"完全隔离："
 }

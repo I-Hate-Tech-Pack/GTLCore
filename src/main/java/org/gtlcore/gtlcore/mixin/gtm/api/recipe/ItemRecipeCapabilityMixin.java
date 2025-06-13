@@ -28,7 +28,7 @@ public class ItemRecipeCapabilityMixin {
     private Object2IntMap<ItemStack> getIngredientStacks(IRecipeCapabilityHolder holder) {
         Object2IntMap<ItemStack> map = new Object2IntOpenCustomHashMap<>(ItemStackHashStrategy.comparingAllButCount());
         Object2IntMap<ItemStack> result = new Object2IntOpenHashMap<>();
-        if (holder instanceof IDistinctMachine iDistinctMachine && iDistinctMachine.getDistinctHatch() != null) {
+        if (holder instanceof IDistinctMachine iDistinctMachine && iDistinctMachine.isDistinct() && iDistinctMachine.getDistinctHatch() != null) {
             List<IRecipeHandler<?>> distinctIMultiPart = iDistinctMachine.getDistinctHatch().allHandles().get(ItemRecipeCapability.CAP);
             for (IRecipeHandler<?> handler : distinctIMultiPart) {
                 for (Object o : handler.getContents()) {

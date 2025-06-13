@@ -1647,5 +1647,6 @@
     "gtceu.space_cosmic_probe_receivers": "天基宇宙探测",
     "gtceu.top.electricity": "%sA %s",
     "gtceu.top.extra_output": "剩余%s项重复输出已隐藏",
-    "gtceu.recipe.eu_to_starts": "启动耗能：%sMEU(MK%s)"
+    "gtceu.recipe.eu_to_starts": "启动耗能：%sMEU(MK%s)",
+    "gtceu.multiblock.universal.distinct.all":"完全隔离："
 }
