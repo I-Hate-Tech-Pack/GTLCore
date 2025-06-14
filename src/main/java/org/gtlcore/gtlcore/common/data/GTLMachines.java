@@ -44,9 +44,9 @@ import com.hepdd.gtmthings.data.WirelessMachines;
 import java.util.List;
 import java.util.function.BiConsumer;
 
+import static com.gregtechceu.gtceu.api.GTValues.*;
 import static com.gregtechceu.gtceu.api.GTValues.LV;
 import static com.gregtechceu.gtceu.api.GTValues.LuV;
-import static com.gregtechceu.gtceu.api.GTValues.*;
 import static com.gregtechceu.gtceu.common.data.GTMachines.*;
 import static com.gregtechceu.gtceu.common.registry.GTRegistration.REGISTRATE;
 
