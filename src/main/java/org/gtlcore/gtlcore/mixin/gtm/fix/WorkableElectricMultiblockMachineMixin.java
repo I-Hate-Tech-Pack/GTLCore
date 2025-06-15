@@ -1,7 +1,8 @@
 package org.gtlcore.gtlcore.mixin.gtm.fix;
 
 import org.gtlcore.gtlcore.api.machine.trait.IDistinctMachine;
-import org.gtlcore.gtlcore.api.recipe.RecipeRunner;
+import org.gtlcore.gtlcore.api.machine.trait.ILockRecipe;
+import org.gtlcore.gtlcore.api.recipe.RecipeText;
 import org.gtlcore.gtlcore.utils.NumberUtils;
 
 import com.gregtechceu.gtceu.api.GTValues;
@@ -13,24 +14,14 @@ import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.fancyconfigurator.OverclockFancyConfigurator;
 import com.gregtechceu.gtceu.api.machine.feature.IFancyUIMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IOverclockMachine;
-import com.gregtechceu.gtceu.api.machine.feature.multiblock.IDistinctPart;
-import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiPart;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableMultiblockMachine;
 import com.gregtechceu.gtceu.api.misc.EnergyContainerList;
-import com.gregtechceu.gtceu.common.machine.multiblock.part.FluidHatchPartMachine;
+import com.gregtechceu.gtceu.common.machine.multiblock.electric.research.ResearchStationMachine;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
-
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import lombok.Getter;
-import lombok.Setter;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
@@ -38,45 +29,13 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 @Mixin(WorkableElectricMultiblockMachine.class)
-public abstract class WorkableElectricMultiblockMachineMixin extends WorkableMultiblockMachine implements IFancyUIMachine, IDistinctMachine {
-
-    @Persisted
-    @DescSynced
-    @Getter
-    @Setter
-    public boolean isDistinct = false;
-    @Setter
-    @Getter
-    private List<RecipeRunner.RecipeHandlePart> recipeHandleParts = new ObjectArrayList<>();
-    @Getter
-    @Setter
-    private RecipeRunner.RecipeHandlePart distinctHatch;
-    @Getter
-    @Setter
-    private ResourceLocation recipeId;
+public abstract class WorkableElectricMultiblockMachineMixin extends WorkableMultiblockMachine implements IFancyUIMachine {
 
     public WorkableElectricMultiblockMachineMixin(IMachineBlockEntity holder, Object... args) {
         super(holder, args);
-    }
-
-    @Inject(method = "onStructureFormed", at = @At("TAIL"), remap = false)
-    public void onStructureFormed(CallbackInfo ci) {
-        this.upDate();
-    }
-
-    @Inject(method = "onStructureInvalid", at = @At("TAIL"), remap = false)
-    public void onStructureInvalid(CallbackInfo ci) {
-        this.recipeHandleParts.clear();
-    }
-
-    @Inject(method = "onPartUnload", at = @At("TAIL"), remap = false)
-    public void onPartUnload(CallbackInfo ci) {
-        this.recipeHandleParts.clear();
     }
 
     @Shadow(remap = false)
@@ -128,44 +87,21 @@ public abstract class WorkableElectricMultiblockMachineMixin extends WorkableMul
         if (this instanceof IOverclockMachine overclockMachine) {
             configuratorPanel.attachConfigurators(new OverclockFancyConfigurator(overclockMachine));
         }
+        if (this.self() instanceof ResearchStationMachine) return;
         IDistinctMachine.attachConfigurators(configuratorPanel, (WorkableElectricMultiblockMachine) self());
+        ILockRecipe.attachRecipeLockable(configuratorPanel, this.getRecipeLogic());
     }
 
-    public void upDate() {
-        recipeHandleParts.clear();
-        distinctHatch = null;
-        recipeId = null;
-        Iterator<IMultiPart> parts = this.getParts().iterator();
-        Object2ObjectOpenHashMap<RecipeCapability<?>, List<IRecipeHandler<?>>> outputParts = new Object2ObjectOpenHashMap<>();
-        while (parts.hasNext()) {
-            IMultiPart part = parts.next();
-            if (part instanceof FluidHatchPartMachine || part instanceof IDistinctPart) {
-                List<IRecipeHandler<?>> itemPart = new ObjectArrayList<>();
-                List<IRecipeHandler<?>> fluidPart = new ObjectArrayList<>();
-                boolean isOutput = false;
-                for (var v : part.getRecipeHandlers()) {
-                    if (!v.isProxy()) {
-                        if (v.getHandlerIO() == IO.IN) {
-                            if (v.getCapability() == ItemRecipeCapability.CAP) itemPart.add(v);
-                            else if (v.getCapability() == FluidRecipeCapability.CAP) fluidPart.add(v);
-                        } else if (v.getHandlerIO() == IO.OUT) {
-                            isOutput = true;
-                            if (v.getCapability() == ItemRecipeCapability.CAP) itemPart.add(v);
-                            else if (v.getCapability() == FluidRecipeCapability.CAP) fluidPart.add(v);
-                        }
-                    }
-                }
-                if (isOutput) {
-                    outputParts.computeIfAbsent(ItemRecipeCapability.CAP, k -> new ArrayList<>()).addAll(itemPart);
-                    outputParts.computeIfAbsent(FluidRecipeCapability.CAP, k -> new ArrayList<>()).addAll(fluidPart);
-                } else {
-                    Object2ObjectOpenHashMap<RecipeCapability<?>, List<IRecipeHandler<?>>> distinctParts = new Object2ObjectOpenHashMap<>();
-                    distinctParts.computeIfAbsent(ItemRecipeCapability.CAP, k -> new ArrayList<>()).addAll(itemPart);
-                    distinctParts.computeIfAbsent(FluidRecipeCapability.CAP, k -> new ArrayList<>()).addAll(fluidPart);
-                    recipeHandleParts.add(new RecipeRunner.RecipeHandlePart(IO.IN, distinctParts));
-                }
+    @Inject(method = "addDisplayText", at = @At(value = "INVOKE", target = "Lcom/gregtechceu/gtceu/api/machine/multiblock/WorkableElectricMultiblockMachine;getDefinition()Lcom/gregtechceu/gtceu/api/machine/MultiblockMachineDefinition;"), remap = false)
+    public void addDisplayText(List<Component> textList, CallbackInfo ci) {
+        if (this.getRecipeLogic() instanceof ILockRecipe iLockRecipe) {
+            if (iLockRecipe.isLock() && iLockRecipe.getLockRecipe() != null) {
+                textList.add(Component.translatable("gui.gtlcore.recipe_lock.recipe"));
+                textList.add(RecipeText.getRecipeInputText(iLockRecipe.getLockRecipe()));
+                textList.add(RecipeText.getRecipeOutputText(iLockRecipe.getLockRecipe()));
+            } else {
+                textList.add(Component.translatable("gui.gtlcore.recipe_lock.no_recipe"));
             }
         }
-        recipeHandleParts.add(new RecipeRunner.RecipeHandlePart(IO.OUT, outputParts));
     }
 }

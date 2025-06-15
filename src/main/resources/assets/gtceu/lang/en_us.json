@@ -1648,5 +1648,11 @@
     "tagprefix.titanstone": "土卫六%s矿石",
     "tagprefix.venus_stone": "金星石%s矿石",
     "gtceu.recipe.eu_to_starts": "启动耗能：%sMEU(MK%s)",
-    "gtceu.multiblock.universal.distinct.all":"完全隔离："
+    "gtceu.multiblock.universal.distinct.all":"完全隔离：",
+    "gtceu.top.recipe_input": "配方输入：",
+    "gtceu.machine.lockrecipe.line.0": "%s x §e%s§r ",
+    "gtceu.machine.lockrecipe.line.1": "%s x §e%s§r(出产概率：%s%%) ",
+    "gtceu.machine.lockrecipe.line.2": "%s x §e%s§r(§c不消耗§r) ",
+    "gui.gtlcore.recipe_lock.recipe": "已锁定配方: ",
+    "gui.gtlcore.recipe_lock.no_recipe": "未锁定配方"
 }

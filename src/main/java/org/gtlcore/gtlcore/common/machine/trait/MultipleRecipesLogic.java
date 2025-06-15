@@ -1,6 +1,7 @@
 package org.gtlcore.gtlcore.common.machine.trait;
 
 import org.gtlcore.gtlcore.api.machine.multiblock.ParallelMachine;
+import org.gtlcore.gtlcore.api.machine.trait.ILockRecipe;
 import org.gtlcore.gtlcore.api.recipe.RecipeRunnerHelper;
 
 import com.gregtechceu.gtceu.api.capability.recipe.*;
@@ -14,6 +15,8 @@ import com.gregtechceu.gtceu.api.recipe.content.Content;
 import com.gregtechceu.gtceu.api.recipe.content.ContentModifier;
 import com.gregtechceu.gtceu.data.recipe.builder.GTRecipeBuilder;
 
+import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
+
 import net.minecraft.nbt.CompoundTag;
 
 import lombok.Getter;
@@ -24,7 +27,14 @@ import java.util.List;
 import java.util.function.BiPredicate;
 
 @Getter
-public class MultipleRecipesLogic extends RecipeLogic {
+public class MultipleRecipesLogic extends RecipeLogic implements ILockRecipe {
+
+    @Persisted
+    @Getter
+    private boolean isLock = false;
+    @Persisted
+    @Getter
+    private GTRecipe lockRecipe;
 
     private final ParallelMachine parallel;
 
@@ -80,7 +90,7 @@ public class MultipleRecipesLogic extends RecipeLogic {
             }
             input.inputs.putAll(match.inputs);
             input.setId(match.id);
-            if (RecipeRunnerHelper.matchRecipe(machine, input) && RecipeRunnerHelper.handleRecipeInput(machine, input)) {
+            if (RecipeRunnerHelper.handleRecipeInput(machine, input)) {
                 totalEu += match.duration * inputEUt;
                 List<Content> item = match.outputs.get(ItemRecipeCapability.CAP);
                 if (item != null) {
@@ -104,7 +114,17 @@ public class MultipleRecipesLogic extends RecipeLogic {
     }
 
     private GTRecipe lookupRecipe() {
-        return machine.getRecipeType().getLookup().findRecipe(machine);
+        if (this.isLock()) {
+            if (this.lockRecipe == null) this.lockRecipe = machine.getRecipeType().getLookup().findRecipe(machine);
+            else if (!RecipeRunnerHelper.matchRecipe(machine, this.lockRecipe)) return null;
+            return this.lockRecipe;
+        } else return machine.getRecipeType().getLookup().findRecipe(machine);
+    }
+
+    public void setLock(boolean look) {
+        isLock = look;
+        lockRecipe = null;
+        updateTickSubscription();
     }
 
     private GTRecipe buildEmptyRecipe() {

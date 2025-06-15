@@ -1,11 +1,12 @@
 package org.gtlcore.gtlcore.api.recipe;
 
-import org.gtlcore.gtlcore.api.machine.trait.IDistinctMachine;
-
 import com.gregtechceu.gtceu.api.capability.recipe.*;
+import com.gregtechceu.gtceu.api.machine.WorkableTieredMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
+import com.gregtechceu.gtceu.api.machine.steam.SteamWorkableMachine;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.content.Content;
+import com.gregtechceu.gtceu.common.machine.multiblock.primitive.PrimitiveWorkableMachine;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 
@@ -44,15 +45,14 @@ public class RecipeRunnerHelper {
 
     public static GTRecipe.ActionResult handleRecipe(IO io, IRecipeCapabilityHolder holder, Map<RecipeCapability<?>, List<Content>> contents,
                                                      Map<RecipeCapability<?>, Object2IntMap<?>> chanceCaches, boolean isTick, GTRecipe recipe, boolean isSimulate) {
-        if (holder instanceof IDistinctMachine iDistinctMachine && iDistinctMachine.isDistinct()) {
+        if (holder instanceof PrimitiveWorkableMachine || holder instanceof SteamWorkableMachine || holder instanceof WorkableTieredMachine) {
+            if (isSimulate) return recipe.matchRecipe(holder);
+            else return recipe.handleRecipe(io, holder, isTick, contents, chanceCaches) ? GTRecipe.ActionResult.SUCCESS : GTRecipe.ActionResult.fail(null);
+        } else {
             RecipeRunner runner = new RecipeRunner(recipe, io, isTick, holder, chanceCaches, isSimulate);
-            if (isSimulate && io == IO.IN) return runner.simulatedHandle() ? GTRecipe.ActionResult.SUCCESS : GTRecipe.ActionResult.fail(null);
             if (runner.handle(contents).isSuccess()) {
                 return GTRecipe.ActionResult.SUCCESS;
             }
-        } else {
-            if (isSimulate) return recipe.matchRecipe(holder);
-            else return recipe.handleRecipe(io, holder, isTick, contents, chanceCaches) ? GTRecipe.ActionResult.SUCCESS : GTRecipe.ActionResult.fail(null);
         }
         return GTRecipe.ActionResult.fail(null);
     }

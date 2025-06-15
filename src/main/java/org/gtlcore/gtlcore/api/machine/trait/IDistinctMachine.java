@@ -1,7 +1,8 @@
 package org.gtlcore.gtlcore.api.machine.trait;
 
-import org.gtlcore.gtlcore.api.recipe.RecipeRunner;
-
+import com.gregtechceu.gtceu.api.capability.recipe.IO;
+import com.gregtechceu.gtceu.api.capability.recipe.IRecipeHandler;
+import com.gregtechceu.gtceu.api.capability.recipe.RecipeCapability;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.gui.fancy.ConfiguratorPanel;
 import com.gregtechceu.gtceu.api.gui.fancy.IFancyConfiguratorButton;
@@ -12,7 +13,13 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 
+import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 部分代码参考自gto
@@ -21,31 +28,46 @@ import java.util.List;
 
 public interface IDistinctMachine {
 
-    default List<RecipeRunner.RecipeHandlePart> getRecipeHandleParts() {
-        return List.of();
+    @NotNull
+    Map<IO, List<RecipeHandlePart>> getCapabilities();
+
+    @NotNull
+    Map<IO, Map<RecipeCapability<?>, List<IRecipeHandler<?>>>> getCapabilitiesFlat();
+
+    @NotNull
+    default List<IRecipeHandler<?>> getCapabilitiesFlat(IO io, RecipeCapability<?> cap) {
+        return getCapabilitiesFlat()
+                .getOrDefault(io, Collections.emptyMap())
+                .getOrDefault(cap, Collections.emptyList());
     }
 
-    default void setRecipeHandleParts(List<RecipeRunner.RecipeHandlePart> recipeHandleParts) {}
-
-    default RecipeRunner.RecipeHandlePart getDistinctHatch() {
-        return null;
+    default void addHandlerList(RecipeHandlePart handler) {
+        if (handler == RecipeHandlePart.NO_DATA) return;
+        IO io = handler.getHandlerIO();
+        getCapabilities().computeIfAbsent(io, i -> new ArrayList<>()).add(handler);
+        var entrySet = handler.getHandlerMap().entrySet();
+        var inner = getCapabilitiesFlat().computeIfAbsent(io, i -> new Reference2ObjectOpenHashMap<>(entrySet.size()));
+        for (var entry : entrySet) {
+            var entryList = entry.getValue();
+            inner.computeIfAbsent(entry.getKey(), c -> new ArrayList<>(entryList.size())).addAll(entryList);
+        }
     }
 
-    default void setDistinctHatch(RecipeRunner.RecipeHandlePart hatch) {}
+    List<RecipeHandlePart> getRecipeHandleParts();
 
-    default ResourceLocation getRecipeId() {
-        return null;
-    }
+    RecipeHandlePart getDistinctHatch();
 
-    default void setRecipeId(ResourceLocation recipeId) {}
+    void setDistinctHatch(RecipeHandlePart hatch);
 
-    default void upDate() {}
+    ResourceLocation getRecipeId();
 
-    default boolean isDistinct() {
-        return false;
-    }
+    void setRecipeId(ResourceLocation recipeId);
 
-    default void setDistinct(boolean isDistinct) {}
+    void upDate();
+
+    boolean isDistinct();
+
+    void setDistinct(boolean isDistinct);
 
     static void attachConfigurators(ConfiguratorPanel configuratorPanel, WorkableElectricMultiblockMachine machine) {
         if (machine instanceof IDistinctMachine distinctMachine) {
@@ -56,9 +78,8 @@ public interface IDistinctMachine {
                         distinctMachine.setDistinct(pressed);
                         distinctMachine.upDate();
                     })
-                    .setTooltipsSupplier(pressed -> List.of(
-                            Component.translatable("gtceu.multiblock.universal.distinct.all").setStyle(Style.EMPTY.withColor(ChatFormatting.YELLOW))
-                                    .append(Component.translatable(pressed ? "gtceu.multiblock.universal.distinct.yes" : "gtceu.multiblock.universal.distinct.no")))));
+                    .setTooltipsSupplier(pressed -> List.of(Component.translatable("gtceu.multiblock.universal.distinct.all").setStyle(Style.EMPTY.withColor(ChatFormatting.YELLOW))
+                            .append(Component.translatable(pressed ? "gtceu.multiblock.universal.distinct.yes" : "gtceu.multiblock.universal.distinct.no")))));
         }
     }
 }
