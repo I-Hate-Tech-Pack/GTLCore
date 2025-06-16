@@ -1,18 +1,41 @@
 package org.gtlcore.gtlcore.mixin.gtm.fix;
 
+import org.gtlcore.gtlcore.api.machine.trait.IDistinctMachine;
+import org.gtlcore.gtlcore.api.machine.trait.ILockRecipe;
+import org.gtlcore.gtlcore.api.recipe.RecipeText;
 import org.gtlcore.gtlcore.utils.NumberUtils;
 
 import com.gregtechceu.gtceu.api.GTValues;
+import com.gregtechceu.gtceu.api.gui.GuiTextures;
+import com.gregtechceu.gtceu.api.gui.fancy.ConfiguratorPanel;
+import com.gregtechceu.gtceu.api.gui.fancy.IFancyConfiguratorButton;
+import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
+import com.gregtechceu.gtceu.api.machine.fancyconfigurator.OverclockFancyConfigurator;
+import com.gregtechceu.gtceu.api.machine.feature.IFancyUIMachine;
+import com.gregtechceu.gtceu.api.machine.feature.IOverclockMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
+import com.gregtechceu.gtceu.api.machine.multiblock.WorkableMultiblockMachine;
 import com.gregtechceu.gtceu.api.misc.EnergyContainerList;
+import com.gregtechceu.gtceu.common.machine.multiblock.electric.research.ResearchStationMachine;
 import com.gregtechceu.gtceu.utils.GTUtil;
+
+import net.minecraft.network.chat.Component;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.*;
 
 @Mixin(WorkableElectricMultiblockMachine.class)
-public abstract class WorkableElectricMultiblockMachineMixin {
+public abstract class WorkableElectricMultiblockMachineMixin extends WorkableMultiblockMachine implements IFancyUIMachine {
+
+    public WorkableElectricMultiblockMachineMixin(IMachineBlockEntity holder, Object... args) {
+        super(holder, args);
+    }
 
     @Shadow(remap = false)
     protected EnergyContainerList energyContainer;
@@ -49,6 +72,35 @@ public abstract class WorkableElectricMultiblockMachineMixin {
             // ignore amperage, since only the voltage is relevant for recipe search
             // amps are never > 3 in an EnergyContainerList
             return voltage;
+        }
+    }
+
+    @Override
+    public void attachConfigurators(ConfiguratorPanel configuratorPanel) {
+        configuratorPanel.attachConfigurators(new IFancyConfiguratorButton.Toggle(
+                GuiTextures.BUTTON_POWER.getSubTexture(0, 0, 1, 0.5),
+                GuiTextures.BUTTON_POWER.getSubTexture(0, 0.5, 1, 0.5),
+                this::isWorkingEnabled, (clickData, pressed) -> this.setWorkingEnabled(pressed))
+                .setTooltipsSupplier(pressed -> List.of(
+                        Component.translatable(pressed ? "behaviour.soft_hammer.enabled" : "behaviour.soft_hammer.disabled"))));
+        if (this instanceof IOverclockMachine overclockMachine) {
+            configuratorPanel.attachConfigurators(new OverclockFancyConfigurator(overclockMachine));
+        }
+        if (this.self() instanceof ResearchStationMachine) return;
+        IDistinctMachine.attachConfigurators(configuratorPanel, (WorkableElectricMultiblockMachine) self());
+        ILockRecipe.attachRecipeLockable(configuratorPanel, this.getRecipeLogic());
+    }
+
+    @Inject(method = "addDisplayText", at = @At(value = "INVOKE", target = "Lcom/gregtechceu/gtceu/api/machine/multiblock/WorkableElectricMultiblockMachine;getDefinition()Lcom/gregtechceu/gtceu/api/machine/MultiblockMachineDefinition;"), remap = false)
+    public void addDisplayText(List<Component> textList, CallbackInfo ci) {
+        if (this.getRecipeLogic() instanceof ILockRecipe iLockRecipe) {
+            if (iLockRecipe.isLock() && iLockRecipe.getLockRecipe() != null) {
+                textList.add(Component.translatable("gui.gtlcore.recipe_lock.recipe"));
+                textList.add(RecipeText.getRecipeInputText(iLockRecipe.getLockRecipe()));
+                textList.add(RecipeText.getRecipeOutputText(iLockRecipe.getLockRecipe()));
+            } else {
+                textList.add(Component.translatable("gui.gtlcore.recipe_lock.no_recipe"));
+            }
         }
     }
 }
