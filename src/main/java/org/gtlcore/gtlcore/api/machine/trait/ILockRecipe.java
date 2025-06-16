@@ -22,6 +22,8 @@ public interface ILockRecipe {
         return null;
     }
 
+    default void setLockRecipe(GTRecipe lockRecipe) {}
+
     static void attachRecipeLockable(ConfiguratorPanel configuratorPanel, RecipeLogic logic) {
         if (logic instanceof ILockRecipe iLockRecipe) {
             configuratorPanel.attachConfigurators(new IFancyConfiguratorButton.Toggle(

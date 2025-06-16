@@ -15,6 +15,7 @@ import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.*;
 
@@ -28,6 +29,7 @@ public abstract class RecipeLogicMixin implements ILockRecipe {
     private boolean isLock = false;
     @Persisted
     @Getter
+    @Setter
     private GTRecipe lockRecipe;
 
     @Mutable

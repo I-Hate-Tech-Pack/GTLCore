@@ -15,8 +15,6 @@ import com.gregtechceu.gtceu.api.recipe.content.Content;
 import com.gregtechceu.gtceu.api.recipe.content.ContentModifier;
 import com.gregtechceu.gtceu.data.recipe.builder.GTRecipeBuilder;
 
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
-
 import net.minecraft.nbt.CompoundTag;
 
 import lombok.Getter;
@@ -28,13 +26,6 @@ import java.util.function.BiPredicate;
 
 @Getter
 public class MultipleRecipesLogic extends RecipeLogic implements ILockRecipe {
-
-    @Persisted
-    @Getter
-    private boolean isLock = false;
-    @Persisted
-    @Getter
-    private GTRecipe lockRecipe;
 
     private final ParallelMachine parallel;
 
@@ -115,16 +106,10 @@ public class MultipleRecipesLogic extends RecipeLogic implements ILockRecipe {
 
     private GTRecipe lookupRecipe() {
         if (this.isLock()) {
-            if (this.lockRecipe == null) this.lockRecipe = machine.getRecipeType().getLookup().findRecipe(machine);
-            else if (!RecipeRunnerHelper.matchRecipe(machine, this.lockRecipe)) return null;
-            return this.lockRecipe;
+            if (this.getLockRecipe() == null) this.setLockRecipe(machine.getRecipeType().getLookup().findRecipe(machine));
+            else if (!RecipeRunnerHelper.matchRecipe(machine, this.getLockRecipe())) return null;
+            return this.getLockRecipe();
         } else return machine.getRecipeType().getLookup().findRecipe(machine);
-    }
-
-    public void setLock(boolean look) {
-        isLock = look;
-        lockRecipe = null;
-        updateTickSubscription();
     }
 
     private GTRecipe buildEmptyRecipe() {
