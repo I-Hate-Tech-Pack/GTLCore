@@ -1,5 +1,7 @@
 package org.gtlcore.gtlcore.api.machine.multiblock;
 
+import org.gtlcore.gtlcore.api.machine.trait.ICheckPatternMachine;
+
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.gui.fancy.FancyMachineUIWidget;
 import com.gregtechceu.gtceu.api.gui.fancy.IFancyUIProvider;
@@ -27,7 +29,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class NoEnergyMultiblockMachine extends WorkableMultiblockMachine implements IFancyUIMachine, IDisplayUIMachine {
+public class NoEnergyMultiblockMachine extends WorkableMultiblockMachine implements IFancyUIMachine, IDisplayUIMachine, ICheckPatternMachine {
 
     protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(
             NoEnergyMultiblockMachine.class, WorkableMultiblockMachine.MANAGED_FIELD_HOLDER);
@@ -104,5 +106,10 @@ public class NoEnergyMultiblockMachine extends WorkableMultiblockMachine impleme
     @Override
     public ManagedFieldHolder getFieldHolder() {
         return MANAGED_FIELD_HOLDER;
+    }
+
+    @Override
+    public boolean hasButton() {
+        return true;
     }
 }

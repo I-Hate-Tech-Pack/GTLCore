@@ -6,7 +6,6 @@ import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import lombok.Getter;
-import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -15,13 +14,19 @@ public class RecipeHandlePart {
 
     public static final RecipeHandlePart NO_DATA = new RecipeHandlePart(IO.NONE);
 
+    public static final Comparator<RecipeHandlePart> COMPARATOR = (h1, h2) -> {
+        int cmp = Long.compare(h1.getPriority(), h2.getPriority());
+        if (cmp != 0) return cmp;
+        boolean b1 = h1.getTotalContentAmount() > 0;
+        boolean b2 = h2.getTotalContentAmount() > 0;
+        return Boolean.compare(b1, b2);
+    };
+
     @Getter
     private final IO handlerIO;
     @Getter
     private final Reference2ObjectOpenHashMap<RecipeCapability<?>, List<IRecipeHandler<?>>> handlerMap = new Reference2ObjectOpenHashMap<>();
-    @Setter
-    @Getter
-    private boolean isDistinct = false;
+    private final List<IRecipeHandler<?>> allHandlers = new ArrayList<>();
 
     public RecipeHandlePart(IO io) {
         this.handlerIO = io;
@@ -36,6 +41,7 @@ public class RecipeHandlePart {
     public void addHandlers(Iterable<IRecipeHandler<?>> handlers) {
         for (var handler : handlers) {
             getHandlerMap().computeIfAbsent(handler.getCapability(), c -> new ArrayList<>()).add(handler);
+            allHandlers.add(handler);
         }
         if (handlerIO == IO.OUT) sort();
     }
@@ -52,6 +58,18 @@ public class RecipeHandlePart {
 
     public @NotNull List<IRecipeHandler<?>> getCapability(RecipeCapability<?> cap) {
         return getHandlerMap().getOrDefault(cap, Collections.emptyList());
+    }
+
+    public long getPriority() {
+        long priority = 0;
+        for (var handler : allHandlers) priority += handler.getPriority();
+        return priority;
+    }
+
+    public double getTotalContentAmount() {
+        double sum = 0;
+        for (var handler : allHandlers) sum += handler.getTotalContentAmount();
+        return sum;
     }
 
     public Reference2ObjectOpenHashMap<RecipeCapability<?>, List<Object>> handleRecipe(IO io, GTRecipe recipe,

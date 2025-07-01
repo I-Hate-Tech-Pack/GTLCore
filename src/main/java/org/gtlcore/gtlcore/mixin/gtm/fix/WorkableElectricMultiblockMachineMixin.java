@@ -1,7 +1,10 @@
 package org.gtlcore.gtlcore.mixin.gtm.fix;
 
+import org.gtlcore.gtlcore.api.machine.trait.ICheckPatternMachine;
 import org.gtlcore.gtlcore.api.machine.trait.IDistinctMachine;
 import org.gtlcore.gtlcore.api.machine.trait.ILockRecipe;
+import org.gtlcore.gtlcore.api.machine.trait.IRecipeStatus;
+import org.gtlcore.gtlcore.api.recipe.RecipeResult;
 import org.gtlcore.gtlcore.api.recipe.RecipeText;
 import org.gtlcore.gtlcore.utils.NumberUtils;
 
@@ -19,8 +22,11 @@ import com.gregtechceu.gtceu.api.misc.EnergyContainerList;
 import com.gregtechceu.gtceu.common.machine.multiblock.electric.research.ResearchStationMachine;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
@@ -31,7 +37,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.*;
 
 @Mixin(WorkableElectricMultiblockMachine.class)
-public abstract class WorkableElectricMultiblockMachineMixin extends WorkableMultiblockMachine implements IFancyUIMachine {
+public abstract class WorkableElectricMultiblockMachineMixin extends WorkableMultiblockMachine implements IFancyUIMachine, IRecipeStatus, ICheckPatternMachine {
+
+    @Getter
+    @Setter
+    private RecipeResult recipeStatus;
 
     public WorkableElectricMultiblockMachineMixin(IMachineBlockEntity holder, Object... args) {
         super(holder, args);
@@ -89,10 +99,16 @@ public abstract class WorkableElectricMultiblockMachineMixin extends WorkableMul
         if (this.self() instanceof ResearchStationMachine) return;
         IDistinctMachine.attachConfigurators(configuratorPanel, (WorkableElectricMultiblockMachine) self());
         ILockRecipe.attachRecipeLockable(configuratorPanel, this.getRecipeLogic());
+        ICheckPatternMachine.attachConfigurators(configuratorPanel, self());
     }
 
     @Inject(method = "addDisplayText", at = @At(value = "INVOKE", target = "Lcom/gregtechceu/gtceu/api/machine/multiblock/WorkableElectricMultiblockMachine;getDefinition()Lcom/gregtechceu/gtceu/api/machine/MultiblockMachineDefinition;"), remap = false)
     public void addDisplayText(List<Component> textList, CallbackInfo ci) {
+        if (this.isFormed()) {
+            if (this.recipeStatus != null && this.recipeStatus.reason() != null) {
+                textList.add(this.recipeStatus.reason().copy().withStyle(ChatFormatting.RED));
+            }
+        }
         if (this.getRecipeLogic() instanceof ILockRecipe iLockRecipe) {
             if (iLockRecipe.isLock() && iLockRecipe.getLockRecipe() != null) {
                 textList.add(Component.translatable("gui.gtlcore.recipe_lock.recipe"));
@@ -102,5 +118,10 @@ public abstract class WorkableElectricMultiblockMachineMixin extends WorkableMul
                 textList.add(Component.translatable("gui.gtlcore.recipe_lock.no_recipe"));
             }
         }
+    }
+
+    @Override
+    public boolean hasButton() {
+        return true;
     }
 }
