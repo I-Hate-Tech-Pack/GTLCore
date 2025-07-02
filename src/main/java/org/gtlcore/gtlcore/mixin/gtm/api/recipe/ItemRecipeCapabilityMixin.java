@@ -128,8 +128,14 @@ public class ItemRecipeCapabilityMixin {
             }
             long minMultiplier = Integer.MAX_VALUE;
             Object2IntOpenHashMap<Ingredient> countableMap = new Object2IntOpenHashMap<>();
+            Ingredient repeatIngredient = Ingredient.EMPTY;
+            ItemStack repeatStack = ItemStack.EMPTY;
+            boolean hasRepeat = false;
             for (Content content : recipe.getInputContents(CAP)) {
                 Ingredient recipeIngredient = CAP.of(content.content);
+                if (!hasRepeat) repeatStack = recipeIngredient.getItems()[0];
+                hasRepeat = recipeIngredient.test(repeatStack);
+                if (repeatIngredient.isEmpty() && hasRepeat) repeatIngredient = recipeIngredient;
                 int ingredientCount;
                 if (recipeIngredient instanceof SizedIngredient sizedIngredient) {
                     ingredientCount = sizedIngredient.getAmount();
@@ -139,8 +145,7 @@ public class ItemRecipeCapabilityMixin {
                     ingredientCount = 1;
                 }
                 if (content.chance > 0) {
-                    countableMap.computeIfPresent(recipeIngredient, (k, v) -> v + ingredientCount);
-                    countableMap.putIfAbsent(recipeIngredient, ingredientCount);
+                    countableMap.addTo(hasRepeat ? repeatIngredient : recipeIngredient, ingredientCount);
                 }
             }
             if (countableMap.isEmpty()) {

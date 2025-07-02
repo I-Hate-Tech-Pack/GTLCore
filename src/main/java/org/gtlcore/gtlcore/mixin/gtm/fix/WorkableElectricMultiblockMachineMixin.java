@@ -24,6 +24,7 @@ import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -111,9 +112,10 @@ public abstract class WorkableElectricMultiblockMachineMixin extends WorkableMul
         }
         if (this.getRecipeLogic() instanceof ILockRecipe iLockRecipe) {
             if (iLockRecipe.isLock() && iLockRecipe.getLockRecipe() != null) {
-                textList.add(Component.translatable("gui.gtlcore.recipe_lock.recipe"));
-                textList.add(RecipeText.getRecipeInputText(iLockRecipe.getLockRecipe()));
-                textList.add(RecipeText.getRecipeOutputText(iLockRecipe.getLockRecipe()));
+                textList.add(Component.translatable("gui.gtlcore.recipe_lock.recipe")
+                        .withStyle((style -> style.withHoverEvent((new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                                RecipeText.getRecipeInputText(iLockRecipe.getLockRecipe())
+                                        .append(RecipeText.getRecipeOutputText(iLockRecipe.getLockRecipe()))))))));
             } else {
                 textList.add(Component.translatable("gui.gtlcore.recipe_lock.no_recipe"));
             }

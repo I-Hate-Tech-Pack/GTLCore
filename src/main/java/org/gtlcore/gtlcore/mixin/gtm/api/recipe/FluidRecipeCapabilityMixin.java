@@ -120,8 +120,7 @@ public class FluidRecipeCapabilityMixin {
                 FluidIngredient fluidInput = CAP.of(content.content);
                 long fluidAmount = fluidInput.getAmount();
                 if (content.chance > 0) {
-                    fluidCountMap.computeIfPresent(fluidInput, (k, v) -> v + fluidAmount);
-                    fluidCountMap.putIfAbsent(fluidInput, fluidAmount);
+                    fluidCountMap.addTo(fluidInput, fluidAmount);
                 }
             }
             if (fluidCountMap.isEmpty()) {

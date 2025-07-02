@@ -5,6 +5,7 @@ import com.gregtechceu.gtceu.api.capability.recipe.ItemRecipeCapability;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 
@@ -20,7 +21,9 @@ public class RecipeText {
 
     private static MutableComponent getIngredientText(GTRecipe recipe, boolean io) {
         if (recipe != null) {
-            MutableComponent buffer = io ? Component.translatable("gtceu.top.recipe_input") : Component.translatable("gtceu.top.recipe_output");
+            MutableComponent buffer = io ?
+                    Component.translatable("gtceu.top.recipe_input").withStyle(ChatFormatting.WHITE) :
+                    Component.translatable("gtceu.top.recipe_output").withStyle(ChatFormatting.WHITE);
             var items = io ? recipe.getInputContents(ItemRecipeCapability.CAP) : recipe.getOutputContents(ItemRecipeCapability.CAP);
             var fluids = io ? recipe.getInputContents(FluidRecipeCapability.CAP) : recipe.getOutputContents(FluidRecipeCapability.CAP);
             for (var item : items) {
@@ -31,11 +34,11 @@ public class RecipeText {
                 float chance = 100.0F * (float) item.chance / (float) item.maxChance;
                 String percent = FormattingUtil.formatPercent(chance);
                 if (chance == 100.0F) {
-                    buffer.append(Component.translatable("gtceu.machine.lockrecipe.line.0", stack.getHoverName(), count).getString());
+                    buffer.append(Component.translatable("gtceu.machine.lockrecipe.line.0", stack.getHoverName(), count).withStyle(ChatFormatting.GRAY));
                 } else if (chance == 0.0F) {
-                    buffer.append(Component.translatable("gtceu.machine.lockrecipe.line.2", stack.getHoverName(), count).getString());
+                    buffer.append(Component.translatable("gtceu.machine.lockrecipe.line.2", stack.getHoverName(), count).withStyle(ChatFormatting.GRAY));
                 } else {
-                    buffer.append(Component.translatable("gtceu.machine.lockrecipe.line.1", stack.getHoverName(), count, percent).getString());
+                    buffer.append(Component.translatable("gtceu.machine.lockrecipe.line.1", stack.getHoverName(), count, percent).withStyle(ChatFormatting.GRAY));
                 }
             }
             for (var fluid : fluids) {
@@ -56,11 +59,11 @@ public class RecipeText {
                 float chance = 100.0F * (float) fluid.chance / (float) fluid.maxChance;
                 String percent = FormattingUtil.formatPercent(chance);
                 if (chance == 100.0F) {
-                    buffer.append(Component.translatable("gtceu.machine.lockrecipe.line.0", stack.getDisplayName(), s).getString());
+                    buffer.append(Component.translatable("gtceu.machine.lockrecipe.line.0", stack.getDisplayName(), s).withStyle(ChatFormatting.GRAY));
                 } else if (chance == 0.0F) {
-                    buffer.append(Component.translatable("gtceu.machine.lockrecipe.line.2", stack.getDisplayName(), s).getString());
+                    buffer.append(Component.translatable("gtceu.machine.lockrecipe.line.2", stack.getDisplayName(), s).withStyle(ChatFormatting.GRAY));
                 } else {
-                    buffer.append(Component.translatable("gtceu.machine.lockrecipe.line.1", stack.getDisplayName(), s, percent).getString());
+                    buffer.append(Component.translatable("gtceu.machine.lockrecipe.line.1", stack.getDisplayName(), s, percent).withStyle(ChatFormatting.GRAY));
                 }
             }
             return buffer;

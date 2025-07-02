@@ -3,6 +3,7 @@ package org.gtlcore.gtlcore.api.machine.multiblock;
 import org.gtlcore.gtlcore.api.machine.trait.ICheckPatternMachine;
 
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
+import com.gregtechceu.gtceu.api.gui.fancy.ConfiguratorPanel;
 import com.gregtechceu.gtceu.api.gui.fancy.FancyMachineUIWidget;
 import com.gregtechceu.gtceu.api.gui.fancy.IFancyUIProvider;
 import com.gregtechceu.gtceu.api.gui.fancy.TooltipsPanel;
@@ -67,6 +68,12 @@ public class NoEnergyMultiblockMachine extends WorkableMultiblockMachine impleme
                             .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, tooltip))));
         }
         getDefinition().getAdditionalDisplay().accept(this, textList);
+    }
+
+    @Override
+    public void attachConfigurators(ConfiguratorPanel configuratorPanel) {
+        IFancyUIMachine.super.attachConfigurators(configuratorPanel);
+        ICheckPatternMachine.attachConfigurators(configuratorPanel, this);
     }
 
     @Override

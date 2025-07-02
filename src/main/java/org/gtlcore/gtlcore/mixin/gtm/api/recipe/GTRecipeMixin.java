@@ -9,6 +9,8 @@ import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.content.Content;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
+import net.minecraft.resources.ResourceLocation;
+
 import org.spongepowered.asm.mixin.*;
 
 import java.util.List;
@@ -17,6 +19,8 @@ import java.util.Map;
 @Mixin(GTRecipe.class)
 public abstract class GTRecipeMixin {
 
+    @Shadow(remap = false)
+    public ResourceLocation id;
     @Mutable
     @Final
     @Shadow(remap = false)
@@ -48,12 +52,15 @@ public abstract class GTRecipeMixin {
     @Overwrite(remap = false)
     public GTRecipe.ActionResult matchTickRecipe(IRecipeCapabilityHolder holder) {
         if (!this.hasTick()) return GTRecipe.ActionResult.SUCCESS;
-        long eu = this.getTickInputContents(EURecipeCapability.CAP).stream()
-                .map(Content::getContent).mapToLong(EURecipeCapability.CAP::of).sum();
         if (holder instanceof WorkableElectricMultiblockMachine machine) {
-            if (GTUtil.getTierByVoltage(eu) > GTUtil.getFloorTierByVoltage(machine.getOverclockVoltage()) && holder instanceof IRecipeStatus recipeStatus) {
-                recipeStatus.setRecipeStatus(RecipeResult.FailVOLTAGETIER);
-                return GTRecipe.ActionResult.fail(null);
+            GTRecipe lastRecipe = machine.getRecipeLogic().getLastOriginRecipe();
+            if (lastRecipe == null || !this.id.equals(lastRecipe.id)) {
+                long eu = this.getTickInputContents(EURecipeCapability.CAP).stream()
+                        .map(Content::getContent).mapToLong(EURecipeCapability.CAP::of).sum();
+                if (GTUtil.getTierByVoltage(eu) > GTUtil.getFloorTierByVoltage(machine.getOverclockVoltage()) && holder instanceof IRecipeStatus recipeStatus) {
+                    recipeStatus.setRecipeStatus(RecipeResult.FailVOLTAGETIER);
+                    return GTRecipe.ActionResult.fail(null);
+                }
             }
         }
         return this.matchRecipe(holder, true);

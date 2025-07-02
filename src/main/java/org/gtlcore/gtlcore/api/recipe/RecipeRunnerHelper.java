@@ -63,8 +63,8 @@ public class RecipeRunnerHelper {
             RecipeResult result = runner.handle(contents);
             if (holder instanceof IRecipeStatus status) {
                 status.setRecipeStatus(result.isSuccess() ? result : (io == IO.IN ? RecipeResult.FailFind : RecipeResult.FailOutput));
-                if (result.isSuccess()) return result;
             }
+            if (result.isSuccess()) return result;
         }
         return RecipeResult.fail(null);
     }
