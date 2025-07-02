@@ -1,23 +1,26 @@
 package org.gtlcore.gtlcore.mixin.gtm.api.machine;
 
 import org.gtlcore.gtlcore.api.machine.trait.IDistinctMachine;
+import org.gtlcore.gtlcore.api.machine.trait.IMEPartMachine;
 import org.gtlcore.gtlcore.api.machine.trait.RecipeHandlePart;
 
-import com.gregtechceu.gtceu.api.capability.recipe.IO;
-import com.gregtechceu.gtceu.api.capability.recipe.IRecipeHandler;
-import com.gregtechceu.gtceu.api.capability.recipe.RecipeCapability;
+import com.gregtechceu.gtceu.api.capability.recipe.*;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IDistinctPart;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiPart;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableMultiblockMachine;
+import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.common.machine.multiblock.part.FluidHatchPartMachine;
+import com.gregtechceu.gtceu.integration.ae2.machine.MEOutputBusPartMachine;
+import com.gregtechceu.gtceu.integration.ae2.machine.MEOutputHatchPartMachine;
 
 import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
 import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 
 import net.minecraft.resources.ResourceLocation;
 
+import com.hepdd.gtmthings.common.block.machine.multiblock.part.appeng.MEOutputPartMachine;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,8 +34,20 @@ import java.util.List;
 import java.util.Map;
 
 @Mixin(WorkableMultiblockMachine.class)
-public abstract class WorkableMultiblockMachineMixin extends MultiblockControllerMachine implements IDistinctMachine {
+public abstract class WorkableMultiblockMachineMixin extends MultiblockControllerMachine implements IDistinctMachine, IMEPartMachine {
 
+    @Persisted
+    @Getter
+    @Setter
+    private boolean MEOutPutBus = false;
+    @Persisted
+    @Getter
+    @Setter
+    private boolean MEOutPutHatch = false;
+    @Persisted
+    @Getter
+    @Setter
+    private boolean MEOutPutDual = false;
     @Persisted
     @DescSynced
     @Getter
@@ -62,6 +77,9 @@ public abstract class WorkableMultiblockMachineMixin extends MultiblockControlle
 
     @Inject(method = "onStructureInvalid", at = @At("TAIL"), remap = false)
     public void onStructureInvalid(CallbackInfo ci) {
+        MEOutPutBus = false;
+        MEOutPutHatch = false;
+        MEOutPutDual = false;
         this.capabilities.clear();
         this.capabilitiesFlat.clear();
         this.recipeHandleParts.clear();
@@ -69,9 +87,21 @@ public abstract class WorkableMultiblockMachineMixin extends MultiblockControlle
 
     @Inject(method = "onPartUnload", at = @At("TAIL"), remap = false)
     public void onPartUnload(CallbackInfo ci) {
+        MEOutPutBus = false;
+        MEOutPutHatch = false;
+        MEOutPutDual = false;
         this.capabilities.clear();
         this.capabilitiesFlat.clear();
         this.recipeHandleParts.clear();
+    }
+
+    @Override
+    public boolean isRecipeOutput(GTRecipe recipe) {
+        if (MEOutPutDual) return true;
+        else if (MEOutPutBus || recipe.getOutputContents(ItemRecipeCapability.CAP).isEmpty()) {
+            return MEOutPutHatch || recipe.getOutputContents(FluidRecipeCapability.CAP).isEmpty();
+        }
+        return false;
     }
 
     public void upDate() {
@@ -83,6 +113,15 @@ public abstract class WorkableMultiblockMachineMixin extends MultiblockControlle
         var distinctParts = new ObjectArrayList<IRecipeHandler<?>>();
         for (IMultiPart part : this.getParts()) {
             if (part instanceof FluidHatchPartMachine || part instanceof IDistinctPart) {
+                if (part instanceof MEOutputPartMachine) {
+                    MEOutPutBus = true;
+                    MEOutPutHatch = true;
+                    MEOutPutDual = true;
+                } else if (part instanceof MEOutputBusPartMachine) {
+                    MEOutPutBus = true;
+                } else if (part instanceof MEOutputHatchPartMachine) {
+                    MEOutPutHatch = true;
+                }
                 List<IRecipeHandler<?>> hatch = new ObjectArrayList<>();
                 boolean isOutput = false;
                 for (var v : part.getRecipeHandlers()) {

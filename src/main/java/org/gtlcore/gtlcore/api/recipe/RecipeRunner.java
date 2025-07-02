@@ -12,7 +12,6 @@ import com.gregtechceu.gtceu.api.recipe.content.Content;
 import com.gregtechceu.gtceu.api.recipe.content.ContentModifier;
 
 import it.unimi.dsi.fastutil.objects.*;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -53,9 +52,9 @@ public class RecipeRunner {
         this.simulated = simulated;
     }
 
-    public GTRecipe.ActionResult handle(Map<RecipeCapability<?>, List<Content>> entry) {
+    public RecipeResult handle(Map<RecipeCapability<?>, List<Content>> entry) {
         this.fillContent(entry);
-        if (this.recipeContent.isEmpty()) return GTRecipe.ActionResult.SUCCESS;
+        if (this.recipeContent.isEmpty()) return RecipeResult.SUCCESS;
         return this.handleContents();
     }
 
@@ -94,8 +93,8 @@ public class RecipeRunner {
         }
     }
 
-    private GTRecipe.@NotNull ActionResult handleContents() {
-        return handleContentsInternal(io) ? GTRecipe.ActionResult.SUCCESS : GTRecipe.ActionResult.fail(null);
+    private RecipeResult handleContents() {
+        return handleContentsInternal(io) ? RecipeResult.SUCCESS : RecipeResult.fail(null);
     }
 
     private boolean handleContentsInternal(IO capIO) {
@@ -130,6 +129,7 @@ public class RecipeRunner {
                     return itemContent.isEmpty() && fluidContent.isEmpty();
                 } else {
                     var handlers = iDistinctMachine.getCapabilities().getOrDefault(IO.OUT, new ObjectArrayList<>());
+                    handlers.sort(RecipeHandlePart.COMPARATOR.reversed());
                     for (var handler : handlers) {
                         recipeContent = handler.handleRecipe(capIO, recipe, recipeContent, simulated);
                         if (recipeContent.isEmpty()) {

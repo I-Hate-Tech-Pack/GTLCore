@@ -1,4 +1,4 @@
-package org.gtlcore.gtlcore.mixin.gtm;
+package org.gtlcore.gtlcore.mixin.gtm.ae.slot;
 
 import com.gregtechceu.gtceu.integration.ae2.slot.ExportOnlyAEItemSlot;
 import com.gregtechceu.gtceu.integration.ae2.slot.ExportOnlyAESlot;
