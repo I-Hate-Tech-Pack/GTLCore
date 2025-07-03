@@ -18,6 +18,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 
 import com.google.common.primitives.Ints;
+import com.hepdd.gtmthings.common.block.machine.trait.CatalystItemStackHandler;
 import it.unimi.dsi.fastutil.objects.*;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -97,6 +98,7 @@ public class ItemRecipeCapabilityMixin {
             if (iDistinctMachine.isDistinct() && iDistinctMachine.getDistinctHatch() != null) {
                 List<IRecipeHandler<?>> distinctIMultiPart = iDistinctMachine.getDistinctHatch().getHandlerMap().getOrDefault(CAP, Collections.emptyList());
                 for (IRecipeHandler<?> handler : distinctIMultiPart) {
+                    if (handler instanceof CatalystItemStackHandler) continue;
                     for (Object o : handler.getContents()) {
                         if (o instanceof ItemStack itemStack) {
                             ingredientStacks.computeLong(itemStack, (k, v) -> v == null ? itemStack.getCount() : v + itemStack.getCount());
@@ -107,6 +109,7 @@ public class ItemRecipeCapabilityMixin {
                 Object2LongOpenCustomHashMap<ItemStack> map = new Object2LongOpenCustomHashMap<>(ItemStackHashStrategy.comparingAllButCount());
                 List<IRecipeHandler<?>> recipeHandlerList = iDistinctMachine.getCapabilitiesFlat(IO.IN, CAP);
                 for (IRecipeHandler<?> container : recipeHandlerList) {
+                    if (container instanceof CatalystItemStackHandler) continue;
                     Object2LongOpenCustomHashMap<ItemStack> itemMap = new Object2LongOpenCustomHashMap<>(ItemStackHashStrategy.comparingAllButCount());
                     for (Object o : container.getContents()) {
                         if (o instanceof ItemStack itemStack) {

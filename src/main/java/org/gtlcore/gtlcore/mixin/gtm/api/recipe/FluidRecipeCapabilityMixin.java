@@ -16,6 +16,7 @@ import com.gregtechceu.gtceu.api.recipe.modifier.ParallelLogic;
 import com.lowdragmc.lowdraglib.side.fluid.FluidStack;
 
 import com.google.common.primitives.Ints;
+import com.hepdd.gtmthings.common.block.machine.trait.CatalystFluidStackHandler;
 import it.unimi.dsi.fastutil.objects.Object2LongMaps;
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import org.spongepowered.asm.mixin.Mixin;
@@ -102,6 +103,7 @@ public class FluidRecipeCapabilityMixin {
             if (iDistinctMachine.isDistinct() && iDistinctMachine.getDistinctHatch() != null) {
                 List<IRecipeHandler<?>> distinctIMultiPart = iDistinctMachine.getDistinctHatch().getHandlerMap().getOrDefault(CAP, Collections.emptyList());
                 for (IRecipeHandler<?> handler : distinctIMultiPart) {
+                    if (handler instanceof CatalystFluidStackHandler) continue;
                     for (Object o : handler.getContents()) {
                         if (o instanceof FluidStack fluidStack) {
                             ingredientStacks.computeLong(fluidStack, (k, v) -> v == null ? fluidStack.getAmount() : v + fluidStack.getAmount());
@@ -110,6 +112,7 @@ public class FluidRecipeCapabilityMixin {
                 }
             } else {
                 for (var container : iDistinctMachine.getCapabilitiesFlat(IO.IN, CAP)) {
+                    if (container instanceof CatalystFluidStackHandler) continue;
                     for (Object object : container.getContents()) {
                         if (object instanceof FluidStack fluidStack) {
                             ingredientStacks.computeLong(fluidStack, (k, v) -> v == null ? fluidStack.getAmount() : v + fluidStack.getAmount());
