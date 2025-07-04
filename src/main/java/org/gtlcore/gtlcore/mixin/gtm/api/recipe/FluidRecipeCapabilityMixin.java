@@ -23,7 +23,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static com.gregtechceu.gtceu.api.capability.recipe.FluidRecipeCapability.CAP;
@@ -97,21 +96,16 @@ public class FluidRecipeCapabilityMixin {
     @Overwrite(remap = false)
     public int getMaxParallelRatio(IRecipeCapabilityHolder holder, GTRecipe recipe, int parallelAmount) {
         if (parallelAmount <= 1 || recipe.inputs.get(CAP) == null) return parallelAmount;
-        if (holder instanceof IDistinctMachine iDistinctMachine) {
-            if (iDistinctMachine.getRecipeHandleParts().isEmpty()) return 0;
+        if (holder instanceof IDistinctMachine machine) {
+            if (machine.getRecipeHandleParts().isEmpty()) return 0;
             Object2LongOpenHashMap<FluidStack> ingredientStacks = new Object2LongOpenHashMap<>();
-            if (iDistinctMachine.isDistinct() && iDistinctMachine.getDistinctHatch() != null) {
-                List<IRecipeHandler<?>> distinctIMultiPart = iDistinctMachine.getDistinctHatch().getHandlerMap().getOrDefault(CAP, Collections.emptyList());
-                for (IRecipeHandler<?> handler : distinctIMultiPart) {
-                    if (handler instanceof CatalystFluidStackHandler) continue;
-                    for (Object o : handler.getContents()) {
-                        if (o instanceof FluidStack fluidStack) {
-                            ingredientStacks.computeLong(fluidStack, (k, v) -> v == null ? fluidStack.getAmount() : v + fluidStack.getAmount());
-                        }
-                    }
+            if (machine.isDistinct() && machine.getDistinctHatch() != null) {
+                for (var it = machine.getDistinctHatch().getContent(CAP).object2LongEntrySet().fastIterator(); it.hasNext();) {
+                    var entry = it.next();
+                    ingredientStacks.computeLong((FluidStack) entry.getKey(), (k, v) -> v == null ? entry.getLongValue() : v + entry.getLongValue());
                 }
             } else {
-                for (var container : iDistinctMachine.getCapabilitiesFlat(IO.IN, CAP)) {
+                for (var container : machine.getCapabilitiesFlat(IO.IN, CAP)) {
                     if (container instanceof CatalystFluidStackHandler) continue;
                     for (Object object : container.getContents()) {
                         if (object instanceof FluidStack fluidStack) {

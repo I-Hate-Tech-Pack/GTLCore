@@ -20,7 +20,10 @@ import appeng.api.storage.cells.CellState;
 import appeng.api.storage.cells.ISaveProvider;
 import appeng.api.storage.cells.StorageCell;
 import appeng.core.AELog;
+import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectMaps;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import lombok.Getter;
 
 import java.math.BigInteger;
@@ -218,7 +221,8 @@ public class InfinityCellInventory implements StorageCell {
 
     protected void saveChanges() {
         this.storedItemCount = 0;
-        for (BigInteger storedAmount : this.storedMap.values()) {
+        for (ObjectIterator<Object2ObjectMap.Entry<AEKey, BigInteger>> it = Object2ObjectMaps.fastIterator(this.storedMap); it.hasNext();) {
+            BigInteger storedAmount = it.next().getValue();
             if (this.storedItemCount < 0) {
                 this.storedItemCount = Double.MAX_VALUE;
                 break;

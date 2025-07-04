@@ -3,8 +3,13 @@ package org.gtlcore.gtlcore.api.machine.trait;
 import com.gregtechceu.gtceu.api.capability.recipe.*;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
+import com.lowdragmc.lowdraglib.side.fluid.FluidStack;
+
+import net.minecraft.world.item.ItemStack;
+
+import com.hepdd.gtmthings.common.block.machine.trait.CatalystFluidStackHandler;
+import com.hepdd.gtmthings.common.block.machine.trait.CatalystItemStackHandler;
+import it.unimi.dsi.fastutil.objects.*;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
@@ -27,6 +32,8 @@ public class RecipeHandlePart {
     @Getter
     private final Reference2ObjectOpenHashMap<RecipeCapability<?>, List<IRecipeHandler<?>>> handlerMap = new Reference2ObjectOpenHashMap<>();
     private final List<IRecipeHandler<?>> allHandlers = new ArrayList<>();
+    private Object2LongOpenHashMap<ItemStack> itemContent;
+    private Object2LongOpenHashMap<FluidStack> fluidContent;
 
     public RecipeHandlePart(IO io) {
         this.handlerIO = io;
@@ -36,6 +43,42 @@ public class RecipeHandlePart {
         RecipeHandlePart rhl = new RecipeHandlePart(io);
         rhl.addHandlers(handlers);
         return rhl;
+    }
+
+    public Object2LongOpenHashMap<?> getContent(RecipeCapability<?> cap) {
+        if (cap == ItemRecipeCapability.CAP) {
+            itemContent = (Object2LongOpenHashMap<ItemStack>) this.initializeContent(cap);
+            return itemContent;
+        } else {
+            fluidContent = (Object2LongOpenHashMap<FluidStack>) this.initializeContent(cap);
+            return fluidContent;
+        }
+    }
+
+    public Object2LongOpenHashMap<?> initializeContent(RecipeCapability<?> cap) {
+        if (cap == ItemRecipeCapability.CAP) {
+            itemContent = new Object2LongOpenHashMap<>();
+            for (var itemsRecipeContent : this.getCapability(cap)) {
+                if (itemsRecipeContent instanceof CatalystItemStackHandler || itemsRecipeContent instanceof NotifiableCircuitItemStackHandler) continue;
+                for (var item : itemsRecipeContent.getContents()) {
+                    if (item instanceof ItemStack itemStack) {
+                        itemContent.computeLong(itemStack, (k, v) -> v == null ? itemStack.getCount() : v + itemStack.getCount());
+                    }
+                }
+            }
+        } else if (cap == FluidRecipeCapability.CAP) {
+            fluidContent = new Object2LongOpenHashMap<>();
+            for (var fluidsRecipeContent : this.getCapability(cap)) {
+                if (fluidsRecipeContent instanceof CatalystFluidStackHandler) continue;
+                for (var fluid : fluidsRecipeContent.getContents()) {
+                    if (fluid instanceof FluidStack fluidStack) {
+                        fluidContent.computeLong(fluidStack, (k, v) -> v == null ? fluidStack.getAmount() : v + fluidStack.getAmount());
+                    }
+                }
+            }
+        }
+        if (cap == ItemRecipeCapability.CAP) return itemContent;
+        else return fluidContent;
     }
 
     public void addHandlers(Iterable<IRecipeHandler<?>> handlers) {
@@ -50,10 +93,6 @@ public class RecipeHandlePart {
         for (var list : getHandlerMap().values()) {
             list.sort(IRecipeHandler.ENTRY_COMPARATOR);
         }
-    }
-
-    public boolean hasCapability(RecipeCapability<?> cap) {
-        return getHandlerMap().containsKey(cap);
     }
 
     public @NotNull List<IRecipeHandler<?>> getCapability(RecipeCapability<?> cap) {
@@ -85,9 +124,7 @@ public class RecipeHandlePart {
                     if (left == null) {
                         it.remove();
                         break;
-                    } else {
-                        entry.setValue(new ArrayList<>(left));
-                    }
+                    } else entry.setValue(new ArrayList<>(left));
                 }
             }
         }
