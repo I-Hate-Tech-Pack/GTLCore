@@ -29,8 +29,6 @@ public class MultipleRecipesLogic extends RecipeLogic implements ILockRecipe {
 
     private final ParallelMachine parallel;
 
-    private boolean change = false;
-
     private final BiPredicate<CompoundTag, IRecipeLogicMachine> dataCheck;
 
     public MultipleRecipesLogic(ParallelMachine machine) {
@@ -51,8 +49,6 @@ public class MultipleRecipesLogic extends RecipeLogic implements ILockRecipe {
     @Override
     public void findAndHandleRecipe() {
         lastRecipe = null;
-        lastOriginRecipe = null;
-        change = false;
         var match = getRecipe();
         if (match != null) {
             if (RecipeRunnerHelper.matchRecipeOutput(machine, match)) {
@@ -99,7 +95,6 @@ public class MultipleRecipesLogic extends RecipeLogic implements ILockRecipe {
             }
             match = lookupRecipe();
             if (match == null) break;
-            else if (!match.equals(lastOriginRecipe)) lastOriginRecipe = match;
         }
         if (recipe.outputs.get(ItemRecipeCapability.CAP).isEmpty() && recipe.outputs.get(FluidRecipeCapability.CAP).isEmpty())
             return null;
@@ -116,11 +111,7 @@ public class MultipleRecipesLogic extends RecipeLogic implements ILockRecipe {
             else if (!RecipeRunnerHelper.matchRecipe(machine, this.getLockRecipe())) return null;
             return this.getLockRecipe();
         } else {
-            if (change) {
-                change = false;
-                return machine.getRecipeType().getLookup().findRecipe(machine);
-            }
-            return lastOriginRecipe == null ? machine.getRecipeType().getLookup().findRecipe(machine) : lastOriginRecipe;
+            return machine.getRecipeType().getLookup().findRecipe(machine);
         }
     }
 
@@ -138,7 +129,6 @@ public class MultipleRecipesLogic extends RecipeLogic implements ILockRecipe {
                 }
             }
         }
-        if (maxMultipliers != max) change = true;
         if (maxMultipliers > 1) {
             recipe = recipe.copy(ContentModifier.multiplier(maxMultipliers), false);
         }

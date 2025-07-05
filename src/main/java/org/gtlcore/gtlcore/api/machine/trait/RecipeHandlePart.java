@@ -31,7 +31,7 @@ public class RecipeHandlePart {
     private final IO handlerIO;
     @Getter
     private final Reference2ObjectOpenHashMap<RecipeCapability<?>, List<IRecipeHandler<?>>> handlerMap = new Reference2ObjectOpenHashMap<>();
-    private final List<IRecipeHandler<?>> allHandlers = new ArrayList<>();
+    private final List<IRecipeHandler<?>> allHandlers = new ObjectArrayList<>();
     private Object2LongOpenHashMap<ItemStack> itemContent;
     private Object2LongOpenHashMap<FluidStack> fluidContent;
 

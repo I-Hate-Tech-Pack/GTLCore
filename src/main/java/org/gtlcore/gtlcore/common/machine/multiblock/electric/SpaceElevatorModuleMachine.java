@@ -44,32 +44,48 @@ public class SpaceElevatorModuleMachine extends WorkableElectricMultiblockMachin
 
     private final boolean SEPMTier;
 
+    private SpaceElevatorMachine controller;
+
     private void getSpaceElevatorTier() {
-        Level level = getLevel();
-        BlockPos pos = getPos();
-        BlockPos[] coordinates = new BlockPos[] { pos.offset(8, -2, 3),
-                pos.offset(8, -2, -3),
-                pos.offset(-8, -2, 3),
-                pos.offset(-8, -2, -3),
-                pos.offset(3, -2, 8),
-                pos.offset(-3, -2, 8),
-                pos.offset(3, -2, -8),
-                pos.offset(-3, -2, -8) };
-        for (BlockPos i : coordinates) {
-            if (level != null && level.getBlockState(i).getBlock() == GTLBlocks.POWER_CORE.get()) {
-                BlockPos[] coordinatess = new BlockPos[] { i.offset(3, 2, 0),
-                        i.offset(-3, 2, 0),
-                        i.offset(0, 2, 3),
-                        i.offset(0, 2, -3) };
-                for (BlockPos j : coordinatess) {
-                    RecipeLogic logic = GTCapabilityHelper.getRecipeLogic(level, j, null);
-                    if (logic != null && logic.getMachine().getDefinition() == AdvancedMultiBlockMachine.SPACE_ELEVATOR) {
-                        if (logic.isWorking() && logic.getProgress() > 80) {
-                            SpaceElevatorTier = ((SpaceElevatorMachine) logic.machine).getTier() - GTValues.ZPM;
-                            ModuleTier = ((SpaceElevatorMachine) logic.machine).getCasingTier();
-                        } else if (!logic.isWorking()) {
-                            SpaceElevatorTier = 0;
-                            ModuleTier = 0;
+        if (controller != null) {
+            RecipeLogic logic = controller.recipeLogic;
+            if (logic != null) {
+                if (logic.isWorking() && logic.getProgress() > 80) {
+                    SpaceElevatorTier = controller.getTier() - GTValues.ZPM;
+                    ModuleTier = controller.getCasingTier();
+                } else if (!logic.isWorking()) {
+                    SpaceElevatorTier = 0;
+                    ModuleTier = 0;
+                }
+            }
+        } else {
+            Level level = getLevel();
+            BlockPos pos = getPos();
+            BlockPos[] coordinates = new BlockPos[] { pos.offset(8, -2, 3),
+                    pos.offset(8, -2, -3),
+                    pos.offset(-8, -2, 3),
+                    pos.offset(-8, -2, -3),
+                    pos.offset(3, -2, 8),
+                    pos.offset(-3, -2, 8),
+                    pos.offset(3, -2, -8),
+                    pos.offset(-3, -2, -8) };
+            for (BlockPos i : coordinates) {
+                if (level != null && level.getBlockState(i).getBlock() == GTLBlocks.POWER_CORE.get()) {
+                    BlockPos[] coordinatess = new BlockPos[] { i.offset(3, 2, 0),
+                            i.offset(-3, 2, 0),
+                            i.offset(0, 2, 3),
+                            i.offset(0, 2, -3) };
+                    for (BlockPos j : coordinatess) {
+                        RecipeLogic logic = GTCapabilityHelper.getRecipeLogic(level, j, null);
+                        if (logic != null && logic.getMachine().getDefinition() == AdvancedMultiBlockMachine.SPACE_ELEVATOR) {
+                            controller = (SpaceElevatorMachine) logic.machine;
+                            if (logic.isWorking() && logic.getProgress() > 80) {
+                                SpaceElevatorTier = controller.getTier() - GTValues.ZPM;
+                                ModuleTier = controller.getCasingTier();
+                            } else if (!logic.isWorking()) {
+                                SpaceElevatorTier = 0;
+                                ModuleTier = 0;
+                            }
                         }
                     }
                 }
@@ -80,21 +96,39 @@ public class SpaceElevatorModuleMachine extends WorkableElectricMultiblockMachin
     @Nullable
     public static GTRecipe recipeModifier(MetaMachine machine, @NotNull GTRecipe recipe, @NotNull OCParams params,
                                           @NotNull OCResult result) {
-        if (machine instanceof SpaceElevatorModuleMachine spaceElevatorModuleMachine) {
-            spaceElevatorModuleMachine.getSpaceElevatorTier();
-            if (spaceElevatorModuleMachine.SpaceElevatorTier < 1) {
+        if (machine instanceof SpaceElevatorModuleMachine moduleMachine) {
+            moduleMachine.getSpaceElevatorTier();
+            if (moduleMachine.SpaceElevatorTier < 1) {
                 return null;
             }
-            if (spaceElevatorModuleMachine.SEPMTier && recipe.data.getInt("SEPMTier") > spaceElevatorModuleMachine.ModuleTier) {
+            if (moduleMachine.SEPMTier && recipe.data.getInt("SEPMTier") > moduleMachine.ModuleTier) {
                 return null;
             }
-            GTRecipe recipe1 = GTLRecipeModifiers.reduction(machine, recipe, 1, Math.pow(0.8, spaceElevatorModuleMachine.SpaceElevatorTier - 1));
+            GTRecipe recipe1 = GTLRecipeModifiers.reduction(machine, recipe, 1, Math.pow(0.8, moduleMachine.SpaceElevatorTier - 1));
             if (recipe1 != null) {
-                recipe1 = GTRecipeModifiers.accurateParallel(machine, recipe1, (int) Math.pow(4, spaceElevatorModuleMachine.ModuleTier - 1), false).getFirst();
-                if (recipe1 != null) return RecipeHelper.applyOverclock(OverclockingLogic.NON_PERFECT_OVERCLOCK_SUBTICK, recipe1, spaceElevatorModuleMachine.getOverclockVoltage(), params, result);
+                recipe1 = GTRecipeModifiers.accurateParallel(machine, recipe1, (int) Math.pow(4, moduleMachine.ModuleTier - 1), false).getFirst();
+                if (recipe1 != null) return RecipeHelper.applyOverclock(OverclockingLogic.NON_PERFECT_OVERCLOCK_SUBTICK, recipe1, moduleMachine.getOverclockVoltage(), params, result);
             }
         }
         return null;
+    }
+
+    @Override
+    public void onStructureFormed() {
+        super.onStructureFormed();
+        getSpaceElevatorTier();
+    }
+
+    @Override
+    public void onStructureInvalid() {
+        super.onStructureInvalid();
+        controller = null;
+    }
+
+    @Override
+    public void onPartUnload() {
+        super.onPartUnload();
+        controller = null;
     }
 
     @Override

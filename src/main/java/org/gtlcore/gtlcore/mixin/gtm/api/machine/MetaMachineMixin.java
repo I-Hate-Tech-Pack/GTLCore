@@ -27,6 +27,7 @@ import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.EnumSet;
@@ -36,6 +37,9 @@ import java.util.Set;
 
 @Mixin(MetaMachine.class)
 public abstract class MetaMachineMixin implements IPerformanceDisplayMachine {
+
+    @Unique
+    private long gtlcore$offsetTimer;
 
     @Unique
     private long gtlcore$lastExecutionTime;
@@ -69,9 +73,6 @@ public abstract class MetaMachineMixin implements IPerformanceDisplayMachine {
     public abstract BlockState getBlockState();
 
     @Shadow(remap = false)
-    public abstract long getOffsetTimer();
-
-    @Shadow(remap = false)
     @Final
     private List<TickableSubscription> serverTicks;
 
@@ -99,6 +100,20 @@ public abstract class MetaMachineMixin implements IPerformanceDisplayMachine {
     }
 
     /**
+     * @author .
+     * @reason .
+     */
+    @Overwrite(remap = false)
+    public long getOffsetTimer() {
+        return this.gtlcore$offsetTimer;
+    }
+
+    @Inject(method = { "clientTick" }, at = { @At("HEAD") }, remap = false)
+    public void clientTick(CallbackInfo ci) {
+        this.gtlcore$offsetTimer = this.holder.getOffsetTimer();
+    }
+
+    /**
      * @author form nutant
      * @reason Add tick time
      */
@@ -109,13 +124,14 @@ public abstract class MetaMachineMixin implements IPerformanceDisplayMachine {
         if (currentTime - gtlcore$lastExecutionTime < 40) {
             return;
         }
+        this.gtlcore$offsetTimer = this.holder.getOffsetTimer();
         gtlcore$lastExecutionTime = currentTime;
         boolean observe = PerformanceMonitorMachine.observe || gtlcore$observe;
         if (observe) currentTime = System.nanoTime();
         runTick();
         if (observe) {
             gtlcore$totaTtickCount += System.nanoTime() - currentTime;
-            if (getOffsetTimer() % 40 == 0) {
+            if (gtlcore$offsetTimer % 40L == 0) {
                 gtlcore$observe = false;
                 gtlcore$averageTickTime = (int) (gtlcore$totaTtickCount / 40000);
                 gtlcore$totaTtickCount = 0;

@@ -22,8 +22,8 @@ public class FluidHatchPartMachineMixin extends TieredIOPartMachine {
     }
 
     /**
-     * @author
-     * @reason
+     * @author .
+     * @reason .
      */
     @Overwrite(remap = false)
     public static long getTankCapacity(long initialCapacity, int tier) {
@@ -36,4 +36,15 @@ public class FluidHatchPartMachineMixin extends TieredIOPartMachine {
             cir.setReturnValue(new NotifiableCircuitItemStackHandler(this));
         }
     }
+
+    @Override
+    public boolean isWorkingEnabled() {
+        return !this.workingEnabled;
+    }
+
+    @Override
+    public void setWorkingEnabled(boolean workingEnabled) {
+        this.workingEnabled = !workingEnabled;
+    }
+
 }

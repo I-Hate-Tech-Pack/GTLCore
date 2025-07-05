@@ -1,7 +1,9 @@
 package org.gtlcore.gtlcore.mixin.gtm.api.recipe;
 
 import org.gtlcore.gtlcore.api.machine.trait.IDistinctMachine;
+import org.gtlcore.gtlcore.api.machine.trait.IRecipeStatus;
 import org.gtlcore.gtlcore.api.machine.trait.RecipeHandlePart;
+import org.gtlcore.gtlcore.api.recipe.RecipeResult;
 import org.gtlcore.gtlcore.api.recipe.RecipeRunnerHelper;
 
 import com.gregtechceu.gtceu.api.capability.recipe.*;
@@ -63,13 +65,17 @@ public abstract class GTRecipeLookupMixin {
             if (totalSize == 0) return null;
             List<List<AbstractMapIngredient>> list = new ObjectArrayList<>(totalSize);
             list.addAll(fromHolder(holder));
-            if (list.isEmpty()) return null;
+            if (list.isEmpty()) {
+                if (holder instanceof IRecipeStatus iRecipeStatus) iRecipeStatus.setRecipeStatus(RecipeResult.FailNOINPUT);
+                return null;
+            }
             return list;
         } else if (holder instanceof IDistinctMachine iDistinctMachine) {
             if (iDistinctMachine.getRecipeHandleParts().isEmpty()) return null;
             List<List<AbstractMapIngredient>> list = new ObjectArrayList<>(iDistinctMachine.getRecipeHandleParts().size());
             list.addAll(this.gtlcore$fromHolder(iDistinctMachine));
             if (list.isEmpty()) {
+                if (holder instanceof IRecipeStatus iRecipeStatus) iRecipeStatus.setRecipeStatus(RecipeResult.FailNOINPUT);
                 return null;
             }
             return list;

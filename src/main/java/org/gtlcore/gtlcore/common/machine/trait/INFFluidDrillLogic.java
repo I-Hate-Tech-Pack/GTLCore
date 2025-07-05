@@ -1,5 +1,6 @@
 package org.gtlcore.gtlcore.common.machine.trait;
 
+import org.gtlcore.gtlcore.api.recipe.RecipeRunnerHelper;
 import org.gtlcore.gtlcore.common.machine.multiblock.electric.INFFluidDrillMachine;
 
 import com.gregtechceu.gtceu.api.GTValues;
@@ -69,7 +70,7 @@ public class INFFluidDrillLogic extends RecipeLogic {
                     .outputFluids(FluidStack.create(veinFluid,
                             getFluidToProduce(data.getFluidVeinWorldEntry(getChunkX(), getChunkZ()))))
                     .buildRawRecipe();
-            if (recipe.matchRecipe(getMachine()).isSuccess() && recipe.matchTickRecipe(getMachine()).isSuccess()) {
+            if (RecipeRunnerHelper.matchRecipeOutput(getMachine(), recipe) && recipe.matchTickRecipe(getMachine()).isSuccess()) {
                 return recipe;
             }
         }
