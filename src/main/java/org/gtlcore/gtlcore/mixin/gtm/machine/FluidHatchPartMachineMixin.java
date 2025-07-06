@@ -36,15 +36,4 @@ public class FluidHatchPartMachineMixin extends TieredIOPartMachine {
             cir.setReturnValue(new NotifiableCircuitItemStackHandler(this));
         }
     }
-
-    @Override
-    public boolean isWorkingEnabled() {
-        return !this.workingEnabled;
-    }
-
-    @Override
-    public void setWorkingEnabled(boolean workingEnabled) {
-        this.workingEnabled = !workingEnabled;
-    }
-
 }

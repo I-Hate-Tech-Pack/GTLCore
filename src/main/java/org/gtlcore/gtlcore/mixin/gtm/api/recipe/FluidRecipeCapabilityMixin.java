@@ -121,6 +121,7 @@ public class FluidRecipeCapabilityMixin {
                     fluidCountMap.addTo(fluidInput, fluidInput.getAmount());
                 }
             }
+            if (fluidCountMap.isEmpty()) return parallelAmount;
             long needed;
             long available;
             for (var it = fluidCountMap.object2LongEntrySet().fastIterator(); it.hasNext(); parallelAmount = Ints.saturatedCast(Math.min(parallelAmount, available / needed))) {

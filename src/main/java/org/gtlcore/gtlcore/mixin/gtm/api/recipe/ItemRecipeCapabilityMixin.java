@@ -2,7 +2,6 @@ package org.gtlcore.gtlcore.mixin.gtm.api.recipe;
 
 import org.gtlcore.gtlcore.api.machine.trait.IDistinctMachine;
 import org.gtlcore.gtlcore.api.machine.trait.IMEPartMachine;
-import org.gtlcore.gtlcore.api.recipe.ingredient.ItemIngredientMap;
 
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.capability.recipe.*;
@@ -111,7 +110,7 @@ public class ItemRecipeCapabilityMixin {
                     ingredientStacks.computeLong(obj.getKey(), (k, v) -> v == null ? obj.getLongValue() : v + obj.getLongValue());
                 }
             }
-            ItemIngredientMap countableMap = new ItemIngredientMap();
+            Object2IntOpenHashMap<Ingredient> countableMap = new Object2IntOpenHashMap<>();
             for (Content content : recipe.getInputContents(CAP)) {
                 Ingredient recipeIngredient = CAP.of(content.content);
                 int ingredientCount;
@@ -126,11 +125,12 @@ public class ItemRecipeCapabilityMixin {
                     countableMap.addTo(recipeIngredient, ingredientCount);
                 }
             }
+            if (countableMap.isEmpty()) return parallelAmount;
             long needed;
             long available;
-            for (var it = Object2LongMaps.fastIterator(countableMap.getIngredientMap()); it.hasNext(); parallelAmount = Ints.saturatedCast(Math.min(parallelAmount, available / needed))) {
+            for (var it = Object2IntMaps.fastIterator(countableMap); it.hasNext(); parallelAmount = Ints.saturatedCast(Math.min(parallelAmount, available / needed))) {
                 var entry = it.next();
-                needed = entry.getLongValue();
+                needed = entry.getIntValue();
                 available = 0;
                 for (var iter = Object2LongMaps.fastIterator(ingredientStacks); iter.hasNext();) {
                     var inputItem = iter.next();
@@ -144,7 +144,7 @@ public class ItemRecipeCapabilityMixin {
                     break;
                 }
             }
-            return Ints.saturatedCast(parallelAmount);
+            return parallelAmount;
         }
         return 1;
     }
