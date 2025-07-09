@@ -2,7 +2,6 @@ package org.gtlcore.gtlcore.common.machine.trait;
 
 import org.gtlcore.gtlcore.api.machine.multiblock.ParallelMachine;
 import org.gtlcore.gtlcore.api.machine.trait.ILockRecipe;
-import org.gtlcore.gtlcore.api.recipe.RecipeRunnerHelper;
 
 import com.gregtechceu.gtceu.api.capability.recipe.*;
 import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
@@ -23,6 +22,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiPredicate;
+
+import static org.gtlcore.gtlcore.api.recipe.RecipeRunnerHelper.*;
 
 @Getter
 public class MultipleRecipesLogic extends RecipeLogic implements ILockRecipe {
@@ -51,7 +52,7 @@ public class MultipleRecipesLogic extends RecipeLogic implements ILockRecipe {
         lastRecipe = null;
         var match = getRecipe();
         if (match != null) {
-            if (RecipeRunnerHelper.matchRecipeOutput(machine, match)) {
+            if (matchRecipeOutput(machine, match)) {
                 setupRecipe(match);
             }
         }
@@ -62,7 +63,6 @@ public class MultipleRecipesLogic extends RecipeLogic implements ILockRecipe {
         if (!machine.hasProxies()) return null;
         GTRecipe match = lookupRecipe();
         if (match == null) return null;
-        lastOriginRecipe = match;
         GTRecipe recipe = buildEmptyRecipe();
         recipe.outputs.put(ItemRecipeCapability.CAP, new ArrayList<>());
         recipe.outputs.put(FluidRecipeCapability.CAP, new ArrayList<>());
@@ -82,7 +82,7 @@ public class MultipleRecipesLogic extends RecipeLogic implements ILockRecipe {
             }
             input.inputs.putAll(match.inputs);
             input.setId(match.id);
-            if (RecipeRunnerHelper.handleRecipeInput(machine, input)) {
+            if (handleRecipeInput(machine, input)) {
                 totalEu += match.duration * inputEUt;
                 List<Content> item = match.outputs.get(ItemRecipeCapability.CAP);
                 if (item != null) {
@@ -108,7 +108,7 @@ public class MultipleRecipesLogic extends RecipeLogic implements ILockRecipe {
     private GTRecipe lookupRecipe() {
         if (this.isLock()) {
             if (this.getLockRecipe() == null) this.setLockRecipe(machine.getRecipeType().getLookup().findRecipe(machine));
-            else if (!RecipeRunnerHelper.matchRecipe(machine, this.getLockRecipe())) return null;
+            else if (!matchRecipe(machine, this.getLockRecipe())) return null;
             return this.getLockRecipe();
         } else {
             return machine.getRecipeType().getLookup().findRecipe(machine);
@@ -140,11 +140,11 @@ public class MultipleRecipesLogic extends RecipeLogic implements ILockRecipe {
         machine.afterWorking();
         if (lastRecipe != null) {
             lastRecipe.postWorking(this.machine);
-            RecipeRunnerHelper.handleRecipeOutput(this.machine, lastRecipe);
+            handleRecipeOutput(this.machine, lastRecipe);
         }
         var match = getRecipe();
         if (match != null) {
-            if (RecipeRunnerHelper.matchRecipeOutput(machine, match)) {
+            if (matchRecipeOutput(machine, match)) {
                 setupRecipe(match);
                 return;
             }

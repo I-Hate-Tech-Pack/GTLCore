@@ -13,9 +13,7 @@ import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.gui.fancy.ConfiguratorPanel;
 import com.gregtechceu.gtceu.api.gui.fancy.IFancyConfiguratorButton;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
-import com.gregtechceu.gtceu.api.machine.fancyconfigurator.OverclockFancyConfigurator;
 import com.gregtechceu.gtceu.api.machine.feature.IFancyUIMachine;
-import com.gregtechceu.gtceu.api.machine.feature.IOverclockMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableMultiblockMachine;
 import com.gregtechceu.gtceu.api.misc.EnergyContainerList;
@@ -35,7 +33,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.*;
+import java.util.List;
 
 @Mixin(WorkableElectricMultiblockMachine.class)
 public abstract class WorkableElectricMultiblockMachineMixin extends WorkableMultiblockMachine implements IFancyUIMachine, IRecipeStatus, ICheckPatternMachine {
@@ -94,9 +92,6 @@ public abstract class WorkableElectricMultiblockMachineMixin extends WorkableMul
                 this::isWorkingEnabled, (clickData, pressed) -> this.setWorkingEnabled(pressed))
                 .setTooltipsSupplier(pressed -> List.of(
                         Component.translatable(pressed ? "behaviour.soft_hammer.enabled" : "behaviour.soft_hammer.disabled"))));
-        if (this instanceof IOverclockMachine overclockMachine) {
-            configuratorPanel.attachConfigurators(new OverclockFancyConfigurator(overclockMachine));
-        }
         if (this.self() instanceof ResearchStationMachine) return;
         IDistinctMachine.attachConfigurators(configuratorPanel, (WorkableElectricMultiblockMachine) self());
         ILockRecipe.attachRecipeLockable(configuratorPanel, this.getRecipeLogic());

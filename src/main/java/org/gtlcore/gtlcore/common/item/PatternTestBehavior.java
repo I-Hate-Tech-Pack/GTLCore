@@ -133,17 +133,6 @@ public class PatternTestBehavior implements IItemUIFactory {
 
     public void useAe2PatternGenerator(HeldItemUIFactory.HeldItemHolder playerInventoryHolder) {
         if (playerInventoryHolder.getPlayer() instanceof ServerPlayer serverPlayer) {
-            boolean allowUsing = switch (playerInventoryHolder.getPlayer().getName().getString()) {
-                case "xinxinsuried", "Dev" -> true;
-                default -> false;
-                /*
-                 * 仅测试使用
-                 */
-            };
-
-            if (!allowUsing) {
-                return;
-            }
             /*
              * 获取样板 入口
              */

@@ -32,8 +32,7 @@ public class ItemIngredientMap {
         return 0;
     }
 
-    public void clear() {
-        ingredientMap.clear();
-        itemStackMap.clear();
+    public boolean isEmpty() {
+        return this.ingredientMap.isEmpty();
     }
 }
