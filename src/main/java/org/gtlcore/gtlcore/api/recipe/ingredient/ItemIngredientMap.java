@@ -25,15 +25,14 @@ public class ItemIngredientMap {
             if (existingIngredient != null) {
                 return ingredientMap.addTo(existingIngredient, count);
             } else {
-                ingredientMap.put(ingredient, count);
                 itemStackMap.put(stack.getItem(), ingredient);
+                ingredientMap.addTo(ingredient, count);
             }
         }
         return 0;
     }
 
-    public void clear() {
-        ingredientMap.clear();
-        itemStackMap.clear();
+    public boolean isEmpty() {
+        return this.ingredientMap.isEmpty();
     }
 }
