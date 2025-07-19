@@ -1,6 +1,6 @@
 package org.gtlcore.gtlcore.api.recipe;
 
-import org.gtlcore.gtlcore.api.machine.trait.IDistinctMachine;
+import org.gtlcore.gtlcore.api.machine.trait.IRecipeCapabilityMachine;
 import org.gtlcore.gtlcore.api.machine.trait.RecipeHandlePart;
 
 import com.gregtechceu.gtceu.api.capability.recipe.*;
@@ -34,13 +34,8 @@ public class RecipeRunner {
     public RecipeRunner(GTRecipe recipe, IO io, boolean isTick, IRecipeCapabilityHolder holder,
                         Map<RecipeCapability<?>, Object2IntMap<?>> chanceCaches, boolean simulated) {
         RecipeHandlePart recipeHandlePart = null;
-        if (io == IO.IN && holder instanceof IDistinctMachine iDistinctMachine && iDistinctMachine.isDistinct()) {
-            if (recipe.id.equals(iDistinctMachine.getRecipeId())) {
-                recipeHandlePart = iDistinctMachine.getDistinctHatch();
-            } else {
-                iDistinctMachine.setRecipeId(recipe.id);
-                iDistinctMachine.setDistinctHatch(null);
-            }
+        if (io == IO.IN && holder instanceof IRecipeCapabilityMachine machine) {
+            recipeHandlePart = machine.getRecipeHandleMap().get(recipe);
         }
         this.recipeHandlePart = recipeHandlePart;
         this.recipe = recipe;
@@ -54,8 +49,8 @@ public class RecipeRunner {
 
     public RecipeResult handle(Map<RecipeCapability<?>, List<Content>> entry) {
         this.fillContent(entry);
-        if (this.recipeContent.isEmpty()) return RecipeResult.SUCCESS;
-        return this.handleContents();
+        return this.recipeContent.isEmpty() ? RecipeResult.SUCCESS :
+                (handleContentsInternal(io) ? RecipeResult.SUCCESS : RecipeResult.fail(null));
     }
 
     private void fillContent(Map<RecipeCapability<?>, List<Content>> entries) {
@@ -93,42 +88,61 @@ public class RecipeRunner {
         }
     }
 
-    private RecipeResult handleContents() {
-        return handleContentsInternal(io) ? RecipeResult.SUCCESS : RecipeResult.fail(null);
-    }
-
     private boolean handleContentsInternal(IO capIO) {
-        if (holder instanceof IDistinctMachine iDistinctMachine) {
-            if (iDistinctMachine.isDistinct() && simulated && capIO == IO.IN) return this.simulatedHandle();
-            if (recipeHandlePart != null) {
-                return recipeHandlePart.handleRecipe(capIO, recipe, recipeContent, simulated).isEmpty();
-            } else {
+        if (holder instanceof IRecipeCapabilityMachine machine) {
+            if (machine.getRecipeHandleParts().isEmpty()) return false;
+            else {
                 if (capIO == IO.IN) {
-                    var itemContent = recipeContent.getOrDefault(ItemRecipeCapability.CAP, new ObjectArrayList<>());
-                    if (!itemContent.isEmpty()) {
-                        Map<RecipeCapability<?>, List<Object>> contents = new HashMap<>();
-                        contents.put(ItemRecipeCapability.CAP, itemContent);
-                        for (var item : iDistinctMachine.getCapabilities().get(capIO)) {
-                            var result = item.handleRecipe(capIO, recipe, contents, simulated);
+                    if (machine.isDistinct()) {
+                        if (this.recipeHandlePart != null) {
+                            var result = this.recipeHandlePart.handleRecipe(IO.IN, recipe, recipeContent, simulated);
                             if (result.isEmpty()) {
-                                itemContent.clear();
-                                break;
-                            } else contents = result;
+                                return true;
+                            }
                         }
-                    }
-                    List<?> fluidContent = recipeContent.getOrDefault(FluidRecipeCapability.CAP, new ObjectArrayList<>());
-                    if (!fluidContent.isEmpty()) {
-                        for (var fluid : iDistinctMachine.getCapabilitiesFlat(capIO, FluidRecipeCapability.CAP)) {
-                            var result = fluid.handleRecipe(capIO, recipe, fluidContent, null, simulated);
-                            if (result == null) {
-                                fluidContent.clear();
-                                break;
-                            } else fluidContent = result;
+                        for (var handlePart : machine.getCapabilities().get(IO.IN)) {
+                            var result = handlePart.handleRecipe(IO.IN, recipe, recipeContent, simulated);
+                            if (result.isEmpty()) {
+                                if (simulated) machine.setRecipeHandleMap(handlePart, recipe);
+                                return true;
+                            }
                         }
+                    } else {
+                        var itemContent = recipeContent.getOrDefault(ItemRecipeCapability.CAP, new ObjectArrayList<>());
+                        if (!itemContent.isEmpty()) {
+                            Map<RecipeCapability<?>, List<Object>> contents = new HashMap<>();
+                            contents.put(ItemRecipeCapability.CAP, itemContent);
+                            if (this.recipeHandlePart != null) {
+                                var result = this.recipeHandlePart.handleRecipe(IO.IN, recipe, contents, simulated);
+                                if (result.isEmpty()) {
+                                    itemContent.clear();
+                                }
+                            }
+                            if (!itemContent.isEmpty()) {
+                                for (var item : machine.getCapabilities().get(IO.IN)) {
+                                    var result = item.handleRecipe(IO.IN, recipe, contents, simulated);
+                                    if (result.isEmpty()) {
+                                        if (simulated) machine.setRecipeHandleMap(item, recipe);
+                                        itemContent.clear();
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        List<?> fluidContent = recipeContent.getOrDefault(FluidRecipeCapability.CAP, new ObjectArrayList<>());
+                        if (!fluidContent.isEmpty()) {
+                            for (var fluid : machine.getCapabilitiesFlat(IO.IN, FluidRecipeCapability.CAP)) {
+                                var result = fluid.handleRecipe(IO.IN, recipe, fluidContent, null, simulated);
+                                if (result == null) {
+                                    fluidContent.clear();
+                                    break;
+                                } else fluidContent = result;
+                            }
+                        }
+                        return itemContent.isEmpty() && fluidContent.isEmpty();
                     }
-                    return itemContent.isEmpty() && fluidContent.isEmpty();
                 } else {
-                    var handlers = iDistinctMachine.getCapabilities().getOrDefault(IO.OUT, new ObjectArrayList<>());
+                    var handlers = machine.getCapabilities().getOrDefault(IO.OUT, new ObjectArrayList<>());
                     handlers.sort(RecipeHandlePart.COMPARATOR.reversed());
                     for (var handler : handlers) {
                         recipeContent = handler.handleRecipe(capIO, recipe, recipeContent, simulated);
@@ -136,24 +150,6 @@ public class RecipeRunner {
                             return true;
                         }
                     }
-                }
-            }
-        }
-        return false;
-    }
-
-    public boolean simulatedHandle() {
-        if (holder instanceof IDistinctMachine iDistinctMachine) {
-            if (iDistinctMachine.getRecipeHandleParts().isEmpty()) return false;
-            List<Object> itemContent = recipeContent.computeIfAbsent(ItemRecipeCapability.CAP, k -> new ObjectArrayList<>());
-            List<Object> fluidContent = recipeContent.computeIfAbsent(FluidRecipeCapability.CAP, k -> new ObjectArrayList<>());
-            if (itemContent.isEmpty() && fluidContent.isEmpty()) return false;
-            if (recipeHandlePart != null) {
-                return recipeHandlePart.testRecipeHandle(iDistinctMachine, recipe, itemContent, fluidContent);
-            }
-            for (RecipeHandlePart recipeHandlePart : iDistinctMachine.getCapabilities().get(IO.IN)) {
-                if (recipeHandlePart.testRecipeHandle(iDistinctMachine, recipe, itemContent, fluidContent)) {
-                    return true;
                 }
             }
         }

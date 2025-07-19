@@ -22,15 +22,13 @@ public class GTLJadePlugin implements IWailaPlugin {
 
     @Override
     public void register(IWailaCommonRegistration registration) {
-        registration.registerBlockDataProvider(new WirelessOpticalDataHatchProvide(),
-                BlockEntity.class);
+        registration.registerBlockDataProvider(new WirelessOpticalDataHatchProvide(), BlockEntity.class);
         registration.registerBlockDataProvider(new TickTimeProvider(), MetaMachineBlockEntity.class);
     }
 
     @Override
     public void registerClient(IWailaClientRegistration registration) {
-        registration.registerBlockComponent(new WirelessOpticalDataHatchProvide(),
-                Block.class);
+        registration.registerBlockComponent(new WirelessOpticalDataHatchProvide(), Block.class);
         registration.registerBlockComponent(new TickTimeProvider(), MetaMachineBlock.class);
     }
 }

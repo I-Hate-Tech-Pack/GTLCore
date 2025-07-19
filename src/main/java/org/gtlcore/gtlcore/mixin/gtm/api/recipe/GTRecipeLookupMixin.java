@@ -1,13 +1,12 @@
 package org.gtlcore.gtlcore.mixin.gtm.api.recipe;
 
-import org.gtlcore.gtlcore.api.machine.trait.IDistinctMachine;
-import org.gtlcore.gtlcore.api.machine.trait.IRecipeStatus;
+import org.gtlcore.gtlcore.api.machine.trait.IRecipeCapabilityMachine;
 import org.gtlcore.gtlcore.api.machine.trait.RecipeHandlePart;
 import org.gtlcore.gtlcore.api.recipe.RecipeResult;
-import org.gtlcore.gtlcore.api.recipe.RecipeRunnerHelper;
 
 import com.gregtechceu.gtceu.api.capability.recipe.*;
 import com.gregtechceu.gtceu.api.machine.WorkableTieredMachine;
+import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
 import com.gregtechceu.gtceu.api.machine.steam.SteamWorkableMachine;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.content.Content;
@@ -39,15 +38,6 @@ public abstract class GTRecipeLookupMixin {
      * @reason .
      */
     @Overwrite(remap = false)
-    public @Nullable GTRecipe findRecipe(IRecipeCapabilityHolder holder) {
-        return this.find(holder, (recipe) -> RecipeRunnerHelper.matchRecipe(holder, recipe));
-    }
-
-    /**
-     * @author .
-     * @reason .
-     */
-    @Overwrite(remap = false)
     protected @Nullable List<List<AbstractMapIngredient>> prepareRecipeFind(@NotNull IRecipeCapabilityHolder holder) {
         this.gtlcore$machine = holder;
         if (holder instanceof PrimitiveWorkableMachine || holder instanceof SteamWorkableMachine ||
@@ -66,16 +56,16 @@ public abstract class GTRecipeLookupMixin {
             List<List<AbstractMapIngredient>> list = new ObjectArrayList<>(totalSize);
             list.addAll(fromHolder(holder));
             if (list.isEmpty()) {
-                if (holder instanceof IRecipeStatus iRecipeStatus) iRecipeStatus.setRecipeStatus(RecipeResult.FailNOINPUT);
+                RecipeResult.of((IRecipeLogicMachine) holder, RecipeResult.FAIL_NO_INPUT);
                 return null;
             }
             return list;
-        } else if (holder instanceof IDistinctMachine iDistinctMachine) {
-            if (iDistinctMachine.getRecipeHandleParts().isEmpty()) return null;
-            List<List<AbstractMapIngredient>> list = new ObjectArrayList<>(iDistinctMachine.getRecipeHandleParts().size());
-            list.addAll(this.gtlcore$fromHolder(iDistinctMachine));
+        } else if (holder instanceof IRecipeCapabilityMachine machine) {
+            if (machine.getRecipeHandleParts().isEmpty()) return null;
+            List<List<AbstractMapIngredient>> list = new ObjectArrayList<>(machine.getRecipeHandleParts().size());
+            list.addAll(this.gtlcore$fromHolder(machine));
             if (list.isEmpty()) {
-                if (holder instanceof IRecipeStatus iRecipeStatus) iRecipeStatus.setRecipeStatus(RecipeResult.FailNOINPUT);
+                RecipeResult.of((IRecipeLogicMachine) holder, RecipeResult.FAIL_NO_INPUT);
                 return null;
             }
             return list;
@@ -84,7 +74,7 @@ public abstract class GTRecipeLookupMixin {
     }
 
     @Unique
-    protected @NotNull List<List<AbstractMapIngredient>> gtlcore$fromHolder(@NotNull IDistinctMachine r) {
+    protected @NotNull List<List<AbstractMapIngredient>> gtlcore$fromHolder(@NotNull IRecipeCapabilityMachine r) {
         List<List<AbstractMapIngredient>> list;
         List<RecipeHandlePart> recipeHandleParts = r.getCapabilities().getOrDefault(IO.IN, new ObjectArrayList<>());
         if (recipeHandleParts.isEmpty()) return Collections.emptyList();
@@ -149,7 +139,7 @@ public abstract class GTRecipeLookupMixin {
                         }
                     }
                 } else
-            if (this.gtlcore$machine instanceof IDistinctMachine) {
+            if (this.gtlcore$machine instanceof IRecipeCapabilityMachine) {
                 List<AbstractMapIngredient> ingredient = new ObjectArrayList<>(ingredients.get(index));
                 return this.gtlcore$diveIngredientTreeFindRecipe(ingredient, branchMap, canHandle);
             }
@@ -213,9 +203,6 @@ public abstract class GTRecipeLookupMixin {
 
     @Shadow(remap = false)
     protected abstract @NotNull List<List<AbstractMapIngredient>> fromHolder(@NotNull IRecipeCapabilityHolder r);
-
-    @Shadow(remap = false)
-    public abstract @Nullable GTRecipe find(@NotNull IRecipeCapabilityHolder holder, @NotNull Predicate<GTRecipe> canHandle);
 
     @Shadow(remap = false)
     protected static void retrieveCachedIngredient(@NotNull List<List<AbstractMapIngredient>> list, @NotNull List<AbstractMapIngredient> ingredients, @NotNull WeakHashMap<AbstractMapIngredient, WeakReference<AbstractMapIngredient>> cache) {}

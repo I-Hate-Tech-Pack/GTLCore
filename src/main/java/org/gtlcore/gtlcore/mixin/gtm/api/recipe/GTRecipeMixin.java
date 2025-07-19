@@ -1,9 +1,9 @@
 package org.gtlcore.gtlcore.mixin.gtm.api.recipe;
 
-import org.gtlcore.gtlcore.api.machine.trait.IRecipeStatus;
 import org.gtlcore.gtlcore.api.recipe.RecipeResult;
 
 import com.gregtechceu.gtceu.api.capability.recipe.*;
+import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.content.Content;
@@ -57,13 +57,19 @@ public abstract class GTRecipeMixin {
             if (lastRecipe == null || !this.id.equals(lastRecipe.id)) {
                 long eu = this.getTickInputContents(EURecipeCapability.CAP).stream()
                         .map(Content::getContent).mapToLong(EURecipeCapability.CAP::of).sum();
-                if (GTUtil.getTierByVoltage(eu) > GTUtil.getFloorTierByVoltage(machine.getOverclockVoltage()) && holder instanceof IRecipeStatus recipeStatus) {
-                    recipeStatus.setRecipeStatus(RecipeResult.FailVOLTAGETIER);
+                if (GTUtil.getTierByVoltage(eu) > GTUtil.getFloorTierByVoltage(machine.getOverclockVoltage())) {
+                    RecipeResult.of((IRecipeLogicMachine) holder, RecipeResult.FAIL_VOLTAGE_TIER);
                     return GTRecipe.ActionResult.fail(null);
                 }
             }
         }
-        return this.matchRecipe(holder, true);
+        GTRecipe.ActionResult result = this.matchRecipe(holder, true);
+        if (!result.isSuccess() && result.reason() != null) {
+            String s = result.reason().get().getSiblings().get(1).toString();
+            if (s.contains("eu")) RecipeResult.of((IRecipeLogicMachine) holder, RecipeResult.FAIL_NO_ENOUGH_EU);
+            else if (s.contains("cwu")) RecipeResult.of((IRecipeLogicMachine) holder, RecipeResult.FAIL_NO_ENOUGH_CWU);
+        }
+        return result;
     }
 
     @Shadow(remap = false)

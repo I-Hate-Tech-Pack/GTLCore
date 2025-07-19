@@ -45,19 +45,22 @@ public class SpaceElevatorModuleMachine extends WorkableElectricMultiblockMachin
 
     private final boolean SEPMTier;
 
-    private SpaceElevatorMachine controller;
+    private BlockPos controller;
 
     private void getSpaceElevatorTier() {
-        if (controller != null) {
-            RecipeLogic logic = controller.recipeLogic;
-            if (logic != null) {
+        if (controller != null && getLevel() != null) {
+            RecipeLogic logic = GTCapabilityHelper.getRecipeLogic(getLevel(), controller, null);
+            if (logic != null && logic.getMachine().getDefinition() == AdvancedMultiBlockMachine.SPACE_ELEVATOR) {
                 if (logic.isWorking() && logic.getProgress() > 80) {
-                    SpaceElevatorTier = controller.getTier() - GTValues.ZPM;
-                    ModuleTier = controller.getCasingTier();
+                    SpaceElevatorTier = ((SpaceElevatorMachine) logic.machine).getTier() - GTValues.ZPM;
+                    ModuleTier = ((SpaceElevatorMachine) logic.machine).getCasingTier();
                 } else if (!logic.isWorking()) {
                     SpaceElevatorTier = 0;
                     ModuleTier = 0;
                 }
+            } else if (logic == null) {
+                SpaceElevatorTier = 0;
+                ModuleTier = 0;
             }
         } else {
             Level level = getLevel();
@@ -79,10 +82,10 @@ public class SpaceElevatorModuleMachine extends WorkableElectricMultiblockMachin
                     for (BlockPos j : coordinatess) {
                         RecipeLogic logic = GTCapabilityHelper.getRecipeLogic(level, j, null);
                         if (logic != null && logic.getMachine().getDefinition() == AdvancedMultiBlockMachine.SPACE_ELEVATOR) {
-                            controller = (SpaceElevatorMachine) logic.machine;
+                            controller = j;
                             if (logic.isWorking() && logic.getProgress() > 80) {
-                                SpaceElevatorTier = controller.getTier() - GTValues.ZPM;
-                                ModuleTier = controller.getCasingTier();
+                                SpaceElevatorTier = ((SpaceElevatorMachine) logic.machine).getTier() - GTValues.ZPM;
+                                ModuleTier = ((SpaceElevatorMachine) logic.machine).getCasingTier();
                             } else if (!logic.isWorking()) {
                                 SpaceElevatorTier = 0;
                                 ModuleTier = 0;

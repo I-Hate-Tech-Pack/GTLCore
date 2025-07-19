@@ -3,6 +3,7 @@ package org.gtlcore.gtlcore.common.machine.multiblock.part.maintenance;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMaintenanceMachine;
+import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 import com.gregtechceu.gtceu.api.machine.multiblock.part.MultiblockPartMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.part.TieredPartMachine;
 
@@ -19,6 +20,7 @@ import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.Style;
 
 import lombok.Getter;
+import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -111,6 +113,18 @@ public class AutoConfigurationMaintenanceHatchPartMachine extends TieredPartMach
             return;
         }
         durationMultiplier = newDurationMultiplier;
+    }
+
+    @Override
+    public void addedToController(@NotNull IMultiController controller) {
+        super.addedToController(controller);
+        ICleaningRoom.addedToController(controller, null);
+    }
+
+    @Override
+    public void removedFromController(@NotNull IMultiController controller) {
+        super.removedFromController(controller);
+        ICleaningRoom.removedFromController(controller, null);
     }
 
     @Override

@@ -1,6 +1,6 @@
 package org.gtlcore.gtlcore.mixin.gtmt;
 
-import org.gtlcore.gtlcore.api.machine.trait.IDistinctMachine;
+import org.gtlcore.gtlcore.api.machine.trait.IRecipeCapabilityMachine;
 
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
@@ -28,8 +28,8 @@ public class HugeBusPartMachineMixin extends TieredIOPartMachine {
     @Inject(method = "setDistinct", at = @At("RETURN"), remap = false)
     public void setDistinct(boolean isDistinct, CallbackInfo ci) {
         for (var controller : this.getControllers()) {
-            if (controller instanceof IDistinctMachine iDistinctMachine && !iDistinctMachine.isDistinct()) {
-                iDistinctMachine.upDate();
+            if (controller instanceof IRecipeCapabilityMachine machine && !machine.isDistinct()) {
+                machine.upDate();
             }
         }
     }

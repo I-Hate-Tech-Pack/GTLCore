@@ -58,21 +58,21 @@ public class RecipeHandlePart {
     public Object2LongOpenHashMap<?> initializeContent(RecipeCapability<?> cap) {
         if (cap == ItemRecipeCapability.CAP) {
             itemContent = new Object2LongOpenHashMap<>();
-            for (var itemsRecipeContent : this.getCapability(cap)) {
-                if (itemsRecipeContent instanceof CatalystItemStackHandler || itemsRecipeContent instanceof NotifiableCircuitItemStackHandler) continue;
-                for (var item : itemsRecipeContent.getContents()) {
-                    if (item instanceof ItemStack itemStack) {
-                        itemContent.computeLong(itemStack, (k, v) -> v == null ? itemStack.getCount() : v + itemStack.getCount());
+            for (var item : this.getCapability(cap)) {
+                if (item instanceof CatalystItemStackHandler || item instanceof NotifiableCircuitItemStackHandler) continue;
+                for (var o : item.getContents()) {
+                    if (o instanceof ItemStack stack) {
+                        itemContent.computeLong(stack, (k, v) -> v == null ? stack.getCount() : v + stack.getCount());
                     }
                 }
             }
         } else if (cap == FluidRecipeCapability.CAP) {
             fluidContent = new Object2LongOpenHashMap<>();
-            for (var fluidsRecipeContent : this.getCapability(cap)) {
-                if (fluidsRecipeContent instanceof CatalystFluidStackHandler) continue;
-                for (var fluid : fluidsRecipeContent.getContents()) {
-                    if (fluid instanceof FluidStack fluidStack) {
-                        fluidContent.computeLong(fluidStack, (k, v) -> v == null ? fluidStack.getAmount() : v + fluidStack.getAmount());
+            for (var fluid : this.getCapability(cap)) {
+                if (fluid instanceof CatalystFluidStackHandler) continue;
+                for (var o : fluid.getContents()) {
+                    if (o instanceof FluidStack stack) {
+                        fluidContent.computeLong(stack, (k, v) -> v == null ? stack.getAmount() : v + stack.getAmount());
                     }
                 }
             }
@@ -129,44 +129,5 @@ public class RecipeHandlePart {
             }
         }
         return copy;
-    }
-
-    public boolean testRecipeHandle(IDistinctMachine iDistinctMachine, GTRecipe recipe, List<Object> itemContent, List<Object> fluidContent) {
-        if (itemContent.isEmpty()) {
-            List<?> copyFluid = new ObjectArrayList<>(fluidContent);
-            for (var handle : this.getCapability(FluidRecipeCapability.CAP)) {
-                copyFluid = handle.handleRecipe(IO.IN, recipe, copyFluid, null, true);
-                if (copyFluid == null) {
-                    iDistinctMachine.setDistinctHatch(this);
-                    return true;
-                }
-            }
-        } else if (fluidContent.isEmpty()) {
-            List<?> copyItem = new ObjectArrayList<>(itemContent);
-            for (var handle : this.getCapability(ItemRecipeCapability.CAP)) {
-                copyItem = handle.handleRecipe(IO.IN, recipe, copyItem, null, true);
-                if (copyItem == null) {
-                    iDistinctMachine.setDistinctHatch(this);
-                    return true;
-                }
-            }
-        } else {
-            List<?> copyItem = new ObjectArrayList<>(itemContent);
-            for (var handle : this.getCapability(ItemRecipeCapability.CAP)) {
-                copyItem = handle.handleRecipe(IO.IN, recipe, copyItem, null, true);
-                if (copyItem == null) {
-                    List<?> copyFluid = new ObjectArrayList<>(fluidContent);
-                    for (var h : this.getCapability(FluidRecipeCapability.CAP)) {
-                        copyFluid = h.handleRecipe(IO.IN, recipe, copyFluid, null, true);
-                        if (copyFluid == null) {
-                            iDistinctMachine.setDistinctHatch(this);
-                            return true;
-                        }
-                    }
-                    copyItem = new ObjectArrayList<>(itemContent);
-                }
-            }
-        }
-        return false;
     }
 }

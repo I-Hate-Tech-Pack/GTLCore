@@ -1,4 +1,4 @@
-package org.gtlcore.gtlcore.mixin.gtm;
+package org.gtlcore.gtlcore.mixin.gtm.api.capability;
 
 import com.gregtechceu.gtceu.api.capability.recipe.*;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableComputationContainer;
@@ -21,6 +21,10 @@ public abstract class CWURecipeCapabilityMixin extends RecipeCapability<Integer>
 
     @Override
     public int getMaxParallelRatio(IRecipeCapabilityHolder holder, GTRecipe recipe, int maxParallel) {
+        int recipeCWU = CWURecipeCapability.CAP.of(recipe.tickInputs.get(CWURecipeCapability.CAP).get(0).getContent());
+        if (recipeCWU == 0) {
+            return Integer.MAX_VALUE;
+        }
         long maxCWU = 0;
         List<IRecipeHandler<?>> recipeHandlerList = Objects
                 .requireNonNullElseGet(holder.getCapabilitiesProxy().get(IO.IN, CWURecipeCapability.CAP), Collections::<IRecipeHandler<?>>emptyList)
@@ -30,10 +34,6 @@ public abstract class CWURecipeCapabilityMixin extends RecipeCapability<Integer>
             if (container instanceof NotifiableComputationContainer nc) {
                 maxCWU += nc.requestCWUt(Integer.MAX_VALUE, true);
             }
-        }
-        int recipeCWU = CWURecipeCapability.CAP.of(recipe.tickInputs.get(CWURecipeCapability.CAP).get(0).getContent());
-        if (recipeCWU == 0) {
-            return Integer.MAX_VALUE;
         }
         return Math.min(maxParallel, Math.abs(Ints.saturatedCast(maxCWU / recipeCWU)));
     }

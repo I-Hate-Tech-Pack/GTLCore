@@ -1,6 +1,6 @@
 package org.gtlcore.gtlcore.mixin.gtm.machine;
 
-import org.gtlcore.gtlcore.api.machine.trait.IDistinctMachine;
+import org.gtlcore.gtlcore.api.machine.trait.IRecipeCapabilityMachine;
 import org.gtlcore.gtlcore.api.machine.trait.NotifiableCircuitItemStackHandler;
 
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
@@ -52,8 +52,8 @@ public class ItemBusPartMachineMixin extends TieredIOPartMachine {
     @Inject(method = "setDistinct", at = @At("RETURN"), remap = false)
     public void setDistinct(boolean isDistinct, CallbackInfo ci) {
         for (var controller : this.getControllers()) {
-            if (controller instanceof IDistinctMachine iDistinctMachine && !iDistinctMachine.isDistinct()) {
-                iDistinctMachine.upDate();
+            if (controller instanceof IRecipeCapabilityMachine machine && !machine.isDistinct()) {
+                machine.upDate();
             }
         }
     }

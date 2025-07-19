@@ -2,6 +2,8 @@ package org.gtlcore.gtlcore.common.machine.trait;
 
 import org.gtlcore.gtlcore.api.machine.multiblock.ParallelMachine;
 import org.gtlcore.gtlcore.api.machine.trait.ILockRecipe;
+import org.gtlcore.gtlcore.api.recipe.IParallelLogic;
+import org.gtlcore.gtlcore.api.recipe.RecipeResult;
 
 import com.gregtechceu.gtceu.api.capability.recipe.*;
 import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
@@ -9,7 +11,6 @@ import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMa
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.RecipeHelper;
-import com.gregtechceu.gtceu.api.recipe.chance.logic.ChanceLogic;
 import com.gregtechceu.gtceu.api.recipe.content.Content;
 import com.gregtechceu.gtceu.api.recipe.content.ContentModifier;
 import com.gregtechceu.gtceu.data.recipe.builder.GTRecipeBuilder;
@@ -31,6 +32,8 @@ public class MultipleRecipesLogic extends RecipeLogic implements ILockRecipe {
     private final ParallelMachine parallel;
 
     private final BiPredicate<CompoundTag, IRecipeLogicMachine> dataCheck;
+
+    private static final int MAX_THREADS = 64;
 
     public MultipleRecipesLogic(ParallelMachine machine) {
         this(machine, null);
@@ -61,78 +64,51 @@ public class MultipleRecipesLogic extends RecipeLogic implements ILockRecipe {
     @Nullable
     private GTRecipe getRecipe() {
         if (!machine.hasProxies()) return null;
-        GTRecipe match = lookupRecipe();
-        if (match == null) return null;
-        GTRecipe recipe = buildEmptyRecipe();
-        recipe.outputs.put(ItemRecipeCapability.CAP, new ArrayList<>());
-        recipe.outputs.put(FluidRecipeCapability.CAP, new ArrayList<>());
+        GTRecipe output = GTRecipeBuilder.ofRaw().buildRawRecipe();
+        output.outputs.put(ItemRecipeCapability.CAP, new ArrayList<>());
+        output.outputs.put(FluidRecipeCapability.CAP, new ArrayList<>());
         long maxEUt = getMachine().getOverclockVoltage();
         long totalEu = 0;
-        int parallel = this.parallel.getMaxParallel();
-        for (int i = 0; i < 64; i++) {
-            match = parallelRecipe(match, parallel);
-            GTRecipe input = buildEmptyRecipe();
-            long inputEUt = RecipeHelper.getInputEUt(match);
-            if (inputEUt > maxEUt) {
-                continue;
-            }
-            // 需要在此check data
-            if (dataCheck != null && !dataCheck.test(match.data, machine)) {
-                continue;
-            }
-            input.inputs.putAll(match.inputs);
-            input.setId(match.id);
-            if (handleRecipeInput(machine, input)) {
-                totalEu += match.duration * inputEUt;
-                List<Content> item = match.outputs.get(ItemRecipeCapability.CAP);
-                if (item != null) {
-                    recipe.outputs.get(ItemRecipeCapability.CAP).addAll(item);
-                }
-                List<Content> fluid = match.outputs.get(FluidRecipeCapability.CAP);
-                if (fluid != null) {
-                    recipe.outputs.get(FluidRecipeCapability.CAP).addAll(fluid);
-                }
-            }
-            match = lookupRecipe();
+        long remain = (long) this.parallel.getMaxParallel() * MAX_THREADS;
+        while (remain > 0) {
+            GTRecipe match = lookupRecipe();
             if (match == null) break;
+            long p = IParallelLogic.getMaxParallel(machine, match, remain);
+            if (p > 1) match = match.copy(ContentModifier.multiplier(p), false);
+            totalEu += RecipeHelper.getInputEUt(match) * match.duration;
+            if (totalEu / maxEUt > 1200) break;
+            remain -= p;
+            if (handleRecipeInput(machine, match)) {
+                var item = match.outputs.get(ItemRecipeCapability.CAP);
+                if (item != null) output.outputs.get(ItemRecipeCapability.CAP).addAll(item);
+                var fluid = match.outputs.get(FluidRecipeCapability.CAP);
+                if (fluid != null) output.outputs.get(FluidRecipeCapability.CAP).addAll(fluid);
+            }
         }
-        if (recipe.outputs.get(ItemRecipeCapability.CAP).isEmpty() && recipe.outputs.get(FluidRecipeCapability.CAP).isEmpty())
+        if (output.outputs.get(ItemRecipeCapability.CAP).isEmpty() && output.outputs.get(FluidRecipeCapability.CAP).isEmpty()) {
+            if (totalEu / maxEUt > 1200) RecipeResult.of(machine, RecipeResult.FAIL_NO_ENOUGH_EU);
             return null;
+        }
         double d = (double) totalEu / maxEUt;
         long eut = d > 20 ? maxEUt : (long) (maxEUt * d / 20);
-        recipe.tickInputs.put(EURecipeCapability.CAP, List.of(new Content(eut, ChanceLogic.getMaxChancedValue(), ChanceLogic.getMaxChancedValue(), 0, null, null)));
-        recipe.duration = (int) Math.max(d, 20);
-        return recipe;
+        output.tickInputs.put(EURecipeCapability.CAP,
+                List.of(new Content(eut, 10000, 10000, 0, null, null)));
+        output.duration = (int) Math.max(d, 20);
+        return output;
     }
 
     private GTRecipe lookupRecipe() {
         if (this.isLock()) {
-            if (this.getLockRecipe() == null) this.setLockRecipe(machine.getRecipeType().getLookup().findRecipe(machine));
-            else if (!matchRecipe(machine, this.getLockRecipe())) return null;
+            if (this.getLockRecipe() == null) this.setLockRecipe(machine.getRecipeType().getLookup()
+                    .find(machine, this::checkRecipe));
+            else if (!checkRecipe(this.getLockRecipe())) return null;
             return this.getLockRecipe();
-        } else {
-            return machine.getRecipeType().getLookup().findRecipe(machine);
-        }
+        } else return machine.getRecipeType().getLookup().find(machine, this::checkRecipe);
     }
 
-    private GTRecipe buildEmptyRecipe() {
-        return GTRecipeBuilder.ofRaw().buildRawRecipe();
-    }
-
-    private GTRecipe parallelRecipe(GTRecipe recipe, int max) {
-        int maxMultipliers = max;
-        for (RecipeCapability<?> cap : recipe.inputs.keySet()) {
-            if (cap.doMatchInRecipe()) {
-                int currentMultiplier = cap.getMaxParallelRatio(machine, recipe, max);
-                if (currentMultiplier < maxMultipliers) {
-                    maxMultipliers = currentMultiplier;
-                }
-            }
-        }
-        if (maxMultipliers > 1) {
-            recipe = recipe.copy(ContentModifier.multiplier(maxMultipliers), false);
-        }
-        return recipe;
+    private boolean checkRecipe(GTRecipe recipe) {
+        return matchRecipe(machine, recipe) && RecipeHelper.getRecipeEUtTier(recipe) <= getMachine().getTier() &&
+                (dataCheck == null || dataCheck.test(recipe.data, machine));
     }
 
     @Override

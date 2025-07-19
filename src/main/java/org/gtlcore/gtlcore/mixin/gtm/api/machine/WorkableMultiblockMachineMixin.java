@@ -1,7 +1,6 @@
 package org.gtlcore.gtlcore.mixin.gtm.api.machine;
 
-import org.gtlcore.gtlcore.api.machine.trait.IDistinctMachine;
-import org.gtlcore.gtlcore.api.machine.trait.IMEPartMachine;
+import org.gtlcore.gtlcore.api.machine.trait.IRecipeCapabilityMachine;
 import org.gtlcore.gtlcore.api.machine.trait.RecipeHandlePart;
 
 import com.gregtechceu.gtceu.api.capability.recipe.*;
@@ -18,9 +17,11 @@ import com.gregtechceu.gtceu.integration.ae2.machine.MEOutputHatchPartMachine;
 import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
 import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.TickTask;
+import net.minecraft.server.level.ServerLevel;
 
 import com.hepdd.gtmthings.common.block.machine.multiblock.part.appeng.MEOutputPartMachine;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.Getter;
 import lombok.Setter;
@@ -34,15 +35,12 @@ import java.util.List;
 import java.util.Map;
 
 @Mixin(WorkableMultiblockMachine.class)
-public abstract class WorkableMultiblockMachineMixin extends MultiblockControllerMachine implements IDistinctMachine, IMEPartMachine {
+public abstract class WorkableMultiblockMachineMixin extends MultiblockControllerMachine implements IRecipeCapabilityMachine {
 
-    @Persisted
     @Getter
     private boolean MEOutPutBus = false;
-    @Persisted
     @Getter
     private boolean MEOutPutHatch = false;
-    @Persisted
     @Getter
     private boolean MEOutPutDual = false;
     @Persisted
@@ -51,13 +49,9 @@ public abstract class WorkableMultiblockMachineMixin extends MultiblockControlle
     @Setter
     public boolean isDistinct = false;
     @Getter
-    @Setter
-    private RecipeHandlePart distinctHatch;
-    @Getter
-    @Setter
-    private ResourceLocation recipeId;
-    @Getter
     private List<RecipeHandlePart> recipeHandleParts = new ObjectArrayList<>();
+    @Getter
+    private Map<GTRecipe, RecipeHandlePart> recipeHandleMap = new Object2ObjectOpenHashMap<>();
     @Getter
     protected Map<IO, List<RecipeHandlePart>> capabilities = new EnumMap<>(IO.class);
     @Getter
@@ -69,7 +63,9 @@ public abstract class WorkableMultiblockMachineMixin extends MultiblockControlle
 
     @Inject(method = "onStructureFormed", at = @At("TAIL"), remap = false)
     public void onStructureFormed(CallbackInfo ci) {
-        this.upDate();
+        if (this.getLevel() instanceof ServerLevel sl) {
+            sl.getServer().tell(new TickTask(1, this::upDate));
+        }
     }
 
     @Inject(method = "onStructureInvalid", at = @At("TAIL"), remap = false)
@@ -101,12 +97,17 @@ public abstract class WorkableMultiblockMachineMixin extends MultiblockControlle
         return false;
     }
 
+    @Override
+    public void setRecipeHandleMap(RecipeHandlePart hatch, GTRecipe recipe) {
+        this.recipeHandleMap.put(recipe, hatch);
+    }
+
     public void upDate() {
         capabilities.clear();
         capabilitiesFlat.clear();
         recipeHandleParts.clear();
-        distinctHatch = null;
-        recipeId = null;
+        recipeHandleMap.clear();
+        if (!this.isFormed) return;
         var distinctParts = new ObjectArrayList<IRecipeHandler<?>>();
         for (IMultiPart part : this.getParts()) {
             if (part instanceof FluidHatchPartMachine || part instanceof IDistinctPart) {
