@@ -144,7 +144,6 @@ public abstract class RecipeLogicMixin implements ILockRecipe, IRecipeStatus {
             }
             ++this.progress;
             ++this.totalContinuousRunningTime;
-            RecipeResult.of(this.machine, RecipeResult.SUCCESS);
         } else {
             this.setWaiting(result.reason().get());
         }

@@ -58,8 +58,8 @@ public abstract class RecipeLogicProviderMixin extends CapabilityBlockProvider<R
 
     @Inject(method = "write(Lnet/minecraft/nbt/CompoundTag;Lcom/gregtechceu/gtceu/api/machine/trait/RecipeLogic;)V", at = @At("HEAD"), remap = false)
     protected void write(CompoundTag data, RecipeLogic capability, CallbackInfo ci) {
-        if (capability.isIdle() && capability instanceof IRecipeStatus status) {
-            if (status.getRecipeStatus() != null && !status.getRecipeStatus().isSuccess() && status.getRecipeStatus().reason() != null)
+        if (capability instanceof IRecipeStatus status) {
+            if (status.getRecipeStatus() != null && status.getRecipeStatus().reason() != null)
                 data.putString("reason", status.getRecipeStatus().reason().getString());
         }
     }
@@ -96,10 +96,9 @@ public abstract class RecipeLogicProviderMixin extends CapabilityBlockProvider<R
                     }
                 }
             }
-        } else {
-            String reason = capData.getString("reason");
-            if (reason.isEmpty()) return;
-            tooltip.add(Component.translatable("gtceu.recipe.fail.reason", reason).withStyle(RED));
         }
+        String reason = capData.getString("reason");
+        if (reason.isEmpty()) return;
+        tooltip.add(Component.translatable("gtceu.recipe.fail.reason", reason).withStyle(RED));
     }
 }

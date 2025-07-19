@@ -1,5 +1,6 @@
 package org.gtlcore.gtlcore.mixin.gtm.registry;
 
+import org.gtlcore.gtlcore.api.recipe.IGTRecipeEUTier;
 import org.gtlcore.gtlcore.api.recipe.RecipeRunnerHelper;
 import org.gtlcore.gtlcore.common.data.GTLMaterials;
 
@@ -15,17 +16,24 @@ import com.gregtechceu.gtceu.common.data.GTMaterials;
 import com.gregtechceu.gtceu.data.recipe.builder.GTRecipeBuilder;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
+import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
+
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.resources.ResourceLocation;
 
-import org.jetbrains.annotations.Nullable;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import lombok.Getter;
 import org.spongepowered.asm.mixin.*;
 
 import java.util.*;
 import java.util.function.*;
 
 @Mixin(GTRecipeType.class)
-public class GTRecipeTypeMixin {
+public class GTRecipeTypeMixin implements IGTRecipeEUTier {
+
+    @Persisted
+    @Getter
+    private Object2IntOpenHashMap<ResourceLocation> recipeTierMap = new Object2IntOpenHashMap<>();
 
     @Shadow(remap = false)
     private GTRecipeBuilder recipeBuilder;
@@ -129,21 +137,12 @@ public class GTRecipeTypeMixin {
      * @reason .
      */
     @Overwrite(remap = false)
-    public @Nullable Iterator<GTRecipe> searchFuelRecipe(IRecipeCapabilityHolder holder) {
-        return holder.hasProxies() && this.isFuelRecipeType() ? this.getLookup().getRecipeIterator(holder, (recipe) -> recipe.isFuel && RecipeRunnerHelper.matchRecipe(holder, recipe) && recipe.matchTickRecipe(holder).isSuccess()) : null;
-    }
-
-    /**
-     * @author .
-     * @reason .
-     */
-    @Overwrite(remap = false)
     public Iterator<GTRecipe> searchRecipe(IRecipeCapabilityHolder holder) {
         if (!holder.hasProxies()) {
             return null;
         } else {
             RecipeIterator iterator = this.getLookup().getRecipeIterator(holder,
-                    (recipex) -> !recipex.isFuel && RecipeRunnerHelper.matchRecipe(holder, recipex) && recipex.matchTickRecipe(holder).isSuccess());
+                    (recipex) -> RecipeRunnerHelper.matchRecipe(holder, recipex) && recipex.matchTickRecipe(holder).isSuccess());
             boolean any = false;
             GTRecipe recipe = null;
             while (iterator.hasNext()) {
@@ -184,8 +183,9 @@ public class GTRecipeTypeMixin {
         return null;
     }
 
-    @Shadow(remap = false)
-    public boolean isFuelRecipeType() {
-        return false;
+    @Override
+    public void setRecipeTierMap(ResourceLocation recipe, int tier) {
+        if (recipe == null) return;
+        this.recipeTierMap.put(recipe, tier);
     }
 }

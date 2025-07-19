@@ -2,6 +2,7 @@ package org.gtlcore.gtlcore.common.machine.trait;
 
 import org.gtlcore.gtlcore.api.machine.multiblock.ParallelMachine;
 import org.gtlcore.gtlcore.api.machine.trait.ILockRecipe;
+import org.gtlcore.gtlcore.api.recipe.IGTRecipeEUTier;
 import org.gtlcore.gtlcore.api.recipe.IParallelLogic;
 import org.gtlcore.gtlcore.api.recipe.RecipeResult;
 
@@ -107,7 +108,11 @@ public class MultipleRecipesLogic extends RecipeLogic implements ILockRecipe {
     }
 
     private boolean checkRecipe(GTRecipe recipe) {
-        return matchRecipe(machine, recipe) && RecipeHelper.getRecipeEUtTier(recipe) <= getMachine().getTier() &&
+        int tier = -1;
+        if (recipe.recipeType instanceof IGTRecipeEUTier euTier)
+            tier = euTier.getRecipeTierMap().getOrDefault(recipe.id, -1);
+        if (tier == -1) tier = RecipeHelper.getRecipeEUtTier(recipe);
+        return matchRecipe(machine, recipe) && tier <= getMachine().getTier() &&
                 (dataCheck == null || dataCheck.test(recipe.data, machine));
     }
 

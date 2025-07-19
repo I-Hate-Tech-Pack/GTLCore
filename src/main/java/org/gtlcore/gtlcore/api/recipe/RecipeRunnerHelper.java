@@ -1,6 +1,7 @@
 package org.gtlcore.gtlcore.api.recipe;
 
 import org.gtlcore.gtlcore.api.machine.trait.IRecipeCapabilityMachine;
+import org.gtlcore.gtlcore.api.machine.trait.IRecipeStatus;
 
 import com.gregtechceu.gtceu.api.capability.recipe.*;
 import com.gregtechceu.gtceu.api.machine.WorkableTieredMachine;
@@ -63,6 +64,11 @@ public class RecipeRunnerHelper {
         } else {
             RecipeRunner runner = new RecipeRunner(recipe, io, isTick, holder, chanceCaches, isSimulate);
             RecipeResult result = runner.handle(contents);
+            if (((IRecipeLogicMachine) holder).getRecipeLogic() instanceof IRecipeStatus status && result.isSuccess() &&
+                    status.getRecipeStatus() != null && status.getRecipeStatus().reason() != null &&
+                    status.getRecipeStatus().reason().getContents().toString().contains("ratio")) {
+                return result;
+            }
             RecipeResult.of((IRecipeLogicMachine) holder, result.isSuccess() ? result : (io == IO.IN ? RecipeResult.FAIL_FIND : RecipeResult.FAIL_OUTPUT));
             if (result.isSuccess()) return result;
         }

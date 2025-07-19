@@ -1678,6 +1678,7 @@
     "gtceu.recipe.fail.no.find.researched": "未找到该配方的研究数据",
     "gtceu.recipe.fail.no.ratio": "配方输入比例不正确",
     "gtceu.recipe.fail.no.venting": "排气口已堵塞",
+    "gtceu.recipe.fail.nano_forge.tier": "纳米煅炉等级不足",
     "gtceu.recipe.fail.no.input.item": "缺少输入物品(%s)",
     "gtceu.recipe.fail.no.input.fluid": "缺少输入液体(%s)",
     "gtceu.machine.structure_check": "更新结构检查"
