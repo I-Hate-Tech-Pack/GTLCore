@@ -7,8 +7,6 @@ import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
 import com.gregtechceu.gtceu.data.recipe.builder.GTRecipeBuilder;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
-import com.lowdragmc.lowdraglib.utils.NBTToJsonConverter;
-
 import net.minecraft.nbt.CompoundTag;
 
 import com.google.gson.JsonObject;
@@ -43,13 +41,10 @@ public class GTRecipeBuilderMixin {
     @Unique
     private long gTLCore$eut = 0;
 
-    @Unique
-    private int tier;
-
     @Inject(method = "EUt(J)Lcom/gregtechceu/gtceu/data/recipe/builder/GTRecipeBuilder;", at = @At("HEAD"), remap = false)
     private void eu(long eu, CallbackInfoReturnable<GTRecipeBuilder> cir) {
         gTLCore$eut = eu;
-        this.tier = GTUtil.getTierByVoltage(eu > 0 ? eu : -eu);
+        this.data.putInt("euTier", GTUtil.getTierByVoltage(eu > 0 ? eu : -eu));
     }
 
     @Unique
@@ -70,9 +65,5 @@ public class GTRecipeBuilderMixin {
     @Inject(method = "toJson", at = @At("TAIL"), remap = false)
     public void toJson(JsonObject json, CallbackInfo ci) {
         json.addProperty("duration", gTLCore$getDuration());
-        this.data.putInt("euTier", tier);
-        if (!this.data.isEmpty()) {
-            json.add("data", NBTToJsonConverter.getObject(this.data));
-        }
     }
 }

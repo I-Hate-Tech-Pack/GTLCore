@@ -62,8 +62,12 @@ public abstract class GTRecipeMixin {
         GTRecipe.ActionResult result = this.matchRecipe(holder, true);
         if (!result.isSuccess() && result.reason() != null) {
             String s = result.reason().get().getContents().toString();
-            if (s.contains("eu")) RecipeResult.of((IRecipeLogicMachine) holder, RecipeResult.FAIL_NO_ENOUGH_EU);
-            else if (s.contains("cwu")) RecipeResult.of((IRecipeLogicMachine) holder, RecipeResult.FAIL_NO_ENOUGH_CWU);
+            if (s.contains("_in")) {
+                if (s.contains("eu")) RecipeResult.of((IRecipeLogicMachine) holder, RecipeResult.FAIL_NO_ENOUGH_EU_IN);
+                else if (s.contains("cwu")) RecipeResult.of((IRecipeLogicMachine) holder, RecipeResult.FAIL_NO_ENOUGH_CWU_IN);
+            } else if (s.contains("_out")) {
+                if (s.contains("eu")) RecipeResult.of((IRecipeLogicMachine) holder, RecipeResult.FAIL_NO_ENOUGH_EU_OUT);
+            }
         }
         return result;
     }

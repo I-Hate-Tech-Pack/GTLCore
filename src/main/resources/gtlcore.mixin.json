@@ -93,6 +93,7 @@
     "gtm.registry.GTDimensionMarkersMixin",
     "gtm.registry.GTMachinesMixin",
     "gtm.registry.GTRecipeBuilderMixin",
+    "gtm.registry.GTRecipeJSMixin",
     "gtm.registry.GTRecipeModifiersMixin",
     "gtm.registry.GTRecipeTypeMixin",
     "gtmt.HugeBusPartMachineMixin",

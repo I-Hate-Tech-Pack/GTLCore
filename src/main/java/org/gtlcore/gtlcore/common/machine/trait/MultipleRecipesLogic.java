@@ -89,7 +89,7 @@ public class MultipleRecipesLogic extends RecipeLogic implements ILockRecipe {
             }
         }
         if (output.outputs.get(ItemRecipeCapability.CAP).isEmpty() && output.outputs.get(FluidRecipeCapability.CAP).isEmpty()) {
-            if (totalEu / maxEUt > 1200) RecipeResult.of(machine, RecipeResult.FAIL_NO_ENOUGH_EU);
+            if (totalEu / maxEUt > 1200) RecipeResult.of(machine, RecipeResult.FAIL_NO_ENOUGH_EU_IN);
             return null;
         }
         double d = (double) totalEu / maxEUt;

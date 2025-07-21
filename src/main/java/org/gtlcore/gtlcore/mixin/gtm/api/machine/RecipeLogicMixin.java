@@ -255,8 +255,8 @@ public abstract class RecipeLogicMixin implements ILockRecipe, IRecipeStatus {
                         result = r.matchRecipeContents(IO.IN, holder, r.tickInputs, true);
                         if (!result.isSuccess() && result.reason() != null) {
                             String s = result.reason().get().getSiblings().get(1).toString();
-                            if (s.contains("eu")) RecipeResult.of(holder, RecipeResult.FAIL_NO_ENOUGH_EU);
-                            else if (s.contains("cwu")) RecipeResult.of(holder, RecipeResult.FAIL_NO_ENOUGH_CWU);
+                            if (s.contains("eu")) RecipeResult.of(holder, RecipeResult.FAIL_NO_ENOUGH_EU_IN);
+                            else if (s.contains("cwu")) RecipeResult.of(holder, RecipeResult.FAIL_NO_ENOUGH_CWU_IN);
                         }
                         return result.isSuccess();
                     } else return true;

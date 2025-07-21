@@ -12,8 +12,6 @@ import com.gregtechceu.gtceu.api.recipe.logic.OCParams;
 import com.gregtechceu.gtceu.api.recipe.logic.OCResult;
 import com.gregtechceu.gtceu.common.data.GTRecipeModifiers;
 
-import net.minecraft.network.chat.Component;
-
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -36,7 +34,7 @@ public class GTRecipeModifiersMixin {
                                     params, result, maxVoltage, blastFurnaceTemperature, recipe.data.contains("ebf_temp") ? recipe.data.getInt("ebf_temp") : 0)),
                                     recipe, coilMachine.getOverclockVoltage(), params, result);
                 } else {
-                    RecipeResult.of((IRecipeLogicMachine) machine, RecipeResult.fail(Component.translatable("gtceu.recipe.fail.no.enough.temperature")));
+                    RecipeResult.of((IRecipeLogicMachine) machine, RecipeResult.FAIL_NO_ENOUGH_TEMPERATURE);
                     return null;
                 }
             } else return null;
