@@ -18,6 +18,7 @@ import com.gregtechceu.gtceu.data.recipe.builder.GTRecipeBuilder;
 
 import net.minecraft.nbt.CompoundTag;
 
+import com.google.common.primitives.Ints;
 import lombok.Getter;
 import org.jetbrains.annotations.Nullable;
 
@@ -78,6 +79,8 @@ public class MultipleRecipesLogic extends RecipeLogic implements ILockRecipe {
             if (p > 1) match = match.copy(ContentModifier.multiplier(p), false);
             totalEu += RecipeHelper.getInputEUt(match) * match.duration;
             if (totalEu / maxEUt > 1200) break;
+            match.parallels = Ints.saturatedCast(p);
+            IParallelLogic.getRecipeOutputChance(machine, match);
             remain -= p;
             if (handleRecipeInput(machine, match)) {
                 var item = match.outputs.get(ItemRecipeCapability.CAP);

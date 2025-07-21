@@ -7,6 +7,7 @@ import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.capability.recipe.*;
 import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
+import com.gregtechceu.gtceu.api.recipe.RecipeHelper;
 import com.gregtechceu.gtceu.api.recipe.content.Content;
 import com.gregtechceu.gtceu.api.recipe.content.ContentModifier;
 import com.gregtechceu.gtceu.api.recipe.ingredient.FluidIngredient;
@@ -20,14 +21,81 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 
 import com.hepdd.gtmthings.common.block.machine.trait.CatalystFluidStackHandler;
-import it.unimi.dsi.fastutil.objects.Object2LongMaps;
-import it.unimi.dsi.fastutil.objects.Object2LongOpenCustomHashMap;
-import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.*;
 
-import java.util.List;
+import java.util.*;
 
 public interface IParallelLogic {
+
+    static GTRecipe getRecipeInputChance(IRecipeCapabilityHolder holder, GTRecipe recipe) {
+        Reference2ObjectOpenHashMap<RecipeCapability<?>, List<Object>> recipeContents = new Reference2ObjectOpenHashMap<>();
+        for (var entry : recipe.inputs.entrySet()) {
+            var cap = entry.getKey();
+            List<Content> chancedContents = new ObjectArrayList<>();
+            var contentList = recipeContents.computeIfAbsent(cap, c -> new ObjectArrayList<>());
+            for (Content cont : entry.getValue()) {
+                if (cont.chance >= cont.maxChance) contentList.add(cont.content);
+                else chancedContents.add(cont.copy(cap, ContentModifier.multiplier(1.0 / recipe.parallels)));
+            }
+            if (!chancedContents.isEmpty()) {
+                var function = recipe.getType().getChanceFunction();
+                var logic = recipe.getChanceLogicForCapability(cap, IO.IN, true);
+                int recipeTier = RecipeHelper.getPreOCRecipeEuTier(recipe);
+                int holderTier = holder.getChanceTier();
+                var cache = ((IRecipeLogicMachine) holder).getRecipeLogic().getChanceCaches().get(cap);
+                chancedContents = logic.roll(chancedContents, function, recipeTier, holderTier, cache, recipe.parallels, cap);
+                if (chancedContents != null) {
+                    for (Content cont : chancedContents) {
+                        contentList.add(new Content(cont.content, 10000, 10000, 0, null, null));
+                    }
+                }
+            }
+            if (contentList.isEmpty()) recipeContents.remove(cap);
+        }
+        recipe.inputs.clear();
+        for (var it = recipeContents.reference2ObjectEntrySet().fastIterator(); it.hasNext();) {
+            var entry = it.next();
+            List<Content> contentList = new ArrayList<>(entry.getValue().size());
+            for (var obj : entry.getValue()) contentList.add((Content) obj);
+            recipe.inputs.put(entry.getKey(), contentList);
+        }
+        return recipe;
+    }
+
+    static GTRecipe getRecipeOutputChance(IRecipeCapabilityHolder holder, GTRecipe recipe) {
+        Reference2ObjectOpenHashMap<RecipeCapability<?>, List<Object>> recipeContents = new Reference2ObjectOpenHashMap<>();
+        for (var entry : recipe.outputs.entrySet()) {
+            var cap = entry.getKey();
+            List<Content> chancedContents = new ObjectArrayList<>();
+            var contentList = recipeContents.computeIfAbsent(cap, c -> new ObjectArrayList<>());
+            for (var cont : entry.getValue()) {
+                if (cont.chance >= cont.maxChance) contentList.add(cont.content);
+                else chancedContents.add(cont.copy(cap, ContentModifier.multiplier(1.0 / recipe.parallels)));
+            }
+            if (!chancedContents.isEmpty()) {
+                var function = recipe.getType().getChanceFunction();
+                var logic = recipe.getChanceLogicForCapability(cap, IO.OUT, true);
+                int recipeTier = RecipeHelper.getPreOCRecipeEuTier(recipe);
+                int holderTier = holder.getChanceTier();
+                var cache = ((IRecipeLogicMachine) holder).getRecipeLogic().getChanceCaches().get(cap);
+                chancedContents = logic.roll(chancedContents, function, recipeTier, holderTier, cache, recipe.parallels, cap);
+                if (chancedContents != null) {
+                    for (var cont : chancedContents) {
+                        contentList.add(new Content(cont.content, 10000, 10000, 0, null, null));
+                    }
+                }
+            }
+            if (contentList.isEmpty()) recipeContents.remove(cap);
+        }
+        recipe.outputs.clear();
+        for (var it = recipeContents.reference2ObjectEntrySet().fastIterator(); it.hasNext();) {
+            var entry = it.next();
+            List<Content> contentList = new ArrayList<>(entry.getValue().size());
+            for (var obj : entry.getValue()) contentList.add((Content) obj);
+            recipe.outputs.put(entry.getKey(), contentList);
+        }
+        return recipe;
+    }
 
     static long getParallel(IRecipeCapabilityHolder holder, GTRecipe recipe, long parallelAmount) {
         if (parallelAmount <= 1) return parallelAmount;

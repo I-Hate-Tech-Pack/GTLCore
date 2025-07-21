@@ -4,14 +4,18 @@ import org.gtlcore.gtlcore.api.recipe.IParallelLogic;
 
 import com.gregtechceu.gtceu.api.capability.recipe.IRecipeCapabilityHolder;
 import com.gregtechceu.gtceu.api.capability.recipe.RecipeCapability;
+import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
+import com.gregtechceu.gtceu.api.recipe.content.ContentModifier;
 import com.gregtechceu.gtceu.api.recipe.modifier.ParallelLogic;
 
 import com.google.common.primitives.Ints;
+import com.mojang.datafixers.util.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
+import java.util.Objects;
 import java.util.function.Predicate;
 
 @Mixin(ParallelLogic.class)
@@ -55,5 +59,29 @@ public class ParallelLogicMixin {
             }
         }
         return max;
+    }
+
+    /**
+     * @author .
+     * @reason .
+     */
+    @Overwrite(remap = false)
+    public static @NotNull Pair<GTRecipe, Integer> doParallelRecipes(@NotNull GTRecipe currentRecipe, @NotNull IRecipeLogicMachine machine, int parallelAmount, boolean modifyDuration) {
+        int multiplierByInputs = getMaxRecipeMultiplier(currentRecipe, machine, parallelAmount);
+        if (multiplierByInputs == 0) {
+            return Pair.of(currentRecipe, 1);
+        } else {
+            Objects.requireNonNull(machine);
+            int limitByOutput = limitByOutputMerging(currentRecipe, machine, multiplierByInputs, machine::canVoidRecipeOutputs);
+            if (limitByOutput > 0) {
+                GTRecipe multiRecipe = currentRecipe.copy(ContentModifier.multiplier(limitByOutput), modifyDuration);
+                multiRecipe.parallels = limitByOutput;
+                IParallelLogic.getRecipeInputChance(machine, multiRecipe);
+                IParallelLogic.getRecipeOutputChance(machine, multiRecipe);
+                return Pair.of(multiRecipe, limitByOutput);
+            } else {
+                return Pair.of(currentRecipe, limitByOutput);
+            }
+        }
     }
 }
