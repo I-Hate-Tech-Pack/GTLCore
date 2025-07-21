@@ -1,6 +1,5 @@
 package org.gtlcore.gtlcore.mixin.gtm.registry;
 
-import org.gtlcore.gtlcore.api.recipe.IGTRecipeEUTier;
 import org.gtlcore.gtlcore.api.recipe.RecipeRunnerHelper;
 import org.gtlcore.gtlcore.common.data.GTLMaterials;
 
@@ -16,24 +15,16 @@ import com.gregtechceu.gtceu.common.data.GTMaterials;
 import com.gregtechceu.gtceu.data.recipe.builder.GTRecipeBuilder;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
-import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
-
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.resources.ResourceLocation;
 
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import lombok.Getter;
 import org.spongepowered.asm.mixin.*;
 
 import java.util.*;
 import java.util.function.*;
 
 @Mixin(GTRecipeType.class)
-public class GTRecipeTypeMixin implements IGTRecipeEUTier {
-
-    @Persisted
-    @Getter
-    private Object2IntOpenHashMap<ResourceLocation> recipeTierMap = new Object2IntOpenHashMap<>();
+public class GTRecipeTypeMixin {
 
     @Shadow(remap = false)
     private GTRecipeBuilder recipeBuilder;
@@ -181,11 +172,5 @@ public class GTRecipeTypeMixin implements IGTRecipeEUTier {
     @Shadow(remap = false)
     public GTRecipeLookup getLookup() {
         return null;
-    }
-
-    @Override
-    public void setRecipeTierMap(ResourceLocation recipe, int tier) {
-        if (recipe == null) return;
-        this.recipeTierMap.put(recipe, tier);
     }
 }

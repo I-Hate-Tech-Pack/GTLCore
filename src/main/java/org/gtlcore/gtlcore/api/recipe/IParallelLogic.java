@@ -34,7 +34,7 @@ public interface IParallelLogic {
             List<Content> chancedContents = new ObjectArrayList<>();
             var contentList = recipeContents.computeIfAbsent(cap, c -> new ObjectArrayList<>());
             for (Content cont : entry.getValue()) {
-                if (cont.chance >= cont.maxChance) contentList.add(cont.content);
+                if (cont.chance >= cont.maxChance) contentList.add(cont);
                 else chancedContents.add(cont.copy(cap, ContentModifier.multiplier(1.0 / recipe.parallels)));
             }
             if (!chancedContents.isEmpty()) {
@@ -69,7 +69,7 @@ public interface IParallelLogic {
             List<Content> chancedContents = new ObjectArrayList<>();
             var contentList = recipeContents.computeIfAbsent(cap, c -> new ObjectArrayList<>());
             for (var cont : entry.getValue()) {
-                if (cont.chance >= cont.maxChance) contentList.add(cont.content);
+                if (cont.chance >= cont.maxChance) contentList.add(cont);
                 else chancedContents.add(cont.copy(cap, ContentModifier.multiplier(1.0 / recipe.parallels)));
             }
             if (!chancedContents.isEmpty()) {
