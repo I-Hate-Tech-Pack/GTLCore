@@ -14,6 +14,10 @@ public record RecipeResult(boolean isSuccess, @Nullable Component reason) {
         if (machine.getRecipeLogic() instanceof IRecipeStatus status) status.setRecipeStatus(result);
     }
 
+    public static void ofWorking(IRecipeLogicMachine machine, RecipeResult result) {
+        if (machine.getRecipeLogic() instanceof IRecipeStatus status) status.setWorkingStatus(result);
+    }
+
     public static final RecipeResult SUCCESS = new RecipeResult(true, null);
     public static final RecipeResult FAIL_FIND = fail(Component.translatable("gtceu.recipe.fail.find"));
     public static final RecipeResult FAIL_OUTPUT = fail(Component.translatable("gtceu.recipe.fail.Output"));

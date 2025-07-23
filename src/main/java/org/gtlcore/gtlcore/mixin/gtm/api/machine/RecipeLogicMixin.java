@@ -41,6 +41,9 @@ public abstract class RecipeLogicMixin implements ILockRecipe, IRecipeStatus {
     @Getter
     @Setter
     private RecipeResult recipeStatus;
+    @Getter
+    @Setter
+    private RecipeResult workingStatus;
 
     @Mutable
     @Final

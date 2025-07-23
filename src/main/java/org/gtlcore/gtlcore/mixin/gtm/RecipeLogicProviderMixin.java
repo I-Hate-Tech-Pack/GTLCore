@@ -3,6 +3,7 @@ package org.gtlcore.gtlcore.mixin.gtm;
 import org.gtlcore.gtlcore.api.machine.trait.IRecipeStatus;
 
 import com.gregtechceu.gtceu.api.GTValues;
+import com.gregtechceu.gtceu.api.machine.multiblock.WorkableMultiblockMachine;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.integration.jade.provider.CapabilityBlockProvider;
 import com.gregtechceu.gtceu.integration.jade.provider.RecipeLogicProvider;
@@ -58,15 +59,20 @@ public abstract class RecipeLogicProviderMixin extends CapabilityBlockProvider<R
 
     @Inject(method = "write(Lnet/minecraft/nbt/CompoundTag;Lcom/gregtechceu/gtceu/api/machine/trait/RecipeLogic;)V", at = @At("HEAD"), remap = false)
     protected void write(CompoundTag data, RecipeLogic capability, CallbackInfo ci) {
+        if (capability.machine instanceof WorkableMultiblockMachine machine)
+            data.putBoolean("isFormed", machine.isFormed());
         if (capability instanceof IRecipeStatus status) {
             if (status.getRecipeStatus() != null && status.getRecipeStatus().reason() != null)
                 data.putString("reason", status.getRecipeStatus().reason().getString());
+            if (status.getWorkingStatus() != null && status.getWorkingStatus().reason() != null)
+                data.putString("work_reason", status.getWorkingStatus().reason().getString());
         }
     }
 
     @Override
     protected void addTooltip(CompoundTag capData, ITooltip tooltip, Player player, BlockAccessor block,
                               BlockEntity blockEntity, IPluginConfig config) {
+        if (!capData.getBoolean("isFormed")) return;
         if (capData.getBoolean("Working")) {
             var recipeInfo = capData.getCompound("Recipe");
             if (!recipeInfo.isEmpty()) {
@@ -96,9 +102,13 @@ public abstract class RecipeLogicProviderMixin extends CapabilityBlockProvider<R
                     }
                 }
             }
+            String reason = capData.getString("work_reason");
+            if (reason.isEmpty()) return;
+            tooltip.add(Component.translatable("gtceu.recipe.fail.reason", reason).withStyle(RED));
+        } else {
+            String reason = capData.getString("reason");
+            if (reason.isEmpty()) return;
+            tooltip.add(Component.translatable("gtceu.recipe.fail.reason", reason).withStyle(RED));
         }
-        String reason = capData.getString("reason");
-        if (reason.isEmpty()) return;
-        tooltip.add(Component.translatable("gtceu.recipe.fail.reason", reason).withStyle(RED));
     }
 }

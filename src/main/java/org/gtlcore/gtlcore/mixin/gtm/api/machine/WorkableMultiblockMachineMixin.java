@@ -2,9 +2,11 @@ package org.gtlcore.gtlcore.mixin.gtm.api.machine;
 
 import org.gtlcore.gtlcore.api.machine.trait.IRecipeCapabilityMachine;
 import org.gtlcore.gtlcore.api.machine.trait.RecipeHandlePart;
+import org.gtlcore.gtlcore.api.recipe.RecipeResult;
 
 import com.gregtechceu.gtceu.api.capability.recipe.*;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
+import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IDistinctPart;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiPart;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
@@ -66,6 +68,8 @@ public abstract class WorkableMultiblockMachineMixin extends MultiblockControlle
         if (this.getLevel() instanceof ServerLevel sl) {
             sl.getServer().tell(new TickTask(1, this::upDate));
         }
+        RecipeResult.of((IRecipeLogicMachine) this, null);
+        RecipeResult.ofWorking((IRecipeLogicMachine) this, null);
     }
 
     @Inject(method = "onStructureInvalid", at = @At("TAIL"), remap = false)

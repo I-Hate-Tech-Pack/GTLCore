@@ -1,9 +1,7 @@
 package org.gtlcore.gtlcore.api.recipe;
 
 import org.gtlcore.gtlcore.api.machine.trait.IRecipeCapabilityMachine;
-import org.gtlcore.gtlcore.api.recipe.ingredient.IngredientStackHashStrategy;
 
-import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.capability.recipe.*;
 import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
@@ -11,8 +9,8 @@ import com.gregtechceu.gtceu.api.recipe.RecipeHelper;
 import com.gregtechceu.gtceu.api.recipe.content.Content;
 import com.gregtechceu.gtceu.api.recipe.content.ContentModifier;
 import com.gregtechceu.gtceu.api.recipe.ingredient.FluidIngredient;
-import com.gregtechceu.gtceu.api.recipe.ingredient.IntProviderIngredient;
 import com.gregtechceu.gtceu.api.recipe.ingredient.SizedIngredient;
+import com.gregtechceu.gtceu.utils.IngredientEquality;
 import com.gregtechceu.gtceu.utils.ItemStackHashStrategy;
 
 import com.lowdragmc.lowdraglib.side.fluid.FluidStack;
@@ -26,41 +24,6 @@ import it.unimi.dsi.fastutil.objects.*;
 import java.util.*;
 
 public interface IParallelLogic {
-
-    static GTRecipe getRecipeInputChance(IRecipeCapabilityHolder holder, GTRecipe recipe) {
-        Reference2ObjectOpenHashMap<RecipeCapability<?>, List<Object>> recipeContents = new Reference2ObjectOpenHashMap<>();
-        for (var entry : recipe.inputs.entrySet()) {
-            var cap = entry.getKey();
-            List<Content> chancedContents = new ObjectArrayList<>();
-            var contentList = recipeContents.computeIfAbsent(cap, c -> new ObjectArrayList<>());
-            for (Content cont : entry.getValue()) {
-                if (cont.chance >= cont.maxChance || cont.chance == 0) contentList.add(cont);
-                else chancedContents.add(cont.copy(cap, ContentModifier.multiplier(1.0 / recipe.parallels)));
-            }
-            if (!chancedContents.isEmpty()) {
-                var function = recipe.getType().getChanceFunction();
-                var logic = recipe.getChanceLogicForCapability(cap, IO.IN, true);
-                int recipeTier = RecipeHelper.getPreOCRecipeEuTier(recipe);
-                int holderTier = holder.getChanceTier();
-                var cache = ((IRecipeLogicMachine) holder).getRecipeLogic().getChanceCaches().get(cap);
-                chancedContents = logic.roll(chancedContents, function, recipeTier, holderTier, cache, recipe.parallels, cap);
-                if (chancedContents != null) {
-                    for (Content cont : chancedContents) {
-                        contentList.add(new Content(cont.content, 10000, 10000, 0, null, null));
-                    }
-                }
-            }
-            if (contentList.isEmpty()) recipeContents.remove(cap);
-        }
-        recipe.inputs.clear();
-        for (var it = recipeContents.reference2ObjectEntrySet().fastIterator(); it.hasNext();) {
-            var entry = it.next();
-            List<Content> contentList = new ArrayList<>(entry.getValue().size());
-            for (var obj : entry.getValue()) contentList.add((Content) obj);
-            recipe.inputs.put(entry.getKey(), contentList);
-        }
-        return recipe;
-    }
 
     static GTRecipe getRecipeOutputChance(IRecipeCapabilityHolder holder, GTRecipe recipe) {
         Reference2ObjectOpenHashMap<RecipeCapability<?>, List<Object>> recipeContents = new Reference2ObjectOpenHashMap<>();
@@ -134,17 +97,13 @@ public interface IParallelLogic {
         if (parallelAmount <= 1) return parallelAmount;
         if (holder instanceof IRecipeCapabilityMachine machine) {
             if (machine.getRecipeHandleParts().isEmpty()) return 0;
-            Object2LongOpenCustomHashMap<Ingredient> countableMap = new Object2LongOpenCustomHashMap<>(IngredientStackHashStrategy.comparing());
+            Object2LongOpenCustomHashMap<Ingredient> countableMap = new Object2LongOpenCustomHashMap<>(IngredientEquality.IngredientHashStrategy.INSTANCE);
             for (Content content : recipe.getInputContents(ItemRecipeCapability.CAP)) {
                 Ingredient recipeIngredient = ItemRecipeCapability.CAP.of(content.content);
                 long ingredientCount;
                 if (recipeIngredient instanceof SizedIngredient sizedIngredient) {
                     ingredientCount = sizedIngredient.getAmount();
-                } else if (recipeIngredient instanceof IntProviderIngredient intProviderIngredient) {
-                    ingredientCount = intProviderIngredient.getSampledCount(GTValues.RNG);
-                } else {
-                    ingredientCount = 1;
-                }
+                } else ingredientCount = 1;
                 if (content.chance > 0) {
                     countableMap.addTo(recipeIngredient, ingredientCount);
                 }
@@ -255,11 +214,7 @@ public interface IParallelLogic {
                 long ingredientCount;
                 if (recipeIngredient instanceof SizedIngredient sizedIngredient) {
                     ingredientCount = sizedIngredient.getAmount();
-                } else if (recipeIngredient instanceof IntProviderIngredient intProviderIngredient) {
-                    ingredientCount = intProviderIngredient.getSampledCount(GTValues.RNG);
-                } else {
-                    ingredientCount = 1;
-                }
+                } else ingredientCount = 1;
                 maxCount = Math.max(maxCount, ingredientCount);
                 ingredients.add(recipeIngredient);
             }

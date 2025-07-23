@@ -9,4 +9,10 @@ public interface IRecipeStatus {
     default RecipeResult getRecipeStatus() {
         return null;
     }
+
+    default void setWorkingStatus(RecipeResult result) {}
+
+    default RecipeResult getWorkingStatus() {
+        return null;
+    }
 }

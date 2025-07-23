@@ -135,9 +135,9 @@ public class GTLRecipeModifiers {
             if (hatchedParallel == null) return null;
             GTRecipe recipe1 = RecipeHelper.applyOverclock(OverclockingLogic.NON_PERFECT_OVERCLOCK_SUBTICK, hatchedParallel, workableElectricMultiblockMachine.getOverclockVoltage(), params, result);
             if (a / b != fluidStack1.getAmount() / fluidStack2.getAmount()) {
-                RecipeResult.of((IRecipeLogicMachine) machine, RecipeResult.fail(Component.translatable("gtceu.recipe.fail.no.ratio")));
+                RecipeResult.ofWorking((IRecipeLogicMachine) machine, RecipeResult.fail(Component.translatable("gtceu.recipe.fail.no.ratio")));
                 recipe1.outputs.clear();
-            } else RecipeResult.of((IRecipeLogicMachine) machine, RecipeResult.SUCCESS);
+            } else RecipeResult.ofWorking((IRecipeLogicMachine) machine, RecipeResult.SUCCESS);
             return recipe1;
         }
         return null;

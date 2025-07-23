@@ -98,6 +98,8 @@ public abstract class WorkableElectricMultiblockMachineMixin extends WorkableMul
                     status.getRecipeStatus() != null &&
                     status.getRecipeStatus().reason() != null) {
                 textList.add(status.getRecipeStatus().reason().copy().withStyle(ChatFormatting.RED));
+                if (status.getWorkingStatus() != null && status.getWorkingStatus().reason() != null)
+                    textList.add(status.getWorkingStatus().reason().copy().withStyle(ChatFormatting.RED));
             }
         }
         if (this.getRecipeLogic() instanceof ILockRecipe iLockRecipe) {
