@@ -77,7 +77,6 @@ public class MultipleRecipesLogic extends RecipeLogic implements ILockRecipe {
             long p = IParallelLogic.getMaxParallel(machine, match, remain);
             if (p > 1) match = match.copy(ContentModifier.multiplier(p), false);
             totalEu += RecipeHelper.getInputEUt(match) * match.duration;
-            if (totalEu / maxEUt > 1200) break;
             match.parallels = Ints.saturatedCast(p);
             IParallelLogic.getRecipeOutputChance(machine, match);
             remain -= p;
@@ -87,9 +86,10 @@ public class MultipleRecipesLogic extends RecipeLogic implements ILockRecipe {
                 var fluid = match.outputs.get(FluidRecipeCapability.CAP);
                 if (fluid != null) output.outputs.get(FluidRecipeCapability.CAP).addAll(fluid);
             }
+            if (totalEu / maxEUt > 20 * 500) break;
         }
         if (output.outputs.get(ItemRecipeCapability.CAP).isEmpty() && output.outputs.get(FluidRecipeCapability.CAP).isEmpty()) {
-            if (totalEu / maxEUt > 1200) RecipeResult.of(machine, RecipeResult.FAIL_NO_ENOUGH_EU_IN);
+            if (totalEu / maxEUt > 20 * 500) RecipeResult.of(machine, RecipeResult.FAIL_NO_ENOUGH_EU_IN);
             return null;
         }
         double d = (double) totalEu / maxEUt;

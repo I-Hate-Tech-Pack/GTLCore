@@ -3,16 +3,18 @@ package org.gtlcore.gtlcore.mixin.gtm;
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import com.gregtechceu.gtceu.integration.jei.multipage.MultiblockInfoCategory;
+import com.gregtechceu.gtceu.integration.jei.multipage.MultiblockInfoWrapper;
 
-import mezz.jei.api.registration.IRecipeRegistration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.thread.BlockableEventLoop;
+
+import mezz.jei.api.registration.IRecipeRegistration;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import com.gregtechceu.gtceu.integration.jei.multipage.MultiblockInfoWrapper;
+
 import java.util.concurrent.CompletableFuture;
 
 import static com.gregtechceu.gtceu.integration.jei.multipage.MultiblockInfoCategory.RECIPE_TYPE;
@@ -32,8 +34,8 @@ public class MultiblockInfoCategoryMixin {
                 .filter(MultiblockMachineDefinition::isRenderXEIPreview)
                 .map(MultiblockInfoWrapper::new)
                 .toList(), executor).thenAcceptAsync(recipes -> {
-            registry.addRecipes(RECIPE_TYPE, recipes);
-        }, executor);
+                    registry.addRecipes(RECIPE_TYPE, recipes);
+                }, executor);
         ci.cancel();
     }
 }

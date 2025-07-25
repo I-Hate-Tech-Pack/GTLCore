@@ -32,6 +32,7 @@ public record RecipeResult(boolean isSuccess, @Nullable Component reason) {
     public static final RecipeResult FAIL_NO_FIND_RESEARCHED = fail(Component.translatable("gtceu.recipe.fail.no.find.researched"));
     public static final RecipeResult FAIL_LACK_FLUID = fail(Component.translatable("recipe.condition.rock_breaker.tooltip"));
     public static final RecipeResult FAIL_NO_ENOUGH_TEMPERATURE = fail(Component.translatable("gtceu.recipe.fail.no.enough.temperature"));
+    public static final RecipeResult FAIL_NO_ENOUGH_TIER = fail(Component.translatable("gtceu.recipe.fail.no.enough.recipe.tier"));
 
     public static RecipeResult fail(@Nullable Component reason) {
         return new RecipeResult(false, reason);

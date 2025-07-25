@@ -3417,7 +3417,7 @@ public class MultiBlockMachineA {
                     .where(" ", Predicates.any())
                     .build())
             .additionalDisplay((controller, components) -> {
-                if (controller.isFormed() && controller instanceof StorageMachine machine) {
+                if (controller.isFormed()) {
                     components.add(Component.translatable("gtceu.multiblock.parallel", Component.literal(String.valueOf(8192)).withStyle(ChatFormatting.DARK_PURPLE)).withStyle(ChatFormatting.GRAY));
                 }
             })
