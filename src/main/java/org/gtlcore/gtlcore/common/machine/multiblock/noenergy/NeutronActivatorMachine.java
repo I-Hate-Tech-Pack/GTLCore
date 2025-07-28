@@ -134,7 +134,11 @@ public class NeutronActivatorMachine extends NoEnergyMultiblockMachine {
     @Override
     public boolean beforeWorking(@Nullable GTRecipe recipe) {
         if (recipe != null) {
-            return eV >= recipe.data.getInt("evt") * 1000 * getEVtMultiplier();
+            if (eV >= recipe.data.getInt("evt") * 1000 * getEVtMultiplier()) return true;
+            else {
+                RecipeResult.of(this, RecipeResult.fail(Component.translatable("gtceu.recipe.fail.no.enough.eV.consumed")));
+                return false;
+            }
         }
         return false;
     }

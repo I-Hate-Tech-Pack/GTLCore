@@ -19,9 +19,7 @@ import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 @Mixin(ExportOnlyAEFluidList.class)
 public abstract class ExportOnlyAEFluidListMixin extends NotifiableFluidTank implements IMEPartMachine {
@@ -56,7 +54,7 @@ public abstract class ExportOnlyAEFluidListMixin extends NotifiableFluidTank imp
                                 long amount = stored.amount();
                                 if (amount != 0L) {
                                     if (ingredient.test(i.getFluid())) {
-                                        FluidStack drained = i.drain(count, simulate);
+                                        FluidStack drained = i.drain(count, simulate, !simulate);
                                         if (drained.getAmount() > 0L) {
                                             changed = true;
                                             count -= drained.getAmount();

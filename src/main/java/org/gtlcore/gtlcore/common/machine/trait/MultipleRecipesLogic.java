@@ -2,8 +2,7 @@ package org.gtlcore.gtlcore.common.machine.trait;
 
 import org.gtlcore.gtlcore.api.machine.multiblock.ParallelMachine;
 import org.gtlcore.gtlcore.api.machine.trait.ILockRecipe;
-import org.gtlcore.gtlcore.api.recipe.IParallelLogic;
-import org.gtlcore.gtlcore.api.recipe.RecipeResult;
+import org.gtlcore.gtlcore.api.recipe.IRecipeIterator;
 
 import com.gregtechceu.gtceu.api.capability.recipe.*;
 import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
@@ -19,12 +18,11 @@ import net.minecraft.nbt.CompoundTag;
 
 import com.google.common.primitives.Ints;
 import lombok.Getter;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.function.BiPredicate;
 
+import static org.gtlcore.gtlcore.api.recipe.IParallelLogic.*;
 import static org.gtlcore.gtlcore.api.recipe.RecipeRunnerHelper.*;
 
 @Getter
@@ -62,25 +60,27 @@ public class MultipleRecipesLogic extends RecipeLogic implements ILockRecipe {
         }
     }
 
-    @Nullable
     private GTRecipe getRecipe() {
         if (!machine.hasProxies()) return null;
+        long maxEUt = getMachine().getOverclockVoltage();
+        if (maxEUt <= 0) return null;
+        var iterator = lookupRecipeIterator();
         GTRecipe output = GTRecipeBuilder.ofRaw().buildRawRecipe();
         output.outputs.put(ItemRecipeCapability.CAP, new ArrayList<>());
         output.outputs.put(FluidRecipeCapability.CAP, new ArrayList<>());
-        long maxEUt = getMachine().getOverclockVoltage();
         long totalEu = 0;
         long remain = (long) this.parallel.getMaxParallel() * MAX_THREADS;
-        while (remain > 0) {
-            GTRecipe match = lookupRecipe();
-            if (match == null) break;
-            long p = IParallelLogic.getMaxParallel(machine, match, remain);
-            if (p > 1) match = match.copy(ContentModifier.multiplier(p), false);
-            totalEu += RecipeHelper.getInputEUt(match) * match.duration;
+        while (remain > 0 && iterator.hasNext()) {
+            GTRecipe match = iterator.next();
+            if (match == null) continue;
+            long p = getMaxParallel(machine, match, remain);
+            if (p <= 0) continue;
+            else if (p > 1) match = match.copy(ContentModifier.multiplier(p), false);
             match.parallels = Ints.saturatedCast(p);
-            IParallelLogic.getRecipeOutputChance(machine, match);
+            getRecipeOutputChance(machine, match);
             remain -= p;
             if (handleRecipeInput(machine, match)) {
+                totalEu += RecipeHelper.getInputEUt(match) * match.duration;
                 var item = match.outputs.get(ItemRecipeCapability.CAP);
                 if (item != null) output.outputs.get(ItemRecipeCapability.CAP).addAll(item);
                 var fluid = match.outputs.get(FluidRecipeCapability.CAP);
@@ -88,10 +88,8 @@ public class MultipleRecipesLogic extends RecipeLogic implements ILockRecipe {
             }
             if (totalEu / maxEUt > 20 * 500) break;
         }
-        if (output.outputs.get(ItemRecipeCapability.CAP).isEmpty() && output.outputs.get(FluidRecipeCapability.CAP).isEmpty()) {
-            if (totalEu / maxEUt > 20 * 500) RecipeResult.of(machine, RecipeResult.FAIL_NO_ENOUGH_EU_IN);
+        if (output.outputs.get(ItemRecipeCapability.CAP).isEmpty() && output.outputs.get(FluidRecipeCapability.CAP).isEmpty())
             return null;
-        }
         double d = (double) totalEu / maxEUt;
         long eut = d > 20 ? maxEUt : (long) (maxEUt * d / 20);
         output.tickInputs.put(EURecipeCapability.CAP,
@@ -100,17 +98,20 @@ public class MultipleRecipesLogic extends RecipeLogic implements ILockRecipe {
         return output;
     }
 
-    private GTRecipe lookupRecipe() {
+    private Iterator<GTRecipe> lookupRecipeIterator() {
         if (this.isLock()) {
             if (this.getLockRecipe() == null) this.setLockRecipe(machine.getRecipeType().getLookup()
                     .find(machine, this::checkRecipe));
-            else if (!checkRecipe(this.getLockRecipe())) return null;
-            return this.getLockRecipe();
-        } else return machine.getRecipeType().getLookup().find(machine, this::checkRecipe);
+            else if (!checkRecipe(this.getLockRecipe())) return Collections.emptyIterator();
+            return Collections.singleton(this.getLockRecipe()).iterator();
+        } else
+            return IRecipeIterator.findIteratorRecipeCollection(machine.getRecipeType().getLookup().getRecipeIterator(machine, this::checkRecipe)).iterator();
     }
 
     private boolean checkRecipe(GTRecipe recipe) {
-        return matchRecipe(machine, recipe) && recipe.data.getInt("euTier") <= getMachine().getTier() &&
+        return matchRecipe(machine, recipe) &&
+                recipe.data.getInt("euTier") <= getMachine().getTier() &&
+                recipe.checkConditions(this).isSuccess() &&
                 (dataCheck == null || dataCheck.test(recipe.data, machine));
     }
 

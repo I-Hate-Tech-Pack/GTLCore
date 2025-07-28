@@ -26,7 +26,7 @@ import java.util.*;
 public interface IParallelLogic {
 
     static GTRecipe getRecipeOutputChance(IRecipeCapabilityHolder holder, GTRecipe recipe) {
-        Reference2ObjectOpenHashMap<RecipeCapability<?>, List<Object>> recipeContents = new Reference2ObjectOpenHashMap<>();
+        Reference2ObjectOpenHashMap<RecipeCapability<?>, List<Content>> recipeContents = new Reference2ObjectOpenHashMap<>();
         for (var entry : recipe.outputs.entrySet()) {
             var cap = entry.getKey();
             List<Content> chancedContents = new ObjectArrayList<>();
@@ -54,7 +54,7 @@ public interface IParallelLogic {
         for (var it = recipeContents.reference2ObjectEntrySet().fastIterator(); it.hasNext();) {
             var entry = it.next();
             List<Content> contentList = new ArrayList<>(entry.getValue().size());
-            for (var obj : entry.getValue()) contentList.add((Content) obj);
+            contentList.addAll(entry.getValue());
             recipe.outputs.put(entry.getKey(), contentList);
         }
         return recipe;
