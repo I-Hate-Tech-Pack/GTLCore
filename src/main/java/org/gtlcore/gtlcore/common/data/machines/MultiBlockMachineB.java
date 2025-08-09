@@ -205,7 +205,7 @@ public class MultiBlockMachineB {
                     .where("P", Predicates.blocks(GTBlocks.CASING_BRONZE_PIPE.get()))
                     .where("G", Predicates.blocks(GTBlocks.HERMETIC_CASING_MV.get()))
                     .where("D", Predicates.blocks(GTBlocks.CASING_STAINLESS_CLEAN.get())
-                            .setMinGlobalLimited(40)
+                            .setMinGlobalLimited(36)
                             .or(Predicates.autoAbilities(definition.getRecipeTypes()))
                             .or(Predicates.autoAbilities(true, false, true)))
                     .where("L", Predicates.blocks(GTBlocks.COIL_KANTHAL.get()))

@@ -136,7 +136,6 @@ public abstract class RecipeLogicMixin implements ILockRecipe, IRecipeStatus {
      */
     @Overwrite(remap = false)
     public void handleRecipeWorking() {
-        RecipeLogic.Status last = this.status;
         assert this.lastRecipe != null;
         GTRecipe.ActionResult result = this.handleTickRecipe(this.lastRecipe);
         if (result.isSuccess()) {
@@ -152,11 +151,6 @@ public abstract class RecipeLogicMixin implements ILockRecipe, IRecipeStatus {
         }
         if (this.status == RecipeLogic.Status.WAITING) {
             this.doDamping();
-        }
-        if (last == RecipeLogic.Status.WORKING && this.getStatus() != RecipeLogic.Status.WORKING) {
-            this.lastRecipe.postWorking(this.machine);
-        } else if (last != RecipeLogic.Status.WORKING && this.getStatus() == RecipeLogic.Status.WORKING) {
-            this.lastRecipe.preWorking(this.machine);
         }
     }
 

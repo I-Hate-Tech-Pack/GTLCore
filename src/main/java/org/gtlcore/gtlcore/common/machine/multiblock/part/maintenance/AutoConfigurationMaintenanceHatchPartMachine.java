@@ -6,6 +6,8 @@ import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMaintenanceMachine;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 import com.gregtechceu.gtceu.api.machine.multiblock.part.MultiblockPartMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.part.TieredPartMachine;
+import com.gregtechceu.gtceu.api.recipe.GTRecipe;
+import com.gregtechceu.gtceu.config.ConfigHolder;
 
 import com.lowdragmc.lowdraglib.gui.widget.ComponentPanelWidget;
 import com.lowdragmc.lowdraglib.gui.widget.DraggableScrollableWidgetGroup;
@@ -95,6 +97,21 @@ public class AutoConfigurationMaintenanceHatchPartMachine extends TieredPartMach
         return BigDecimal.valueOf(result)
                 .setScale(2, RoundingMode.HALF_UP)
                 .floatValue();
+    }
+
+    @Override
+    public GTRecipe modifyRecipe(GTRecipe recipe) {
+        if (ConfigHolder.INSTANCE.machines.enableMaintenance) {
+            if (this.hasMaintenanceProblems()) {
+                return null;
+            }
+            float durationMultiplier = this.getDurationMultiplier();
+            if (durationMultiplier != 1.0F) {
+                recipe = recipe.copy();
+                recipe.duration = (int) Math.max(1, recipe.duration * durationMultiplier);
+            }
+        }
+        return recipe;
     }
 
     private void incInternalMultiplier(int multiplier) {

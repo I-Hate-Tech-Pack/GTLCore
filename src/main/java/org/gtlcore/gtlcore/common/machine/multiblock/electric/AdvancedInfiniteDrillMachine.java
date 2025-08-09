@@ -79,7 +79,7 @@ public class AdvancedInfiniteDrillMachine extends StorageMachine {
 
     public static final double RUNNING_HEAT = 2000;
 
-    public static int maxHeat = -1;
+    public int maxHeat = -1;
 
     @Persisted
     @Getter

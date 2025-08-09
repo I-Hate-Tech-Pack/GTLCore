@@ -34,7 +34,6 @@ public class ParallelLogicMixin {
                 minimum = Math.min(minimum, cap.getMaxParallelRatio(holder, recipe, parallelAmount));
             }
         }
-        if (minimum == Integer.MAX_VALUE) return 0;
         return minimum;
     }
 
