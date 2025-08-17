@@ -100,7 +100,7 @@ public class RecipeRunner {
                                 return true;
                             }
                         }
-                        for (var handlePart : machine.getCapabilities().get(IO.IN)) {
+                        for (var handlePart : machine.getCapabilities().getOrDefault(IO.IN, Collections.emptyList())) {
                             var result = handlePart.handleRecipe(IO.IN, recipe, recipeContent, simulated);
                             if (result.isEmpty()) {
                                 if (simulated) machine.setRecipeHandleMap(handlePart, recipe);
