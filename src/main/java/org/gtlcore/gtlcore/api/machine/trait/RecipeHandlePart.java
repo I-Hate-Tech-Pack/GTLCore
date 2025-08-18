@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-public class RecipeHandlePart {
+public class RecipeHandlePart implements IRecipeHandlePart {
 
     public static final RecipeHandlePart NO_DATA = new RecipeHandlePart(IO.NONE);
 
