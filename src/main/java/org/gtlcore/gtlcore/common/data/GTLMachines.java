@@ -122,6 +122,7 @@ public class GTLMachines {
         MultiBlockMachineA.init();
         AdvancedMultiBlockMachine.init();
         AdditionalMultiBlockMachine.init();
+        GTAEMachines.init();
     }
 
     static {
