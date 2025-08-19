@@ -1,7 +1,5 @@
 package org.gtlcore.gtlcore.api.machine.trait;
 
-import com.gregtechceu.gtceu.api.recipe.GTRecipe;
-
 import com.lowdragmc.lowdraglib.side.fluid.FluidStack;
 
 import net.minecraft.world.item.ItemStack;
@@ -22,20 +20,4 @@ public interface IMEPartMachine {
     }
 
     default void setChanged(boolean value) {}
-
-    default boolean isMEOutPutBus() {
-        return false;
-    }
-
-    default boolean isMEOutPutHatch() {
-        return false;
-    }
-
-    default boolean isMEOutPutDual() {
-        return false;
-    }
-
-    default boolean isRecipeOutput(GTRecipe recipe) {
-        return false;
-    }
 }

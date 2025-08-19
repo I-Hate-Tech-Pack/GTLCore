@@ -1,5 +1,7 @@
 package org.gtlcore.gtlcore.api.recipe;
 
+import org.gtlcore.gtlcore.utils.NumberUtils;
+
 import com.gregtechceu.gtceu.api.capability.recipe.FluidRecipeCapability;
 import com.gregtechceu.gtceu.api.capability.recipe.ItemRecipeCapability;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
@@ -45,17 +47,10 @@ public class RecipeText {
                 var stacks = FluidRecipeCapability.CAP.of(fluid.content).getStacks();
                 if (stacks.length == 0) continue;
                 var stack = stacks[0];
-                double amount = (double) stack.getAmount();
+                long amount = stack.getAmount();
                 String s;
-                if (amount >= 1000000.0) {
-                    amount /= 1000000.0;
-                    s = FormattingUtil.DECIMAL_FORMAT_1F.format((float) amount) + "KB";
-                } else if (amount >= 1000.0) {
-                    amount /= 1000.0;
-                    s = FormattingUtil.DECIMAL_FORMAT_1F.format((float) amount) + "B";
-                } else {
-                    s = amount + "mB";
-                }
+                if (amount < 1000) s = amount + "mB";
+                else s = NumberUtils.formatLong(amount / 1000) + "B";
                 float chance = 100.0F * (float) fluid.chance / (float) fluid.maxChance;
                 String percent = FormattingUtil.formatPercent(chance);
                 if (chance == 100.0F) {

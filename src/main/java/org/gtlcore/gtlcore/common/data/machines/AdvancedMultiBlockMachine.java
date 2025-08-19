@@ -3,6 +3,7 @@ package org.gtlcore.gtlcore.common.data.machines;
 import org.gtlcore.gtlcore.GTLCore;
 import org.gtlcore.gtlcore.api.machine.multiblock.GTLPartAbility;
 import org.gtlcore.gtlcore.api.pattern.GTLPredicates;
+import org.gtlcore.gtlcore.api.recipe.RecipeResult;
 import org.gtlcore.gtlcore.client.renderer.machine.EyeOfHarmonyRenderer;
 import org.gtlcore.gtlcore.client.renderer.machine.SpaceElevatorRenderer;
 import org.gtlcore.gtlcore.common.block.GTLFusionCasingBlock;
@@ -1111,6 +1112,10 @@ public class AdvancedMultiBlockMachine {
                 if (machine instanceof StorageMachine storageMachine) {
                     int tier = storageMachine.getTier();
                     GTRecipeType recipeType = storageMachine.getRecipeType();
+                    if (storageMachine.getMachineStorageItem().isEmpty()) {
+                        RecipeResult.of(machine, RecipeResult.FAIL_PROCESSING_PLANT_NO_INPUT);
+                        return false;
+                    }
                     if (recipeType.equals(GTRecipeTypes.BENDER_RECIPES)) {
                         isrecipe = Objects.equals(storageMachine.getMachineStorageItem().kjs$getId(), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_bender");
                     } else if (recipeType.equals(GTRecipeTypes.COMPRESSOR_RECIPES)) {
@@ -1135,6 +1140,7 @@ public class AdvancedMultiBlockMachine {
                         isrecipe = Objects.equals(storageMachine.getMachineStorageItem().kjs$getId(), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_laser_engraver");
                     }
                     if (!isrecipe) {
+                        RecipeResult.of(machine, RecipeResult.FAIL_PROCESSING_PLANT_WRONG_INPUT);
                         machine.getRecipeLogic().interruptRecipe();
                     }
                 }
@@ -1173,12 +1179,17 @@ public class AdvancedMultiBlockMachine {
                 if (machine instanceof StorageMachine storageMachine) {
                     int tier = storageMachine.getTier();
                     GTRecipeType recipeType = storageMachine.getRecipeType();
+                    if (storageMachine.getMachineStorageItem().isEmpty()) {
+                        RecipeResult.of(machine, RecipeResult.FAIL_PROCESSING_PLANT_NO_INPUT);
+                        return false;
+                    }
                     if (recipeType.equals(GTRecipeTypes.ASSEMBLER_RECIPES)) {
                         isrecipe = Objects.equals(storageMachine.getMachineStorageItem().kjs$getId(), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_assembler");
                     } else if (recipeType.equals(GTRecipeTypes.CIRCUIT_ASSEMBLER_RECIPES)) {
                         isrecipe = Objects.equals(storageMachine.getMachineStorageItem().kjs$getId(), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_circuit_assembler");
                     }
                     if (!isrecipe) {
+                        RecipeResult.of(machine, RecipeResult.FAIL_PROCESSING_PLANT_WRONG_INPUT);
                         machine.getRecipeLogic().interruptRecipe();
                     }
                 }
@@ -1228,6 +1239,10 @@ public class AdvancedMultiBlockMachine {
                 if (machine instanceof StorageMachine storageMachine) {
                     int tier = storageMachine.getTier();
                     GTRecipeType recipeType = storageMachine.getRecipeType();
+                    if (storageMachine.getMachineStorageItem().isEmpty()) {
+                        RecipeResult.of(machine, RecipeResult.FAIL_PROCESSING_PLANT_NO_INPUT);
+                        return false;
+                    }
                     if (recipeType.equals(GTRecipeTypes.CENTRIFUGE_RECIPES)) {
                         isrecipe = Objects.equals(storageMachine.getMachineStorageItem().kjs$getId(), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_centrifuge");
                     } else if (recipeType.equals(GTRecipeTypes.THERMAL_CENTRIFUGE_RECIPES)) {
@@ -1244,6 +1259,7 @@ public class AdvancedMultiBlockMachine {
                         isrecipe = Objects.equals(storageMachine.getMachineStorageItem().kjs$getId(), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_dehydrator");
                     }
                     if (!isrecipe) {
+                        RecipeResult.of(machine, RecipeResult.FAIL_PROCESSING_PLANT_WRONG_INPUT);
                         machine.getRecipeLogic().interruptRecipe();
                     }
                 }
@@ -1287,6 +1303,10 @@ public class AdvancedMultiBlockMachine {
                 if (machine instanceof StorageMachine storageMachine) {
                     int tier = storageMachine.getTier();
                     GTRecipeType recipeType = storageMachine.getRecipeType();
+                    if (storageMachine.getMachineStorageItem().isEmpty()) {
+                        RecipeResult.of(machine, RecipeResult.FAIL_PROCESSING_PLANT_NO_INPUT);
+                        return false;
+                    }
                     if (recipeType.equals(GTRecipeTypes.CHEMICAL_RECIPES)) {
                         isrecipe = Objects.equals(storageMachine.getMachineStorageItem().kjs$getId(), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_chemical_reactor");
                     } else if (recipeType.equals(GTRecipeTypes.MIXER_RECIPES)) {
@@ -1297,6 +1317,7 @@ public class AdvancedMultiBlockMachine {
                         isrecipe = Objects.equals(storageMachine.getMachineStorageItem().kjs$getId(), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_ore_washer");
                     }
                     if (!isrecipe) {
+                        RecipeResult.of(machine, RecipeResult.FAIL_PROCESSING_PLANT_WRONG_INPUT);
                         machine.getRecipeLogic().interruptRecipe();
                     }
                 }

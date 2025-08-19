@@ -1,7 +1,6 @@
 package org.gtlcore.gtlcore.api.recipe;
 
-import org.gtlcore.gtlcore.api.machine.trait.IMEPartMachine;
-import org.gtlcore.gtlcore.api.machine.trait.IRecipeStatus;
+import org.gtlcore.gtlcore.api.machine.trait.IRecipeCapabilityMachine;
 
 import com.gregtechceu.gtceu.api.capability.recipe.*;
 import com.gregtechceu.gtceu.api.machine.WorkableTieredMachine;
@@ -32,7 +31,7 @@ public class RecipeRunnerHelper {
 
     public static boolean matchRecipeOutput(IRecipeCapabilityHolder holder, GTRecipe recipe) {
         if (recipe.outputs.isEmpty()) return true;
-        if (holder instanceof IMEPartMachine machine && machine.isRecipeOutput(recipe)) return true;
+        if (holder instanceof IRecipeCapabilityMachine machine && machine.isRecipeOutput(recipe)) return true;
         return handleRecipe(IO.OUT, holder, recipe.outputs, Collections.emptyMap(), false, recipe, true).isSuccess();
     }
 
@@ -54,16 +53,17 @@ public class RecipeRunnerHelper {
                 holder instanceof WorkableTieredMachine || holder instanceof ResearchStationMachine) {
             if (isSimulate) {
                 GTRecipe.ActionResult result = recipe.matchRecipe(holder);
-                if (result.isSuccess()) return RecipeResult.SUCCESS;
+                if (result.isSuccess()) {
+                    RecipeResult.of((IRecipeLogicMachine) holder, RecipeResult.SUCCESS);
+                    return RecipeResult.SUCCESS;
+                } else RecipeResult.of((IRecipeLogicMachine) holder, io == IO.IN ? RecipeResult.FAIL_FIND : RecipeResult.FAIL_OUTPUT);
             } else {
                 if (recipe.handleRecipe(io, holder, isTick, contents, chanceCaches)) return RecipeResult.SUCCESS;
             }
         } else {
             RecipeRunner runner = new RecipeRunner(recipe, io, isTick, holder, chanceCaches, isSimulate);
             RecipeResult result = runner.handle(contents);
-            if (holder instanceof IRecipeStatus status) {
-                status.setRecipeStatus(result.isSuccess() ? result : (io == IO.IN ? RecipeResult.FailFind : RecipeResult.FailOutput));
-            }
+            RecipeResult.of((IRecipeLogicMachine) holder, result.isSuccess() ? result : (io == IO.IN ? RecipeResult.FAIL_FIND : RecipeResult.FAIL_OUTPUT));
             if (result.isSuccess()) return result;
         }
         return RecipeResult.fail(null);

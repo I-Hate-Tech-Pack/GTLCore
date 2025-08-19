@@ -1,5 +1,7 @@
 package org.gtlcore.gtlcore.common.machine.multiblock.electric;
 
+import org.gtlcore.gtlcore.api.recipe.RecipeResult;
+
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableMultiblockMachine;
@@ -54,6 +56,7 @@ public class TierCasingMachine extends WorkableElectricMultiblockMachine {
     @Override
     public boolean beforeWorking(@Nullable GTRecipe recipe) {
         if (recipe != null && recipe.data.contains(tierType) && recipe.data.getInt(tierType) > tier) {
+            RecipeResult.of(this, RecipeResult.FAIL_NO_ENOUGH_TIER);
             getRecipeLogic().interruptRecipe();
             return false;
         }

@@ -3,8 +3,11 @@ package org.gtlcore.gtlcore.common.machine.multiblock.part.maintenance;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMaintenanceMachine;
+import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 import com.gregtechceu.gtceu.api.machine.multiblock.part.MultiblockPartMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.part.TieredPartMachine;
+import com.gregtechceu.gtceu.api.recipe.GTRecipe;
+import com.gregtechceu.gtceu.config.ConfigHolder;
 
 import com.lowdragmc.lowdraglib.gui.widget.ComponentPanelWidget;
 import com.lowdragmc.lowdraglib.gui.widget.DraggableScrollableWidgetGroup;
@@ -19,6 +22,7 @@ import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.Style;
 
 import lombok.Getter;
+import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -95,6 +99,21 @@ public class AutoConfigurationMaintenanceHatchPartMachine extends TieredPartMach
                 .floatValue();
     }
 
+    @Override
+    public GTRecipe modifyRecipe(GTRecipe recipe) {
+        if (ConfigHolder.INSTANCE.machines.enableMaintenance) {
+            if (this.hasMaintenanceProblems()) {
+                return null;
+            }
+            float durationMultiplier = this.getDurationMultiplier();
+            if (durationMultiplier != 1.0F) {
+                recipe = recipe.copy();
+                recipe.duration = (int) Math.max(1, recipe.duration * durationMultiplier);
+            }
+        }
+        return recipe;
+    }
+
     private void incInternalMultiplier(int multiplier) {
         float newDurationMultiplier = durationMultiplier + DURATION_ACTION_AMOUNT * multiplier;
         if (newDurationMultiplier >= MAX_DURATION_MULTIPLIER) {
@@ -111,6 +130,18 @@ public class AutoConfigurationMaintenanceHatchPartMachine extends TieredPartMach
             return;
         }
         durationMultiplier = newDurationMultiplier;
+    }
+
+    @Override
+    public void addedToController(@NotNull IMultiController controller) {
+        super.addedToController(controller);
+        ICleaningRoom.addedToController(controller, null);
+    }
+
+    @Override
+    public void removedFromController(@NotNull IMultiController controller) {
+        super.removedFromController(controller);
+        ICleaningRoom.removedFromController(controller, null);
     }
 
     @Override

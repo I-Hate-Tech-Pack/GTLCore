@@ -1,10 +1,7 @@
 package org.gtlcore.gtlcore.common.data.machines;
 
 import org.gtlcore.gtlcore.GTLCore;
-import org.gtlcore.gtlcore.common.data.GTLBlocks;
-import org.gtlcore.gtlcore.common.data.GTLMachines;
-import org.gtlcore.gtlcore.common.data.GTLRecipeModifiers;
-import org.gtlcore.gtlcore.common.data.GTLRecipeTypes;
+import org.gtlcore.gtlcore.common.data.*;
 import org.gtlcore.gtlcore.common.machine.multiblock.electric.WorkableElectricParallelHatchMultipleRecipesMachine;
 import org.gtlcore.gtlcore.common.machine.multiblock.noenergy.PrimitiveOreMachine;
 import org.gtlcore.gtlcore.config.ConfigHolder;
@@ -28,8 +25,6 @@ import com.gregtechceu.gtceu.common.data.GTRecipeModifiers;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Blocks;
-
-import committee.nova.mods.avaritia.init.registry.ModBlocks;
 
 import static com.gregtechceu.gtceu.api.pattern.Predicates.blocks;
 import static com.gregtechceu.gtceu.api.pattern.Predicates.controller;
@@ -68,7 +63,7 @@ public class MultiBlockMachineB {
                             .or(Predicates.abilities(PartAbility.PARALLEL_HATCH).setExactLimit(1))
                             .or(Predicates.abilities(PartAbility.INPUT_LASER).setMaxGlobalLimited(1)))
                     .where("b", Predicates.blocks(GTLBlocks.INFINITY_GLASS.get()))
-                    .where("c", Predicates.blocks(ModBlocks.infinity.get()))
+                    .where("c", Predicates.blocks(ChemicalHelper.getBlock(TagPrefix.block, GTLMaterials.Infinity)))
                     .where("~", Predicates.controller(Predicates.blocks(definition.get())))
                     .where(" ", Predicates.any())
                     .build())
@@ -210,7 +205,7 @@ public class MultiBlockMachineB {
                     .where("P", Predicates.blocks(GTBlocks.CASING_BRONZE_PIPE.get()))
                     .where("G", Predicates.blocks(GTBlocks.HERMETIC_CASING_MV.get()))
                     .where("D", Predicates.blocks(GTBlocks.CASING_STAINLESS_CLEAN.get())
-                            .setMinGlobalLimited(40)
+                            .setMinGlobalLimited(36)
                             .or(Predicates.autoAbilities(definition.getRecipeTypes()))
                             .or(Predicates.autoAbilities(true, false, true)))
                     .where("L", Predicates.blocks(GTBlocks.COIL_KANTHAL.get()))

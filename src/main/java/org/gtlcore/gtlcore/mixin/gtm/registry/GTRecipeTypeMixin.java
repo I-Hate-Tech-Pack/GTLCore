@@ -18,7 +18,6 @@ import com.gregtechceu.gtceu.utils.GTUtil;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.resources.ResourceLocation;
 
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.*;
 
 import java.util.*;
@@ -129,21 +128,12 @@ public class GTRecipeTypeMixin {
      * @reason .
      */
     @Overwrite(remap = false)
-    public @Nullable Iterator<GTRecipe> searchFuelRecipe(IRecipeCapabilityHolder holder) {
-        return holder.hasProxies() && this.isFuelRecipeType() ? this.getLookup().getRecipeIterator(holder, (recipe) -> recipe.isFuel && RecipeRunnerHelper.matchRecipe(holder, recipe) && recipe.matchTickRecipe(holder).isSuccess()) : null;
-    }
-
-    /**
-     * @author .
-     * @reason .
-     */
-    @Overwrite(remap = false)
     public Iterator<GTRecipe> searchRecipe(IRecipeCapabilityHolder holder) {
         if (!holder.hasProxies()) {
             return null;
         } else {
             RecipeIterator iterator = this.getLookup().getRecipeIterator(holder,
-                    (recipex) -> !recipex.isFuel && RecipeRunnerHelper.matchRecipe(holder, recipex) && recipex.matchTickRecipe(holder).isSuccess());
+                    (recipex) -> RecipeRunnerHelper.matchRecipe(holder, recipex) && recipex.matchTickRecipe(holder).isSuccess());
             boolean any = false;
             GTRecipe recipe = null;
             while (iterator.hasNext()) {
@@ -182,10 +172,5 @@ public class GTRecipeTypeMixin {
     @Shadow(remap = false)
     public GTRecipeLookup getLookup() {
         return null;
-    }
-
-    @Shadow(remap = false)
-    public boolean isFuelRecipeType() {
-        return false;
     }
 }

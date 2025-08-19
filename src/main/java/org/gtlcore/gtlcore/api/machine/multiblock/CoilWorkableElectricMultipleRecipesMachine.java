@@ -1,5 +1,6 @@
 package org.gtlcore.gtlcore.api.machine.multiblock;
 
+import org.gtlcore.gtlcore.api.recipe.RecipeResult;
 import org.gtlcore.gtlcore.common.machine.trait.MultipleRecipesLogic;
 
 import com.gregtechceu.gtceu.api.GTValues;
@@ -24,7 +25,11 @@ public class CoilWorkableElectricMultipleRecipesMachine extends CoilWorkableElec
     private static final BiPredicate<CompoundTag, IRecipeLogicMachine> EBF_CHECK = (data, machine) -> {
         var tm = (CoilWorkableElectricMultiblockMachine) machine;
         var temp = tm.getCoilType().getCoilTemperature() + 100L * Math.max(0, tm.getTier() - GTValues.MV);
-        return temp > data.getInt("ebf_temp");
+        if (temp > data.getInt("ebf_temp")) return true;
+        else {
+            RecipeResult.of(machine, RecipeResult.FAIL_NO_ENOUGH_TEMPERATURE);
+            return false;
+        }
     };
 
     public CoilWorkableElectricMultipleRecipesMachine(IMachineBlockEntity holder) {

@@ -1,17 +1,22 @@
 package org.gtlcore.gtlcore.mixin.gtm.api.recipe;
 
-import org.gtlcore.gtlcore.api.machine.trait.IRecipeStatus;
 import org.gtlcore.gtlcore.api.recipe.RecipeResult;
 
 import com.gregtechceu.gtceu.api.capability.recipe.*;
+import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
-import com.gregtechceu.gtceu.api.recipe.content.Content;
+import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
 import java.util.Map;
@@ -19,30 +24,22 @@ import java.util.Map;
 @Mixin(GTRecipe.class)
 public abstract class GTRecipeMixin {
 
+    @Unique
+    private int tier = -1;
+
     @Shadow(remap = false)
     public ResourceLocation id;
-    @Mutable
-    @Final
     @Shadow(remap = false)
-    public final Map<RecipeCapability<?>, List<Content>> inputs;
-    @Mutable
-    @Final
+    public @NotNull CompoundTag data;
     @Shadow(remap = false)
-    public final Map<RecipeCapability<?>, List<Content>> outputs;
-    @Mutable
     @Final
-    @Shadow(remap = false)
-    public final Map<RecipeCapability<?>, List<Content>> tickInputs;
-    @Mutable
-    @Final
-    @Shadow(remap = false)
-    public final Map<RecipeCapability<?>, List<Content>> tickOutputs;
+    public GTRecipeType recipeType;
 
-    protected GTRecipeMixin(Map<RecipeCapability<?>, List<Content>> inputs, Map<RecipeCapability<?>, List<Content>> outputs, Map<RecipeCapability<?>, List<Content>> tickInputs, Map<RecipeCapability<?>, List<Content>> tickOutputs) {
-        this.inputs = inputs;
-        this.outputs = outputs;
-        this.tickInputs = tickInputs;
-        this.tickOutputs = tickOutputs;
+    @Inject(method = "<init>(Lcom/gregtechceu/gtceu/api/recipe/GTRecipeType;Lnet/minecraft/resources/ResourceLocation;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Ljava/util/List;Ljava/util/List;Lnet/minecraft/nbt/CompoundTag;IZ)V",
+            at = @At("RETURN"),
+            remap = false)
+    public void GTRecipe(GTRecipeType recipeType, ResourceLocation id, Map inputs, Map outputs, Map tickInputs, Map tickOutputs, Map inputChanceLogics, Map outputChanceLogics, Map tickInputChanceLogics, Map tickOutputChanceLogics, List conditions, List ingredientActions, CompoundTag data, int duration, boolean isFuel, CallbackInfo ci) {
+        this.tier = this.data.getInt("euTier");
     }
 
     /**
@@ -55,19 +52,25 @@ public abstract class GTRecipeMixin {
         if (holder instanceof WorkableElectricMultiblockMachine machine) {
             GTRecipe lastRecipe = machine.getRecipeLogic().getLastOriginRecipe();
             if (lastRecipe == null || !this.id.equals(lastRecipe.id)) {
-                long eu = this.getTickInputContents(EURecipeCapability.CAP).stream()
-                        .map(Content::getContent).mapToLong(EURecipeCapability.CAP::of).sum();
-                if (GTUtil.getTierByVoltage(eu) > GTUtil.getFloorTierByVoltage(machine.getOverclockVoltage()) && holder instanceof IRecipeStatus recipeStatus) {
-                    recipeStatus.setRecipeStatus(RecipeResult.FailVOLTAGETIER);
-                    return GTRecipe.ActionResult.fail(null);
+                this.tier = tier == -1 ? this.data.getInt("euTier") : tier;
+                if (this.tier > GTUtil.getFloorTierByVoltage(machine.getMaxVoltage())) {
+                    RecipeResult.of((IRecipeLogicMachine) holder, RecipeResult.FAIL_VOLTAGE_TIER);
+                    return GTRecipe.ActionResult.fail(() -> null);
                 }
             }
         }
-        return this.matchRecipe(holder, true);
+        GTRecipe.ActionResult result = this.matchRecipe(holder, true);
+        if (!result.isSuccess() && result.reason() != null) {
+            String s = result.reason().get().getContents().toString();
+            if (s.contains("_in")) {
+                if (s.contains("cwu")) RecipeResult.of((IRecipeLogicMachine) holder, RecipeResult.FAIL_NO_ENOUGH_CWU_IN);
+                else if (s.contains("eu.name")) RecipeResult.of((IRecipeLogicMachine) holder, RecipeResult.FAIL_NO_ENOUGH_EU_IN);
+            } else if (s.contains("_out")) {
+                if (s.contains("eu.name")) RecipeResult.of((IRecipeLogicMachine) holder, RecipeResult.FAIL_NO_ENOUGH_EU_OUT);
+            }
+        }
+        return result;
     }
-
-    @Shadow(remap = false)
-    public abstract List<Content> getTickInputContents(RecipeCapability<?> capability);
 
     @Shadow(remap = false)
     protected abstract GTRecipe.ActionResult matchRecipe(IRecipeCapabilityHolder holder, boolean tick);

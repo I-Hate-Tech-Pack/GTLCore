@@ -1,10 +1,9 @@
 package org.gtlcore.gtlcore.mixin.gtm.fix;
 
 import org.gtlcore.gtlcore.api.machine.trait.ICheckPatternMachine;
-import org.gtlcore.gtlcore.api.machine.trait.IDistinctMachine;
 import org.gtlcore.gtlcore.api.machine.trait.ILockRecipe;
+import org.gtlcore.gtlcore.api.machine.trait.IRecipeCapabilityMachine;
 import org.gtlcore.gtlcore.api.machine.trait.IRecipeStatus;
-import org.gtlcore.gtlcore.api.recipe.RecipeResult;
 import org.gtlcore.gtlcore.api.recipe.RecipeText;
 import org.gtlcore.gtlcore.utils.NumberUtils;
 
@@ -13,9 +12,7 @@ import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.gui.fancy.ConfiguratorPanel;
 import com.gregtechceu.gtceu.api.gui.fancy.IFancyConfiguratorButton;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
-import com.gregtechceu.gtceu.api.machine.fancyconfigurator.OverclockFancyConfigurator;
 import com.gregtechceu.gtceu.api.machine.feature.IFancyUIMachine;
-import com.gregtechceu.gtceu.api.machine.feature.IOverclockMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableMultiblockMachine;
 import com.gregtechceu.gtceu.api.misc.EnergyContainerList;
@@ -26,8 +23,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
@@ -35,14 +30,10 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.*;
+import java.util.List;
 
 @Mixin(WorkableElectricMultiblockMachine.class)
-public abstract class WorkableElectricMultiblockMachineMixin extends WorkableMultiblockMachine implements IFancyUIMachine, IRecipeStatus, ICheckPatternMachine {
-
-    @Getter
-    @Setter
-    private RecipeResult recipeStatus;
+public abstract class WorkableElectricMultiblockMachineMixin extends WorkableMultiblockMachine implements IFancyUIMachine, ICheckPatternMachine {
 
     public WorkableElectricMultiblockMachineMixin(IMachineBlockEntity holder, Object... args) {
         super(holder, args);
@@ -94,20 +85,21 @@ public abstract class WorkableElectricMultiblockMachineMixin extends WorkableMul
                 this::isWorkingEnabled, (clickData, pressed) -> this.setWorkingEnabled(pressed))
                 .setTooltipsSupplier(pressed -> List.of(
                         Component.translatable(pressed ? "behaviour.soft_hammer.enabled" : "behaviour.soft_hammer.disabled"))));
-        if (this instanceof IOverclockMachine overclockMachine) {
-            configuratorPanel.attachConfigurators(new OverclockFancyConfigurator(overclockMachine));
-        }
-        if (this.self() instanceof ResearchStationMachine) return;
-        IDistinctMachine.attachConfigurators(configuratorPanel, (WorkableElectricMultiblockMachine) self());
-        ILockRecipe.attachRecipeLockable(configuratorPanel, this.getRecipeLogic());
         ICheckPatternMachine.attachConfigurators(configuratorPanel, self());
+        if (this.self() instanceof ResearchStationMachine) return;
+        IRecipeCapabilityMachine.attachConfigurators(configuratorPanel, (WorkableElectricMultiblockMachine) self());
+        ILockRecipe.attachRecipeLockable(configuratorPanel, this.getRecipeLogic());
     }
 
     @Inject(method = "addDisplayText", at = @At(value = "INVOKE", target = "Lcom/gregtechceu/gtceu/api/machine/multiblock/WorkableElectricMultiblockMachine;getDefinition()Lcom/gregtechceu/gtceu/api/machine/MultiblockMachineDefinition;"), remap = false)
     public void addDisplayText(List<Component> textList, CallbackInfo ci) {
         if (this.isFormed()) {
-            if (this.recipeStatus != null && this.recipeStatus.reason() != null) {
-                textList.add(this.recipeStatus.reason().copy().withStyle(ChatFormatting.RED));
+            if (this.getRecipeLogic() instanceof IRecipeStatus status &&
+                    status.getRecipeStatus() != null &&
+                    status.getRecipeStatus().reason() != null) {
+                textList.add(status.getRecipeStatus().reason().copy().withStyle(ChatFormatting.RED));
+                if (status.getWorkingStatus() != null && status.getWorkingStatus().reason() != null)
+                    textList.add(status.getWorkingStatus().reason().copy().withStyle(ChatFormatting.RED));
             }
         }
         if (this.getRecipeLogic() instanceof ILockRecipe iLockRecipe) {

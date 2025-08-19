@@ -20,7 +20,7 @@ import appeng.api.storage.cells.CellState;
 import appeng.api.storage.cells.ISaveProvider;
 import appeng.api.storage.cells.StorageCell;
 import appeng.core.AELog;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.*;
 import lombok.Getter;
 
 import java.math.BigInteger;
@@ -182,7 +182,8 @@ public class InfinityCellInventory implements StorageCell {
 
     @Override
     public void getAvailableStacks(KeyCounter out) {
-        for (var entry : this.getCellItems().object2ObjectEntrySet()) {
+        for (var it = this.getCellItems().object2ObjectEntrySet().fastIterator(); it.hasNext();) {
+            var entry = it.next();
             out.add(entry.getKey(), NumberUtils.getLongValue(entry.getValue()));
         }
     }
@@ -218,7 +219,8 @@ public class InfinityCellInventory implements StorageCell {
 
     protected void saveChanges() {
         this.storedItemCount = 0;
-        for (BigInteger storedAmount : this.storedMap.values()) {
+        for (var it = Object2ObjectMaps.fastIterator(this.storedMap); it.hasNext();) {
+            BigInteger storedAmount = it.next().getValue();
             if (this.storedItemCount < 0) {
                 this.storedItemCount = Double.MAX_VALUE;
                 break;

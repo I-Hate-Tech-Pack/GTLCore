@@ -2,17 +2,21 @@ package org.gtlcore.gtlcore.common.machine.multiblock.noenergy;
 
 import org.gtlcore.gtlcore.GTLCore;
 import org.gtlcore.gtlcore.api.machine.multiblock.NoEnergyMultiblockMachine;
+import org.gtlcore.gtlcore.api.recipe.RecipeResult;
 import org.gtlcore.gtlcore.common.data.GTLMaterials;
 import org.gtlcore.gtlcore.utils.MachineIO;
 
 import com.gregtechceu.gtceu.api.capability.recipe.FluidRecipeCapability;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
+import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
 import com.gregtechceu.gtceu.common.data.GTRecipeModifiers;
 import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
 import com.gregtechceu.gtceu.data.recipe.builder.GTRecipeBuilder;
+
+import net.minecraft.network.chat.Component;
 
 import com.mojang.datafixers.util.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -42,7 +46,7 @@ public class HeatExchangerMachine extends NoEnergyMultiblockMachine {
             if (MachineIO.inputFluid(hMachine, GTMaterials.DistilledWater.getFluid(count / 160))) {
                 hMachine.count = count;
                 return result.getFirst();
-            }
+            } else RecipeResult.of((IRecipeLogicMachine) machine, RecipeResult.fail(Component.translatable("gtceu.recipe.fail.no.enough.distilledwater")));
         }
         return null;
     }

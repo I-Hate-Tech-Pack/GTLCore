@@ -1,5 +1,6 @@
 package org.gtlcore.gtlcore.common.machine.multiblock.electric;
 
+import org.gtlcore.gtlcore.api.recipe.RecipeResult;
 import org.gtlcore.gtlcore.common.data.GTLMaterials;
 
 import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
@@ -9,6 +10,7 @@ import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 
@@ -49,6 +51,7 @@ public class SpaceProbeSurfaceReceptionMachine extends WorkableElectricMultibloc
                     for (int j = -6; j < 7; j++) {
                         if (level.getBrightness(LightLayer.SKY, a.offset(0, 1, 0)) == 0) {
                             getRecipeLogic().interruptRecipe();
+                            RecipeResult.of(this, RecipeResult.fail(Component.translatable("gtceu.recipe.fail.block")));
                             return;
                         }
                     }

@@ -1,5 +1,6 @@
 package org.gtlcore.gtlcore.common.data;
 
+import org.gtlcore.gtlcore.api.recipe.RecipeResult;
 import org.gtlcore.gtlcore.common.machine.multiblock.electric.StorageMachine;
 import org.gtlcore.gtlcore.common.machine.multiblock.steam.LargeSteamParallelMultiblockMachine;
 
@@ -9,6 +10,7 @@ import com.gregtechceu.gtceu.api.capability.recipe.FluidRecipeCapability;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IOverclockMachine;
+import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiPart;
 import com.gregtechceu.gtceu.api.machine.multiblock.CoilWorkableElectricMultiblockMachine;
@@ -24,6 +26,8 @@ import com.gregtechceu.gtceu.api.recipe.modifier.RecipeModifier;
 import com.gregtechceu.gtceu.common.data.GTRecipeModifiers;
 
 import com.lowdragmc.lowdraglib.side.fluid.FluidStack;
+
+import net.minecraft.network.chat.Component;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -72,21 +76,33 @@ public class GTLRecipeModifiers {
     public static GTRecipe nanoForgeOverclock(MetaMachine machine, @NotNull GTRecipe recipe, @NotNull OCParams params,
                                               @NotNull OCResult result, int tier) {
         if (machine instanceof StorageMachine storageMachine) {
+            int t = recipe.data.getInt("nano_forge_tier");
+            if (t > tier) {
+                RecipeResult.of((IRecipeLogicMachine) machine,
+                        RecipeResult.fail(Component.translatable("gtceu.recipe.fail.nano_forge.tier")));
+                return null;
+            }
             if (tier == 1) {
-                if (recipe.data.getInt("nano_forge_tier") > 1 && !Objects.equals(storageMachine.getMachineStorageItem().kjs$getId(), "gtceu:carbon_nanoswarm")) {
+                if (!Objects.equals(storageMachine.getMachineStorageItem().kjs$getId(), "gtceu:carbon_nanoswarm")) {
+                    RecipeResult.of((IRecipeLogicMachine) machine,
+                            RecipeResult.fail(Component.literal("需要放入碳纳米蜂群")));
                     return null;
                 }
             } else if (tier == 2) {
-                if (recipe.data.getInt("nano_forge_tier") > 2 && !Objects.equals(storageMachine.getMachineStorageItem().kjs$getId(), "gtceu:neutronium_nanoswarm")) {
+                if (!Objects.equals(storageMachine.getMachineStorageItem().kjs$getId(), "gtceu:neutronium_nanoswarm")) {
+                    RecipeResult.of((IRecipeLogicMachine) machine,
+                            RecipeResult.fail(Component.literal("需要放入中子素纳米蜂群")));
                     return null;
                 }
             } else if (tier == 3) {
                 if (!Objects.equals(storageMachine.getMachineStorageItem().kjs$getId(), "gtceu:draconium_nanoswarm")) {
+                    RecipeResult.of((IRecipeLogicMachine) machine,
+                            RecipeResult.fail(Component.literal("需要放入龙纳米蜂群")));
                     return null;
                 }
             }
-            GTRecipe recipe1 = GTRecipeModifiers.accurateParallel(machine, recipe, (int) (storageMachine.getMachineStorageItem().getCount() * Math.pow(2, tier - recipe.data.getInt("nano_forge_tier"))), false).getFirst();
-            return RecipeHelper.applyOverclock(new OverclockingLogic(1 / Math.pow(2, 1 + tier - recipe.data.getInt("nano_forge_tier")), 4, false), recipe1, storageMachine.getOverclockVoltage(), params, result);
+            GTRecipe recipe1 = GTRecipeModifiers.accurateParallel(machine, recipe, (int) (storageMachine.getMachineStorageItem().getCount() * Math.pow(2, tier - t)), false).getFirst();
+            return RecipeHelper.applyOverclock(new OverclockingLogic(1 / Math.pow(2, 1 + tier - t), 4, false), recipe1, storageMachine.getOverclockVoltage(), params, result);
         }
         return null;
     }
@@ -119,8 +135,9 @@ public class GTLRecipeModifiers {
             if (hatchedParallel == null) return null;
             GTRecipe recipe1 = RecipeHelper.applyOverclock(OverclockingLogic.NON_PERFECT_OVERCLOCK_SUBTICK, hatchedParallel, workableElectricMultiblockMachine.getOverclockVoltage(), params, result);
             if (a / b != fluidStack1.getAmount() / fluidStack2.getAmount()) {
+                RecipeResult.ofWorking((IRecipeLogicMachine) machine, RecipeResult.fail(Component.translatable("gtceu.recipe.fail.no.ratio")));
                 recipe1.outputs.clear();
-            }
+            } else RecipeResult.ofWorking((IRecipeLogicMachine) machine, RecipeResult.SUCCESS);
             return recipe1;
         }
         return null;

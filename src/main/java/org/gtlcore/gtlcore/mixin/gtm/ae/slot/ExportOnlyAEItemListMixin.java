@@ -24,9 +24,7 @@ import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
 
 @Mixin(ExportOnlyAEItemList.class)
@@ -64,7 +62,7 @@ public abstract class ExportOnlyAEItemListMixin extends NotifiableItemStackHandl
                                 long count = stored.amount();
                                 if (count != 0L) {
                                     if (ingredient.test(i.getStackInSlot(0))) {
-                                        ItemStack extracted = i.extractItem(0, amount, simulate);
+                                        ItemStack extracted = i.extractItem(0, amount, simulate, !simulate);
                                         if (extracted.getCount() > 0) {
                                             changed = true;
                                             amount -= extracted.getCount();

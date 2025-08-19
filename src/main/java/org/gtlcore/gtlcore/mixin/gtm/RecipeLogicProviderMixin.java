@@ -1,6 +1,9 @@
 package org.gtlcore.gtlcore.mixin.gtm;
 
+import org.gtlcore.gtlcore.api.machine.trait.IRecipeStatus;
+
 import com.gregtechceu.gtceu.api.GTValues;
+import com.gregtechceu.gtceu.api.machine.multiblock.WorkableMultiblockMachine;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.integration.jade.provider.CapabilityBlockProvider;
 import com.gregtechceu.gtceu.integration.jade.provider.RecipeLogicProvider;
@@ -16,9 +19,14 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.config.IPluginConfig;
+
+import static net.minecraft.ChatFormatting.*;
 
 /**
  * @author EasterFG on 2024/12/10
@@ -28,30 +36,43 @@ public abstract class RecipeLogicProviderMixin extends CapabilityBlockProvider<R
 
     @Unique
     private static final ChatFormatting[] GTL_CORE$VC = {
-            ChatFormatting.DARK_GRAY,
-            ChatFormatting.GRAY,
-            ChatFormatting.AQUA,
-            ChatFormatting.GOLD,
-            ChatFormatting.DARK_PURPLE,
-            ChatFormatting.BLUE,
-            ChatFormatting.LIGHT_PURPLE,
-            ChatFormatting.RED,
-            ChatFormatting.DARK_AQUA,
-            ChatFormatting.DARK_RED,
-            ChatFormatting.GREEN,
-            ChatFormatting.DARK_GREEN,
-            ChatFormatting.YELLOW,
-            ChatFormatting.BLUE,
-            ChatFormatting.RED
+            DARK_GRAY,
+            GRAY,
+            AQUA,
+            GOLD,
+            DARK_PURPLE,
+            BLUE,
+            LIGHT_PURPLE,
+            RED,
+            DARK_AQUA,
+            DARK_RED,
+            GREEN,
+            DARK_GREEN,
+            YELLOW,
+            BLUE,
+            RED
     };
 
     protected RecipeLogicProviderMixin(ResourceLocation uid) {
         super(uid);
     }
 
+    @Inject(method = "write(Lnet/minecraft/nbt/CompoundTag;Lcom/gregtechceu/gtceu/api/machine/trait/RecipeLogic;)V", at = @At("HEAD"), remap = false)
+    protected void write(CompoundTag data, RecipeLogic capability, CallbackInfo ci) {
+        if (capability.machine instanceof WorkableMultiblockMachine machine)
+            data.putBoolean("isFormed", machine.isFormed());
+        if (capability instanceof IRecipeStatus status) {
+            if (status.getRecipeStatus() != null && status.getRecipeStatus().reason() != null)
+                data.putString("reason", status.getRecipeStatus().reason().getString());
+            if (status.getWorkingStatus() != null && status.getWorkingStatus().reason() != null)
+                data.putString("work_reason", status.getWorkingStatus().reason().getString());
+        }
+    }
+
     @Override
     protected void addTooltip(CompoundTag capData, ITooltip tooltip, Player player, BlockAccessor block,
                               BlockEntity blockEntity, IPluginConfig config) {
+        if (!capData.getBoolean("isFormed")) return;
         if (capData.getBoolean("Working")) {
             var recipeInfo = capData.getCompound("Recipe");
             if (!recipeInfo.isEmpty()) {
@@ -63,15 +84,15 @@ public abstract class RecipeLogicProviderMixin extends CapabilityBlockProvider<R
                 // Default behavior, if this TE is not a steam machine (or somehow not instanceof
                 // IGregTechTileEntity...)
                 var tier = GTUtil.getTierByVoltage(absEUt);
-                Component text = Component.literal(FormattingUtil.formatNumbers(absEUt)).withStyle(ChatFormatting.RED)
-                        .append(Component.literal(" EU/t").withStyle(ChatFormatting.RESET)
-                                .append(Component.literal(" (").withStyle(ChatFormatting.GREEN)
+                Component text = Component.literal(FormattingUtil.formatNumbers(absEUt)).withStyle(RED)
+                        .append(Component.literal(" EU/t").withStyle(RESET)
+                                .append(Component.literal(" (").withStyle(GREEN)
                                         .append(Component
                                                 .translatable("gtceu.top.electricity",
                                                         FormattingUtil.formatNumber2Places(absEUt / ((float) GTValues.V[tier])),
                                                         GTValues.VNF[tier])
                                                 .withStyle(style -> style.withColor(GTL_CORE$VC[tier])))
-                                        .append(Component.literal(")").withStyle(ChatFormatting.GREEN))));
+                                        .append(Component.literal(")").withStyle(GREEN))));
 
                 if (EUt > 0) {
                     if (isInput) {
@@ -81,6 +102,13 @@ public abstract class RecipeLogicProviderMixin extends CapabilityBlockProvider<R
                     }
                 }
             }
+            String reason = capData.getString("work_reason");
+            if (reason.isEmpty()) return;
+            tooltip.add(Component.translatable("gtceu.recipe.fail.reason", reason).withStyle(RED));
+        } else {
+            String reason = capData.getString("reason");
+            if (reason.isEmpty()) return;
+            tooltip.add(Component.translatable("gtceu.recipe.fail.reason", reason).withStyle(RED));
         }
     }
 }

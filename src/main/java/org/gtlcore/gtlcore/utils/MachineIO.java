@@ -1,5 +1,7 @@
 package org.gtlcore.gtlcore.utils;
 
+import org.gtlcore.gtlcore.api.recipe.RecipeResult;
+
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableMultiblockMachine;
@@ -10,6 +12,7 @@ import com.gregtechceu.gtceu.data.recipe.builder.GTRecipeBuilder;
 
 import com.lowdragmc.lowdraglib.side.fluid.FluidStack;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -21,7 +24,7 @@ public class MachineIO {
         GTRecipe recipe = new GTRecipeBuilder(item.kjs$getIdLocation(), GTRecipeTypes.DUMMY_RECIPES).inputItems(item).buildRawRecipe();
         if (recipe.matchRecipe(machine).isSuccess()) {
             return recipe.handleRecipeIO(IO.IN, machine, machine.recipeLogic.getChanceCaches());
-        }
+        } else RecipeResult.of(machine, RecipeResult.fail(Component.translatable("gtceu.recipe.fail.no.input.item", item.getDisplayName())));
         return false;
     }
 
@@ -48,7 +51,7 @@ public class MachineIO {
         GTRecipe recipe = new GTRecipeBuilder(Objects.requireNonNull(ForgeRegistries.FLUIDS.getKey(fluid.getFluid())), GTRecipeTypes.DUMMY_RECIPES).inputFluids(fluid).buildRawRecipe();
         if (recipe.matchRecipe(machine).isSuccess()) {
             return recipe.handleRecipeIO(IO.IN, machine, machine.recipeLogic.getChanceCaches());
-        }
+        } else RecipeResult.of(machine, RecipeResult.fail(Component.translatable("gtceu.recipe.fail.no.input.fluid", fluid.getDisplayName())));
         return false;
     }
 

@@ -7,26 +7,23 @@ import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.gui.fancy.ConfiguratorPanel;
 import com.gregtechceu.gtceu.api.gui.fancy.IFancyConfiguratorButton;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
+import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.resources.ResourceLocation;
 
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
- * 部分代码参考自gto
+ * 部分代码参考自GTO
  * &#064;line <a href="https://github.com/GregTech-Odyssey/GTOCore">...</a>
  */
 
-public interface IDistinctMachine {
+public interface IRecipeCapabilityMachine {
 
     @NotNull
     Map<IO, List<RecipeHandlePart>> getCapabilities();
@@ -53,15 +50,19 @@ public interface IDistinctMachine {
         }
     }
 
+    // region ME
+
+    List<MERecipeHandlePart> getMERecipeHandleParts();
+
+    void setMERecipeHandleMap(MERecipeHandlePart hatch, GTRecipe recipe, int slot);
+
+    // endregion
+
     List<RecipeHandlePart> getRecipeHandleParts();
 
-    RecipeHandlePart getDistinctHatch();
+    Map<GTRecipe, IRecipeHandlePart> getRecipeHandleMap();
 
-    void setDistinctHatch(RecipeHandlePart hatch);
-
-    ResourceLocation getRecipeId();
-
-    void setRecipeId(ResourceLocation recipeId);
+    void setRecipeHandleMap(RecipeHandlePart hatch, GTRecipe recipe);
 
     void upDate();
 
@@ -69,8 +70,24 @@ public interface IDistinctMachine {
 
     void setDistinct(boolean isDistinct);
 
+    default boolean isMEOutPutBus() {
+        return false;
+    }
+
+    default boolean isMEOutPutHatch() {
+        return false;
+    }
+
+    default boolean isMEOutPutDual() {
+        return false;
+    }
+
+    default boolean isRecipeOutput(GTRecipe recipe) {
+        return false;
+    }
+
     static void attachConfigurators(ConfiguratorPanel configuratorPanel, WorkableElectricMultiblockMachine machine) {
-        if (machine instanceof IDistinctMachine distinctMachine) {
+        if (machine instanceof IRecipeCapabilityMachine distinctMachine) {
             configuratorPanel.attachConfigurators(new IFancyConfiguratorButton.Toggle(
                     GuiTextures.BUTTON_DISTINCT_BUSES.getSubTexture(0, 0.5, 1, 0.5),
                     GuiTextures.BUTTON_DISTINCT_BUSES.getSubTexture(0, 0, 1, 0.5),

@@ -3,14 +3,19 @@ package org.gtlcore.gtlcore.api.machine.trait;
 import com.gregtechceu.gtceu.api.capability.recipe.*;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
+import com.lowdragmc.lowdraglib.side.fluid.FluidStack;
+
+import net.minecraft.world.item.ItemStack;
+
+import com.hepdd.gtmthings.common.block.machine.trait.CatalystFluidStackHandler;
+import com.hepdd.gtmthings.common.block.machine.trait.CatalystItemStackHandler;
+import it.unimi.dsi.fastutil.objects.*;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-public class RecipeHandlePart {
+public class RecipeHandlePart implements IRecipeHandlePart {
 
     public static final RecipeHandlePart NO_DATA = new RecipeHandlePart(IO.NONE);
 
@@ -26,7 +31,9 @@ public class RecipeHandlePart {
     private final IO handlerIO;
     @Getter
     private final Reference2ObjectOpenHashMap<RecipeCapability<?>, List<IRecipeHandler<?>>> handlerMap = new Reference2ObjectOpenHashMap<>();
-    private final List<IRecipeHandler<?>> allHandlers = new ArrayList<>();
+    private final List<IRecipeHandler<?>> allHandlers = new ObjectArrayList<>();
+    private Object2LongOpenHashMap<ItemStack> itemContent;
+    private Object2LongOpenHashMap<FluidStack> fluidContent;
 
     public RecipeHandlePart(IO io) {
         this.handlerIO = io;
@@ -36,6 +43,42 @@ public class RecipeHandlePart {
         RecipeHandlePart rhl = new RecipeHandlePart(io);
         rhl.addHandlers(handlers);
         return rhl;
+    }
+
+    public Object2LongOpenHashMap<?> getContent(RecipeCapability<?> cap) {
+        if (cap == ItemRecipeCapability.CAP) {
+            itemContent = (Object2LongOpenHashMap<ItemStack>) this.initializeContent(cap);
+            return itemContent;
+        } else {
+            fluidContent = (Object2LongOpenHashMap<FluidStack>) this.initializeContent(cap);
+            return fluidContent;
+        }
+    }
+
+    public Object2LongOpenHashMap<?> initializeContent(RecipeCapability<?> cap) {
+        if (cap == ItemRecipeCapability.CAP) {
+            itemContent = new Object2LongOpenHashMap<>();
+            for (var item : this.getCapability(cap)) {
+                if (item instanceof CatalystItemStackHandler || item instanceof NotifiableCircuitItemStackHandler) continue;
+                for (var o : item.getContents()) {
+                    if (o instanceof ItemStack stack) {
+                        itemContent.computeLong(stack, (k, v) -> v == null ? stack.getCount() : v + stack.getCount());
+                    }
+                }
+            }
+        } else if (cap == FluidRecipeCapability.CAP) {
+            fluidContent = new Object2LongOpenHashMap<>();
+            for (var fluid : this.getCapability(cap)) {
+                if (fluid instanceof CatalystFluidStackHandler) continue;
+                for (var o : fluid.getContents()) {
+                    if (o instanceof FluidStack stack) {
+                        fluidContent.computeLong(stack, (k, v) -> v == null ? stack.getAmount() : v + stack.getAmount());
+                    }
+                }
+            }
+        }
+        if (cap == ItemRecipeCapability.CAP) return itemContent;
+        else return fluidContent;
     }
 
     public void addHandlers(Iterable<IRecipeHandler<?>> handlers) {
@@ -50,10 +93,6 @@ public class RecipeHandlePart {
         for (var list : getHandlerMap().values()) {
             list.sort(IRecipeHandler.ENTRY_COMPARATOR);
         }
-    }
-
-    public boolean hasCapability(RecipeCapability<?> cap) {
-        return getHandlerMap().containsKey(cap);
     }
 
     public @NotNull List<IRecipeHandler<?>> getCapability(RecipeCapability<?> cap) {
@@ -85,51 +124,10 @@ public class RecipeHandlePart {
                     if (left == null) {
                         it.remove();
                         break;
-                    } else {
-                        entry.setValue(new ArrayList<>(left));
-                    }
+                    } else entry.setValue(new ArrayList<>(left));
                 }
             }
         }
         return copy;
-    }
-
-    public boolean testRecipeHandle(IDistinctMachine iDistinctMachine, GTRecipe recipe, List<Object> itemContent, List<Object> fluidContent) {
-        if (itemContent.isEmpty()) {
-            List<?> copyFluid = new ObjectArrayList<>(fluidContent);
-            for (var handle : this.getCapability(FluidRecipeCapability.CAP)) {
-                copyFluid = handle.handleRecipe(IO.IN, recipe, copyFluid, null, true);
-                if (copyFluid == null) {
-                    iDistinctMachine.setDistinctHatch(this);
-                    return true;
-                }
-            }
-        } else if (fluidContent.isEmpty()) {
-            List<?> copyItem = new ObjectArrayList<>(itemContent);
-            for (var handle : this.getCapability(ItemRecipeCapability.CAP)) {
-                copyItem = handle.handleRecipe(IO.IN, recipe, copyItem, null, true);
-                if (copyItem == null) {
-                    iDistinctMachine.setDistinctHatch(this);
-                    return true;
-                }
-            }
-        } else {
-            List<?> copyItem = new ObjectArrayList<>(itemContent);
-            for (var handle : this.getCapability(ItemRecipeCapability.CAP)) {
-                copyItem = handle.handleRecipe(IO.IN, recipe, copyItem, null, true);
-                if (copyItem == null) {
-                    List<?> copyFluid = new ObjectArrayList<>(fluidContent);
-                    for (var h : this.getCapability(FluidRecipeCapability.CAP)) {
-                        copyFluid = h.handleRecipe(IO.IN, recipe, copyFluid, null, true);
-                        if (copyFluid == null) {
-                            iDistinctMachine.setDistinctHatch(this);
-                            return true;
-                        }
-                    }
-                    copyItem = new ObjectArrayList<>(itemContent);
-                }
-            }
-        }
-        return false;
     }
 }
