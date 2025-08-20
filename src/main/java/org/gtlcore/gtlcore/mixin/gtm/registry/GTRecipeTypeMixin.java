@@ -28,7 +28,7 @@ import java.util.function.*;
 @Mixin(GTRecipeType.class)
 public class GTRecipeTypeMixin {
 
-    @Shadow
+    @Shadow(remap = false)
     @Final
     private GTRecipeLookup lookup;
     @Shadow(remap = false)
