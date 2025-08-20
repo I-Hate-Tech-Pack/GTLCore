@@ -3,8 +3,10 @@ package org.gtlcore.gtlcore.api.recipe;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.lookup.AbstractMapIngredient;
 import com.gregtechceu.gtceu.api.recipe.lookup.Branch;
+import com.gregtechceu.gtceu.api.recipe.lookup.RecipeIterator;
 
 import com.mojang.datafixers.util.Either;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -47,5 +49,12 @@ public interface IRecipeIterator {
 
     static @NotNull Map<AbstractMapIngredient, Either<GTRecipe, Branch>> determineRootNodes(@NotNull AbstractMapIngredient ingredient, @NotNull Branch branchMap) {
         return ingredient.isSpecialIngredient() ? branchMap.getSpecialNodes() : branchMap.getNodes();
+    }
+
+    static @NotNull Set<GTRecipe> findIteratorRecipeCollection(RecipeIterator iterator) {
+        ObjectOpenHashSet<GTRecipe> recipeSet = new ObjectOpenHashSet<>();
+        while (iterator.hasNext()) recipeSet.add(iterator.next());
+        recipeSet.remove(null);
+        return recipeSet;
     }
 }

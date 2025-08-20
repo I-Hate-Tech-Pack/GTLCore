@@ -187,7 +187,6 @@ public class AutoConfigurationMaintenanceHatchPartMachine extends TieredPartMach
     @Override
     public void setDurationMultiplier(float count) {
         if (count > MAX_DURATION_MULTIPLIER) durationMultiplier = MAX_DURATION_MULTIPLIER;
-        else if (count < MIN_DURATION_MULTIPLIER) durationMultiplier = MIN_DURATION_MULTIPLIER;
-        else durationMultiplier = count;
+        else durationMultiplier = Math.max(count, MIN_DURATION_MULTIPLIER);
     }
 }

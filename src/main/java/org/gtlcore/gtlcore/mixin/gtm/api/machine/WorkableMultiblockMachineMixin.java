@@ -59,11 +59,11 @@ public abstract class WorkableMultiblockMachineMixin extends MultiblockControlle
     @Setter
     public boolean isDistinct = false;
     @Getter
-    private List<RecipeHandlePart> recipeHandleParts = new ObjectArrayList<>();
+    private final List<RecipeHandlePart> recipeHandleParts = new ObjectArrayList<>();
     @Getter
-    private List<MERecipeHandlePart> mERecipeHandleParts = new ObjectArrayList<>();
+    private final List<MERecipeHandlePart> mERecipeHandleParts = new ObjectArrayList<>();
     @Getter
-    private Map<GTRecipe, IRecipeHandlePart> recipeHandleMap = new Object2ObjectOpenHashMap<>();
+    private final Map<GTRecipe, IRecipeHandlePart> recipeHandleMap = new Object2ObjectOpenHashMap<>();
     @Getter
     protected Map<IO, List<RecipeHandlePart>> capabilities = new EnumMap<>(IO.class);
     @Getter
@@ -132,7 +132,7 @@ public abstract class WorkableMultiblockMachineMixin extends MultiblockControlle
 
         // ME Traits
         for (MachineTrait trait : this.getTraits()) {
-            if (trait instanceof IMERecipeHandlerTrait<?> meHandlerTrait) {
+            if (trait instanceof IMERecipeHandlerTrait<?, ?> meHandlerTrait) {
                 traitSubscriptions.add(meHandlerTrait.addChangedListener(recipeLogic::updateTickSubscription));
             }
         }
@@ -141,23 +141,26 @@ public abstract class WorkableMultiblockMachineMixin extends MultiblockControlle
         var distinctParts = new ObjectArrayList<IRecipeHandler<?>>();
         for (IMultiPart part : this.getParts()) {
             if (part instanceof FluidHatchPartMachine || part instanceof IDistinctPart) {
-                if (part instanceof MEOutputPartMachine) {
-                    MEOutPutBus = true;
-                    MEOutPutHatch = true;
-                    MEOutPutDual = true;
-                } else if (part instanceof MEOutputBusPartMachine) {
-                    MEOutPutBus = true;
-                } else if (part instanceof MEOutputHatchPartMachine) {
-                    MEOutPutHatch = true;
-                } else if (part instanceof IMEPatternPartMachine mePart) {
-                    var meHandlers = mePart.getMERecipeHandlerTraits();
-                    for (IMERecipeHandlerTrait<?> meHandlerTrait : meHandlers) {
-                        traitSubscriptions.add(meHandlerTrait.addChangedListener(recipeLogic::updateTickSubscription));
+                switch (part) {
+                    case MEOutputPartMachine ignored -> {
+                        MEOutPutBus = true;
+                        MEOutPutHatch = true;
+                        MEOutPutDual = true;
                     }
-                    var me = MERecipeHandlePart.of(mePart);
-                    me.setMachineCache(recipeHandleMap);
-                    mERecipeHandleParts.add(me);
-                    continue;
+                    case MEOutputBusPartMachine ignored -> MEOutPutBus = true;
+                    case MEOutputHatchPartMachine ignored -> MEOutPutHatch = true;
+                    case IMEPatternPartMachine mePart -> {
+                        var meHandlers = mePart.getMERecipeHandlerTraits();
+                        for (IMERecipeHandlerTrait<?, ?> meHandlerTrait : meHandlers) {
+                            traitSubscriptions.add(meHandlerTrait.addChangedListener(recipeLogic::updateTickSubscription));
+                        }
+                        var me = MERecipeHandlePart.of(mePart);
+                        me.setMachineCache(recipeHandleMap);
+                        mERecipeHandleParts.add(me);
+                        continue;
+                    }
+                    default -> {
+                    }
                 }
                 List<IRecipeHandler<?>> hatch = new ObjectArrayList<>();
                 boolean isOutput = false;
