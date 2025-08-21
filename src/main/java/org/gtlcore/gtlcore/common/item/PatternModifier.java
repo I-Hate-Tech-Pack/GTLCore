@@ -117,19 +117,22 @@ public class PatternModifier implements IItemUIFactory {
                 Level level = context.getLevel();
                 BlockEntity tile = level.getBlockEntity(pos);
                 InternalInventory internalInventory;
-                if (tile instanceof CableBusBlockEntity cable) {
-                    // 获取点击方块坐标
-                    Vec3 hitVec = context.getClickLocation();
-                    // 计算具体点击位置
-                    Vec3 hitInBlock = new Vec3(hitVec.x - (double) pos.getX(), hitVec.y - (double) pos.getY(), hitVec.z - (double) pos.getZ());
-                    IPart part = cable.getCableBus().selectPartLocal(hitInBlock).part;
-                    internalInventory = (part instanceof PatternProviderLogicHost providerPart) ?
-                            providerPart.getLogic().getPatternInv() : null;
-                } else if (tile instanceof PatternProviderLogicHost providerBlock) {
-                    internalInventory = providerBlock.getLogic().getPatternInv();
-                } else if (tile instanceof MetaMachineBlockEntity mmbe && mmbe.getMetaMachine() instanceof MEPatternBufferPartMachine me) {
-                    internalInventory = me.getTerminalPatternInventory();
-                } else internalInventory = null;
+                switch (tile) {
+                    case CableBusBlockEntity cable -> {
+                        // 获取点击方块坐标
+                        Vec3 hitVec = context.getClickLocation();
+                        // 计算具体点击位置
+                        Vec3 hitInBlock = new Vec3(hitVec.x - (double) pos.getX(), hitVec.y - (double) pos.getY(), hitVec.z - (double) pos.getZ());
+                        IPart part = cable.getCableBus().selectPartLocal(hitInBlock).part;
+                        internalInventory = (part instanceof PatternProviderLogicHost providerPart) ?
+                                providerPart.getLogic().getPatternInv() : null;
+                    }
+                    case PatternProviderLogicHost providerBlock ->
+                            internalInventory = providerBlock.getLogic().getPatternInv();
+                    case MetaMachineBlockEntity mmbe when mmbe.getMetaMachine() instanceof MEPatternBufferPartMachine me ->
+                            internalInventory = me.getTerminalPatternInventory();
+                    default -> internalInventory = null;
+                }
 
                 if (internalInventory == null) {
                     serverPlayer.displayClientMessage(Component.literal("只能对着样板供应器使用")

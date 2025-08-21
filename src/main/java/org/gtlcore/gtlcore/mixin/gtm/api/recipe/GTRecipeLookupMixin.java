@@ -304,7 +304,8 @@ public abstract class GTRecipeLookupMixin {
                     meRecipes.addAll(part.getMachine().getCachedGTRecipe());
                 }
                 if (!meRecipes.isEmpty()) {
-                    ((IAdditionalRecipeIterator) iterator).setAdditionalRecipes(meRecipes.stream().filter(r -> r.recipeType == recipeType).toList());
+                    meRecipes = meRecipes.stream().filter(r -> r.recipeType == recipeType).toList();
+                    if (!meRecipes.isEmpty()) ((IAdditionalRecipeIterator) iterator).setAdditionalRecipes(meRecipes);
                 }
             }
 
