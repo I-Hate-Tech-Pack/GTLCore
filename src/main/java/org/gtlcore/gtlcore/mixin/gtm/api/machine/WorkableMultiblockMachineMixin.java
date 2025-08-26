@@ -141,26 +141,23 @@ public abstract class WorkableMultiblockMachineMixin extends MultiblockControlle
         var distinctParts = new ObjectArrayList<IRecipeHandler<?>>();
         for (IMultiPart part : this.getParts()) {
             if (part instanceof FluidHatchPartMachine || part instanceof IDistinctPart) {
-                switch (part) {
-                    case MEOutputPartMachine ignored -> {
-                        MEOutPutBus = true;
-                        MEOutPutHatch = true;
-                        MEOutPutDual = true;
+                if (part instanceof MEOutputPartMachine) {
+                    MEOutPutBus = true;
+                    MEOutPutHatch = true;
+                    MEOutPutDual = true;
+                } else if (part instanceof MEOutputBusPartMachine) {
+                    MEOutPutBus = true;
+                } else if (part instanceof MEOutputHatchPartMachine) {
+                    MEOutPutHatch = true;
+                } else if (part instanceof IMEPatternPartMachine mePart) {
+                    var meHandlers = mePart.getMERecipeHandlerTraits();
+                    for (var meHandlerTrait : meHandlers) {
+                        traitSubscriptions.add(meHandlerTrait.addChangedListener(recipeLogic::updateTickSubscription));
                     }
-                    case MEOutputBusPartMachine ignored -> MEOutPutBus = true;
-                    case MEOutputHatchPartMachine ignored -> MEOutPutHatch = true;
-                    case IMEPatternPartMachine mePart -> {
-                        var meHandlers = mePart.getMERecipeHandlerTraits();
-                        for (IMERecipeHandlerTrait<?, ?> meHandlerTrait : meHandlers) {
-                            traitSubscriptions.add(meHandlerTrait.addChangedListener(recipeLogic::updateTickSubscription));
-                        }
-                        var me = MERecipeHandlePart.of(mePart);
-                        me.setMachineCache(recipeHandleMap);
-                        mERecipeHandleParts.add(me);
-                        continue;
-                    }
-                    default -> {
-                    }
+                    var me = MERecipeHandlePart.of(mePart);
+                    me.setMachineCache(recipeHandleMap);
+                    mERecipeHandleParts.add(me);
+                    continue;
                 }
                 List<IRecipeHandler<?>> hatch = new ObjectArrayList<>();
                 boolean isOutput = false;
