@@ -1,5 +1,6 @@
 package org.gtlcore.gtlcore.api.machine.multiblock;
 
+import org.gtlcore.gtlcore.api.machine.trait.IMultiRecipeMachine;
 import org.gtlcore.gtlcore.api.recipe.RecipeResult;
 import org.gtlcore.gtlcore.common.machine.trait.MultipleRecipesLogic;
 
@@ -20,7 +21,7 @@ import static org.gtlcore.gtlcore.common.data.GTLRecipeModifiers.getHatchParalle
 /**
  * @author EasterFG on 2024/12/5
  */
-public class CoilWorkableElectricMultipleRecipesMachine extends CoilWorkableElectricMultiblockMachine implements ParallelMachine {
+public class CoilWorkableElectricMultipleRecipesMachine extends CoilWorkableElectricMultiblockMachine implements ParallelMachine, IMultiRecipeMachine {
 
     private static final BiPredicate<CompoundTag, IRecipeLogicMachine> EBF_CHECK = (data, machine) -> {
         var tm = (CoilWorkableElectricMultiblockMachine) machine;

@@ -1,6 +1,7 @@
 package org.gtlcore.gtlcore.common.machine.multiblock.electric;
 
 import org.gtlcore.gtlcore.api.machine.multiblock.ParallelMachine;
+import org.gtlcore.gtlcore.api.machine.trait.IMultiRecipeMachine;
 import org.gtlcore.gtlcore.common.machine.trait.MultipleRecipesLogic;
 
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
@@ -9,7 +10,7 @@ import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 
 import org.jetbrains.annotations.NotNull;
 
-public class WorkableElectricMultipleRecipesMachine extends WorkableElectricMultiblockMachine implements ParallelMachine {
+public class WorkableElectricMultipleRecipesMachine extends WorkableElectricMultiblockMachine implements ParallelMachine, IMultiRecipeMachine {
 
     public WorkableElectricMultipleRecipesMachine(IMachineBlockEntity holder, Object... args) {
         super(holder, args);

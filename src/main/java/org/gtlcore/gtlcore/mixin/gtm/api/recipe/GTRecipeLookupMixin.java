@@ -1,17 +1,14 @@
 package org.gtlcore.gtlcore.mixin.gtm.api.recipe;
 
-import org.gtlcore.gtlcore.api.machine.multiblock.CoilWorkableElectricMultipleRecipesMachine;
+import org.gtlcore.gtlcore.api.machine.trait.IMultiRecipeMachine;
 import org.gtlcore.gtlcore.api.machine.trait.IRecipeCapabilityMachine;
 import org.gtlcore.gtlcore.api.machine.trait.MERecipeHandlePart;
 import org.gtlcore.gtlcore.api.machine.trait.RecipeHandlePart;
 import org.gtlcore.gtlcore.api.recipe.IAdditionalRecipeIterator;
 import org.gtlcore.gtlcore.api.recipe.IRecipeIterator;
-import org.gtlcore.gtlcore.api.recipe.RecipeResult;
-import org.gtlcore.gtlcore.common.machine.multiblock.electric.WorkableElectricMultipleRecipesMachine;
 
 import com.gregtechceu.gtceu.api.capability.recipe.*;
 import com.gregtechceu.gtceu.api.machine.WorkableTieredMachine;
-import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
 import com.gregtechceu.gtceu.api.machine.steam.SteamWorkableMachine;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
@@ -67,18 +64,13 @@ public abstract class GTRecipeLookupMixin {
             if (totalSize == 0) return null;
             List<List<AbstractMapIngredient>> list = new ObjectArrayList<>(totalSize);
             list.addAll(fromHolder(holder));
-            if (list.isEmpty()) {
-                RecipeResult.of((IRecipeLogicMachine) holder, RecipeResult.FAIL_NO_INPUT);
-                return null;
-            }
+            if (list.isEmpty()) return null;
             return list;
         } else if (holder instanceof IRecipeCapabilityMachine machine) {
             if (machine.getRecipeHandleParts().isEmpty() && machine.getMERecipeHandleParts().isEmpty()) return null;
             List<List<AbstractMapIngredient>> list = new ObjectArrayList<>(machine.getRecipeHandleParts().size() + machine.getMERecipeHandleParts().size());
             list.addAll(this.gtlcore$fromHolder(machine));
-            if (list.isEmpty()) {
-                return null;
-            }
+            if (list.isEmpty()) return null;
             return list;
         }
         return List.of();
@@ -300,20 +292,15 @@ public abstract class GTRecipeLookupMixin {
             var parts = rlm.getMERecipeHandleParts();
             if (!parts.isEmpty()) {
                 List<GTRecipe> meRecipes = new ObjectArrayList<>();
-                for (var part : parts) {
-                    meRecipes.addAll(part.getMachine().getCachedGTRecipe());
-                }
+                for (var part : parts) meRecipes.addAll(part.getMachine().getCachedGTRecipe());
                 meRecipes = meRecipes.stream().filter(r -> r.recipeType == recipeType).toList();
                 if (!meRecipes.isEmpty()) {
                     ((IAdditionalRecipeIterator) iterator).setAdditionalRecipes(meRecipes);
                 }
             }
 
-            if (holder instanceof WorkableElectricMultipleRecipesMachine || holder instanceof CoilWorkableElectricMultipleRecipesMachine) {
+            if (holder instanceof IMultiRecipeMachine) {
                 ((IAdditionalRecipeIterator) iterator).setUseDiveIngredientTreeFind(true);
-            }
-            if (holder instanceof IRecipeLogicMachine irl) {
-                if (!iterator.hasNext()) RecipeResult.of(irl, RecipeResult.FAIL_NO_INPUT);
             }
         }
 
