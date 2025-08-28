@@ -1,11 +1,12 @@
 package org.gtlcore.gtlcore.mixin.gtm.api.recipe;
 
-import org.gtlcore.gtlcore.api.machine.trait.IMultiRecipeMachine;
+import org.gtlcore.gtlcore.api.machine.multiblock.CoilWorkableElectricMultipleRecipesMachine;
 import org.gtlcore.gtlcore.api.machine.trait.IRecipeCapabilityMachine;
 import org.gtlcore.gtlcore.api.machine.trait.MERecipeHandlePart;
 import org.gtlcore.gtlcore.api.machine.trait.RecipeHandlePart;
 import org.gtlcore.gtlcore.api.recipe.IAdditionalRecipeIterator;
 import org.gtlcore.gtlcore.api.recipe.IRecipeIterator;
+import org.gtlcore.gtlcore.common.machine.multiblock.electric.WorkableElectricMultipleRecipesMachine;
 
 import com.gregtechceu.gtceu.api.capability.recipe.*;
 import com.gregtechceu.gtceu.api.machine.WorkableTieredMachine;
@@ -299,7 +300,7 @@ public abstract class GTRecipeLookupMixin {
                 }
             }
 
-            if (holder instanceof IMultiRecipeMachine) {
+            if (holder instanceof WorkableElectricMultipleRecipesMachine || holder instanceof CoilWorkableElectricMultipleRecipesMachine) {
                 ((IAdditionalRecipeIterator) iterator).setUseDiveIngredientTreeFind(true);
             }
         }
