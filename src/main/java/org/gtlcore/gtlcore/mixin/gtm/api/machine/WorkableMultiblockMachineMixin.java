@@ -1,5 +1,6 @@
 package org.gtlcore.gtlcore.mixin.gtm.api.machine;
 
+import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
 import org.gtlcore.gtlcore.api.machine.trait.*;
 import org.gtlcore.gtlcore.api.recipe.RecipeResult;
 
@@ -29,6 +30,8 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.Getter;
 import lombok.Setter;
+import org.gtlcore.gtlcore.common.data.GTLRecipeTypes;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -47,6 +50,10 @@ public abstract class WorkableMultiblockMachineMixin extends MultiblockControlle
     @Shadow(remap = false)
     @Final
     public RecipeLogic recipeLogic;
+
+    @Shadow(remap = false)
+    public abstract @NotNull GTRecipeType getRecipeType();
+
     @Getter
     private boolean MEOutPutBus = false;
     @Getter
@@ -138,6 +145,7 @@ public abstract class WorkableMultiblockMachineMixin extends MultiblockControlle
         var distinctParts = new ObjectArrayList<IRecipeHandler<?>>();
         for (IMultiPart part : this.getParts()) {
             if (part instanceof IMEPatternPartMachine mePart) {
+                if (this.getRecipeType() == GTLRecipeTypes.AGGREGATION_DEVICE_RECIPES) continue;
                 var meHandlers = mePart.getMERecipeHandlerTraits();
                 for (var meHandlerTrait : meHandlers) {
                     traitSubscriptions.add(meHandlerTrait.addChangedListener(recipeLogic::updateTickSubscription));
