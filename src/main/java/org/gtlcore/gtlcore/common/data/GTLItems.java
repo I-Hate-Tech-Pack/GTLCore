@@ -343,6 +343,12 @@ public class GTLItems {
             })))
             .register();
 
+    public static ItemEntry<ComponentItem> ULTIMATE_TERMINAL = REGISTRATE
+            .item("ultimate_terminal", ComponentItem::create)
+            .properties((p) -> p.stacksTo(1))
+            .onRegister(GTItems.attach(new UltimateTerminalBehavior()))
+            .register();
+
     public static ItemEntry<Item> WORLD_FRAGMENTS_OVERWORLD = register("world_fragments_overworld", true);
     public static ItemEntry<Item> WORLD_FRAGMENTS_NETHER = register("world_fragments_nether", true);
     public static ItemEntry<Item> WORLD_FRAGMENTS_END = register("world_fragments_end", true);
