@@ -17,12 +17,11 @@ import com.lowdragmc.lowdraglib.utils.BlockInfo;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.block.Block;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.objects.*;
 import lombok.NonNull;
 
 import java.util.*;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
