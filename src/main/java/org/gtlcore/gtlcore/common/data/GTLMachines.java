@@ -30,7 +30,6 @@ import com.gregtechceu.gtceu.client.renderer.machine.MaintenanceHatchPartRendere
 import com.gregtechceu.gtceu.client.renderer.machine.OverlayTieredMachineRenderer;
 import com.gregtechceu.gtceu.client.renderer.machine.SimpleGeneratorMachineRenderer;
 import com.gregtechceu.gtceu.client.util.TooltipHelper;
-import com.gregtechceu.gtceu.common.data.*;
 import com.gregtechceu.gtceu.common.data.GTCompassSections;
 import com.gregtechceu.gtceu.common.data.GTCreativeModeTabs;
 import com.gregtechceu.gtceu.common.data.GTMachines;
@@ -760,7 +759,7 @@ public class GTLMachines {
                 .langValue("ME Extended Export Buffer")
                 .tooltips(Component.translatable("gtmthings.machine.me_export_buffer.tooltip"),
                         Component.translatable("gtceu.machine.me_extended_export_buffer.tooltip.0"))
-                .tooltipBuilder(GTL_MODIFY)
+                .tooltipBuilder(GTL_ADD)
                 .register();
 
         public static final MachineDefinition ME_EXTENDED_ASYNC_EXPORT_BUFFER = REGISTRATE
@@ -774,7 +773,7 @@ public class GTLMachines {
                 .tooltips(Component.translatable("gtmthings.machine.me_export_buffer.tooltip"),
                         Component.translatable("gtceu.machine.me_extended_export_buffer.tooltip.0"),
                         Component.translatable("gtceu.machine.me_extended_async_export_buffer.tooltip.0"))
-                .tooltipBuilder(GTL_MODIFY)
+                .tooltipBuilder(GTL_ADD)
                 .register();
 
         public static void init() {}
