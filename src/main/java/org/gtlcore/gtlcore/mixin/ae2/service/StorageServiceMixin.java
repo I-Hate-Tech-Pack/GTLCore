@@ -12,11 +12,6 @@ import appeng.me.storage.NetworkStorage;
 import it.unimi.dsi.fastutil.objects.*;
 import org.spongepowered.asm.mixin.*;
 
-/**
- * 代码参考自gto
- * &#064;line <a href="https://github.com/GregTech-Odyssey/GTOCore">...</a>
- */
-
 @Mixin(StorageService.class)
 public abstract class StorageServiceMixin {
 
