@@ -48,6 +48,11 @@ import java.util.*;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 
+/**
+ * 代码参考自gtmthings
+ * &#064;line <a href="https://github.com/liansishen/GTMThings">...</a>
+ */
+
 public class AdvancedBlockPattern extends BlockPattern {
 
     static Direction[] FACINGS = { Direction.SOUTH, Direction.NORTH, Direction.WEST, Direction.EAST, Direction.UP,

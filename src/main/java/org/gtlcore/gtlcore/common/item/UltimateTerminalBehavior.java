@@ -41,6 +41,11 @@ import java.util.*;
 import static org.gtlcore.gtlcore.api.pattern.AdvancedBlockPattern.getAdvancedBlockPattern;
 import static org.gtlcore.gtlcore.common.block.BlockMap.*;
 
+/**
+ * 代码参考自gtmthings
+ * &#064;line <a href="https://github.com/liansishen/GTMThings">...</a>
+ */
+
 public class UltimateTerminalBehavior implements IItemUIFactory {
 
     public UltimateTerminalBehavior() {}

@@ -10,6 +10,11 @@ import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
+/**
+ * 代码参考自gto
+ * &#064;line <a href="https://github.com/GregTech-Odyssey/GTOCore">...</a>
+ */
+
 @Mixin(Fluid.class)
 public class FluidMixin implements IFluid {
 

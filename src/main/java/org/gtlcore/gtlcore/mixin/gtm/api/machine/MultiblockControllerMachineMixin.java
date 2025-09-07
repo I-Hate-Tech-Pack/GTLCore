@@ -18,6 +18,11 @@ import org.spongepowered.asm.mixin.Unique;
 
 import java.util.concurrent.locks.Lock;
 
+/**
+ * 代码参考自gto
+ * &#064;line <a href="https://github.com/GregTech-Odyssey/GTOCore">...</a>
+ */
+
 @Mixin(MultiblockControllerMachine.class)
 public abstract class MultiblockControllerMachineMixin extends MetaMachine implements IMultiController, ICheckPatternMachine {
 
