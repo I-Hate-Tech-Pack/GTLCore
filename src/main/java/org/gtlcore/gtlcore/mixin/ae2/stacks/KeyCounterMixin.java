@@ -10,6 +10,11 @@ import org.spongepowered.asm.mixin.*;
 
 import java.util.*;
 
+/**
+ * 代码参考自gto
+ * &#064;line <a href="https://github.com/GregTech-Odyssey/GTOCore">...</a>
+ */
+
 @Mixin(KeyCounter.class)
 public class KeyCounterMixin implements IKeyCounter {
 
