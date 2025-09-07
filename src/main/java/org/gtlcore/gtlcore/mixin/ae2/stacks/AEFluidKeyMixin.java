@@ -10,6 +10,11 @@ import appeng.api.stacks.AEFluidKey;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.*;
 
+/**
+ * 代码参考自gto
+ * &#064;line <a href="https://github.com/GregTech-Odyssey/GTOCore">...</a>
+ */
+
 @Mixin(AEFluidKey.class)
 public class AEFluidKeyMixin {
 

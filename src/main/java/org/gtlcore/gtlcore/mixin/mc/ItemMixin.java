@@ -9,6 +9,11 @@ import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.*;
 
+/**
+ * 代码参考自gto
+ * &#064;line <a href="https://github.com/GregTech-Odyssey/GTOCore">...</a>
+ */
+
 @Mixin(value = Item.class, priority = 0)
 public class ItemMixin implements IItem {
 
