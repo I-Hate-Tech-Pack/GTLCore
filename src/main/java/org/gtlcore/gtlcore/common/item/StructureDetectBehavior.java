@@ -15,6 +15,7 @@ import com.gregtechceu.gtceu.common.item.TooltipBehavior;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -48,6 +49,12 @@ public class StructureDetectBehavior extends TooltipBehavior implements IToolBeh
     @Override
     public InteractionResult onItemUseFirst(ItemStack stack, UseOnContext context) {
         Player player = context.getPlayer();
+        var tag = stack.getTag();
+        if (tag == null) {
+            tag = new CompoundTag();
+            tag.putBoolean("isFlipped", false);
+            stack.setTag(tag);
+        }
         if (player != null) {
             Level level = context.getLevel();
             if (level.isClientSide) return InteractionResult.PASS;
@@ -58,11 +65,17 @@ public class StructureDetectBehavior extends TooltipBehavior implements IToolBeh
                 } else {
                     MultiblockState multiblockState = controller.getMultiblockState();
                     if (multiblockState instanceof IMultiblockStateGet stateGet && stateGet.isError()) {
-                        if (stateGet.getErrorNormal() != null) showError(player, stateGet.getErrorNormal(), false);
-                        if (stateGet.getErrorFlip() != null) showError(player, stateGet.getErrorFlip(), true);
+                        if (stateGet.getErrorNormal() != null && !tag.isEmpty() && !tag.getBoolean("isFlipped"))
+                            showError(player, stateGet.getErrorNormal(), false);
+                        if (stateGet.getErrorFlip() != null && !tag.isEmpty() && tag.getBoolean("isFlipped"))
+                            showError(player, stateGet.getErrorFlip(), true);
                     }
                     return InteractionResult.SUCCESS;
                 }
+            } else if (player instanceof ServerPlayer serverPlayer) {
+                tag.putBoolean("isFlipped", !tag.getBoolean("isFlipped"));
+                serverPlayer.displayClientMessage(Component.literal("当前检测模式:" +
+                        (!tag.getBoolean("isFlipped") ? "(正常模式)" : "(镜像模式)")), true);
             }
         }
         return InteractionResult.PASS;
