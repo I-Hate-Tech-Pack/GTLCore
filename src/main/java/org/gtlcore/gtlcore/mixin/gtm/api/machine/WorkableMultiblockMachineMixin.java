@@ -40,6 +40,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.*;
 
+@SuppressWarnings({ "AddedMixinMembersNamePattern", "MissingUnique" })
 @Mixin(WorkableMultiblockMachine.class)
 public abstract class WorkableMultiblockMachineMixin extends MultiblockControllerMachine implements IRecipeCapabilityMachine, IRecipeLogicMachine {
 
@@ -69,9 +70,9 @@ public abstract class WorkableMultiblockMachineMixin extends MultiblockControlle
     @Getter
     private final List<RecipeHandlePart> recipeHandleParts = new ObjectArrayList<>();
     @Getter
-    private final List<MERecipeHandlePart> mERecipeHandleParts = new ObjectArrayList<>();
+    private final List<MEPatternRecipeHandlePart> mEPatternRecipeHandleParts = new ObjectArrayList<>();
     @Getter
-    private final List<MERecipeHandlePart> mERecipeOutputHandleParts = new ObjectArrayList<>();
+    private final List<MEIORecipeHandlePart> mEIORecipeHandleParts = new ObjectArrayList<>();
     @Getter
     private final Map<GTRecipe, IRecipeHandlePart> recipeHandleMap = new Object2ObjectOpenHashMap<>();
     @Getter
@@ -168,9 +169,9 @@ public abstract class WorkableMultiblockMachineMixin extends MultiblockControlle
 
     @Override
     public void sortMEOutput() {
-        if (!mERecipeOutputHandleParts.isEmpty()) {
-            mERecipeOutputHandleParts.sort(MERecipeHandlePart.COMPARATOR.reversed());
-            MEOutPutWithFilter = mERecipeOutputHandleParts.get(0).getIoMachine().hasFilter();
+        if (!mEIORecipeHandleParts.isEmpty()) {
+            mEIORecipeHandleParts.sort(MEPatternRecipeHandlePart.COMPARATOR.reversed());
+            MEOutPutWithFilter = mEIORecipeHandleParts.get(0).getIoMachine().hasFilter();
         }
     }
 
@@ -180,7 +181,7 @@ public abstract class WorkableMultiblockMachineMixin extends MultiblockControlle
     }
 
     @Override
-    public void setMERecipeHandleMap(MERecipeHandlePart hatch, GTRecipe recipe, int slot) {
+    public void setMERecipeHandleMap(MEPatternRecipeHandlePart hatch, GTRecipe recipe, int slot) {
         hatch.getSlotMap().forcePut(recipe, slot);
         this.recipeHandleMap.put(recipe, hatch);
     }
@@ -195,8 +196,8 @@ public abstract class WorkableMultiblockMachineMixin extends MultiblockControlle
         capabilities.clear();
         capabilitiesFlat.clear();
         recipeHandleParts.clear();
-        mERecipeHandleParts.clear();
-        mERecipeOutputHandleParts.clear();
+        mEPatternRecipeHandleParts.clear();
+        mEIORecipeHandleParts.clear();
         recipeHandleMap.clear();
         if (!this.isFormed) return;
 
@@ -208,21 +209,22 @@ public abstract class WorkableMultiblockMachineMixin extends MultiblockControlle
                 for (var meHandlerTrait : meHandlers) {
                     traitSubscriptions.add(meHandlerTrait.addBufferChangedListener(recipeLogic::updateTickSubscription));
                 }
-                var me = MERecipeHandlePart.of(mePart);
-                if (mePart.getIO() == IO.OUT) {
-                    mERecipeOutputHandleParts.add(me);
-                    MEOutPutBus = true;
-                    MEOutPutHatch = true;
-                    MEOutPutDual = true;
-                } else {
+
+                if (mePart instanceof IMEPatternPartMachine mePatternPart) {
+                    var me = MEPatternRecipeHandlePart.of(mePatternPart);
                     me.restoreMachineCache(recipeHandleMap);
-                    mERecipeHandleParts.add(me);
+                    mEPatternRecipeHandleParts.add(me);
                     if (mePart.getIO() == IO.BOTH) {
-                        mERecipeOutputHandleParts.add(me);
+                        mEIORecipeHandleParts.add(me);
                         MEOutPutBus = true;
                         MEOutPutHatch = true;
                         MEOutPutDual = true;
                     }
+                } else if (mePart.getIO() == IO.OUT) {
+                    mEIORecipeHandleParts.add(MEIORecipeHandlePart.of(mePart));
+                    MEOutPutBus = true;
+                    MEOutPutHatch = true;
+                    MEOutPutDual = true;
                 }
             } else if (part instanceof FluidHatchPartMachine || part instanceof IDistinctPart) {
                 if (part instanceof MEOutputPartMachine) {
@@ -261,10 +263,10 @@ public abstract class WorkableMultiblockMachineMixin extends MultiblockControlle
                     part instanceof IDataAccessHatch)
                 this.partList.add(part);
         }
-        sortMEOutput();
         if (!distinctParts.isEmpty()) recipeHandleParts.add(RecipeHandlePart.of(IO.IN, distinctParts));
         for (var recipeHandle : getRecipeHandleParts()) {
             this.addHandlerList(recipeHandle);
         }
+        sortMEOutput();
     }
 }
