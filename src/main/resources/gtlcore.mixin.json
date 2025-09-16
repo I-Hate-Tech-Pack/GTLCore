@@ -143,6 +143,7 @@
     "gtm.registry.GTRecipeJSMixin",
     "gtm.registry.GTRecipeModifiersMixin",
     "gtm.registry.GTRecipeTypeMixin",
+    "gtmt.CreativeEnergyHatchPartMachineMixin",
     "gtmt.GTMTRecipeMixin",
     "gtmt.HugeBusPartMachineMixin",
     "gtmt.MEOutputPartMachineMixin",
