@@ -149,6 +149,8 @@
     "gtmt.MEOutputPartMachineMixin$InaccessibleInfiniteHandlerMixin",
     "gtmt.MEOutputPartMachineMixin$InaccessibleInfiniteTankMixin",
     "gtmt.WirelessEnergyReceiveCoverMixin",
+    "gtmt.trait.CatalystFluidStackHandlerMixin",
+    "gtmt.trait.CatalystItemStackHandlerMixin",
     "ldlib.AsyncThreadDataMixin",
     "ldlib.ItemStackTransferMixin",
     "travelanchors.EventListenerMixin"
