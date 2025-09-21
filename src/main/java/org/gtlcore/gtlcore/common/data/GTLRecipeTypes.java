@@ -247,7 +247,7 @@ public class GTLRecipeTypes {
 
     public static final GTRecipeType WORLD_DATA_SCANNER_RECIPES = register("world_data_scanner", ELECTRIC)
             .setEUIO(IO.IN)
-            .setMaxIOSize(2, 1, 2, 0)
+            .setMaxIOSize(3, 1, 2, 0)
             .setProgressBar(GuiTextures.PROGRESS_BAR_ARROW, LEFT_TO_RIGHT)
             .setSound(GTSoundEntries.SCIENCE);
 
