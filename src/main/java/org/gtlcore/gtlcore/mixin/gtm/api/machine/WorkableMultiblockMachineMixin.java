@@ -68,7 +68,10 @@ public abstract class WorkableMultiblockMachineMixin extends MultiblockControlle
     public boolean isDistinct = false;
     @Getter
     private @Nullable IParallelHatch parallelHatch = null;
-    private List<IMultiPart> partList = new ObjectArrayList<>();
+    private IMufflerMachine mufflerMachine = null;
+    @Getter
+    private IMaintenanceMachine maintenanceMachine = null;
+    private IDataAccessHatch dataAccessHatch = null;
     @Getter
     private final List<RecipeHandlePart> recipeHandleParts = new ObjectArrayList<>();
     @Getter
@@ -115,10 +118,10 @@ public abstract class WorkableMultiblockMachineMixin extends MultiblockControlle
      */
     @Overwrite(remap = false)
     public final @Nullable GTRecipe doModifyRecipe(GTRecipe recipe, @NotNull OCParams params, @NotNull OCResult result) {
-        for (var part : this.partList) {
-            recipe = part.modifyRecipe(recipe);
-            if (recipe == null) return null;
-        }
+        if (this.maintenanceMachine != null) recipe = maintenanceMachine.modifyRecipe(recipe);
+        if (recipe != null && this.mufflerMachine != null) recipe = mufflerMachine.modifyRecipe(recipe);
+        if (recipe != null && this.dataAccessHatch != null) recipe = dataAccessHatch.modifyRecipe(recipe);
+        if (recipe == null) return null;
         return this.self().getDefinition().getRecipeModifier().apply(this.self(), recipe, params, result);
     }
 
@@ -153,9 +156,8 @@ public abstract class WorkableMultiblockMachineMixin extends MultiblockControlle
      */
     @Overwrite(remap = false)
     public void afterWorking() {
-        for (var part : this.partList) {
-            part.afterWorking((IWorkableMultiController) this);
-        }
+        if (this.maintenanceMachine != null) maintenanceMachine.afterWorking((IWorkableMultiController) this);
+        if (this.mufflerMachine != null) mufflerMachine.afterWorking((IWorkableMultiController) this);
         this.self().getDefinition().getAfterWorking().accept(this);
     }
 
@@ -194,7 +196,9 @@ public abstract class WorkableMultiblockMachineMixin extends MultiblockControlle
         MEOutPutDual = false;
         MEOutPutWithFilter = false;
         parallelHatch = null;
-        partList.clear();
+        mufflerMachine = null;
+        maintenanceMachine = null;
+        dataAccessHatch = null;
         capabilities.clear();
         capabilitiesFlat.clear();
         recipeHandleParts.clear();
@@ -260,10 +264,9 @@ public abstract class WorkableMultiblockMachineMixin extends MultiblockControlle
                     }
                 }
             } else if (part instanceof IParallelHatch parallel) this.parallelHatch = parallel;
-            else if (part instanceof IMufflerMachine ||
-                    part instanceof IMaintenanceMachine ||
-                    part instanceof IDataAccessHatch)
-                this.partList.add(part);
+            else if (part instanceof IMufflerMachine muffler) this.mufflerMachine = muffler;
+            else if (part instanceof IMaintenanceMachine maintenance) this.maintenanceMachine = maintenance;
+            else if (part instanceof IDataAccessHatch data) this.dataAccessHatch = data;
         }
         if (!distinctParts.isEmpty()) recipeHandleParts.add(RecipeHandlePart.of(IO.IN, distinctParts));
         for (var recipeHandle : getRecipeHandleParts()) {
