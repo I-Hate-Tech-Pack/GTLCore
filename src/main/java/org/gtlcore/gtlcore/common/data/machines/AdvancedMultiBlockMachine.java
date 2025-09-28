@@ -130,6 +130,7 @@ public class AdvancedMultiBlockMachine {
             .tooltips(Component.translatable("gtceu.machine.eye_of_harmony.tooltip.4"))
             .tooltips(Component.translatable("gtceu.machine.eye_of_harmony.tooltip.5"))
             .tooltips(Component.translatable("gtceu.machine.eye_of_harmony.tooltip.6"))
+            .tooltips(Component.translatable("tooltip.gtlcore.structure.source", "GTNH"))
             .tooltips(Component.translatable("gtceu.machine.available_recipe_map_1.tooltip",
                     Component.translatable("gtceu.cosmos_simulation")))
             .tooltipBuilder(GTLMachines.GTL_ADD)
@@ -194,6 +195,7 @@ public class AdvancedMultiBlockMachine {
             .tooltips(Component.translatable("gtceu.machine.perfect_oc"))
             .tooltips(Component.translatable("gtceu.machine.available_recipe_map_1.tooltip",
                     Component.translatable("gtceu.space_probe_surface_reception")))
+            .tooltips(Component.translatable("tooltip.gtlcore.structure.source", "GCY"))
             .tooltipBuilder(GTLMachines.GTL_ADD)
             .recipeModifier(GTRecipeModifiers.ELECTRIC_OVERCLOCK.apply(OverclockingLogic.PERFECT_OVERCLOCK_SUBTICK))
             .appearanceBlock(GCyMBlocks.CASING_ATOMIC)
@@ -259,9 +261,9 @@ public class AdvancedMultiBlockMachine {
                     .aisle("          B               B          ", "          B               B          ", "           EEJJJJJJJJJJJEE           ", "          E               E          ", "          E               E          ", "           EE           EE           ", "             GGGEEEEEGGG             ", "                  E                  ", "          FFFDDDDDDDDDDDFFF          ", "          FFFDDDDDDDDDDDFFF          ", "          CCCCCCCCCCCCCCCCC          ", "       AAA                 AAA       ", "     AA                       AA     ", "    A                           A    ", "   A                             A   ", "AAA                               AAA", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ", "                 CCC                 ", "               CCKKKCC               ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ")
                     .aisle("                                     ", "                                     ", "           EHJJJJJJJJJJJHE           ", "          E               E          ", "       B  E               E          ", "           EE           EE           ", "             EGG     GGE             ", "               GGEEEGG               ", "         FFFIDDFFFFFFFDDIFFF         ", "         FFFIDDFFFFFFFDDIFFF         ", "         CCCCCCCCCCCCCCCCCCC         ", "       AA                   AA       ", "     AA                       AA     ", "    A                           A    ", "   A                             A   ", "AAA                               AAA", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ", "                CCDCC                ", "              CCKKKKKCC              ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ")
                     .aisle("                                     ", "                                     ", "           EHJJJJJJJJJJJHE           ", "         EE               EE         ", "      BD E                 E DB      ", "       D  EEE           EEE  D       ", "             EE       EE             ", "               GEEEEEG               ", "         FFFIDDFFFFFFFDDIFFF         ", "         FFFIDDFFFFFFFDDIFFF         ", "         CCCCCCCCCCCCCCCCCCC         ", "       AA                   AA       ", "     AA                       AA     ", "    A                           A    ", "   A                             A   ", "AAA                               AAA", "                                     ", "                                     ", "                                     ", "                                     ", "                  C                  ", "               CCDDDCC               ", "             CCKKKKKKKCC             ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ")
-                    .aisle("                                  B  ", "                                     ", "           EHJJJJJJJJJJJHE           ", "         EE               EE         ", "      B  E                 E  B      ", "        D EE             EE D        ", "        D   EEE       EEE   D        ", "               EEEEEEE      D        ", "         FFFIDDFFFFFFFDDIFFF         ", "         FFFIDDFFFFFFFDDIFFF         ", "         CCCCCCCCCCCCCCCCCCC         ", "       AA                   AA       ", "     AA                       AA     ", "    A                           A    ", "   A                             A   ", "AAA                               AAA", "                                     ", "                                     ", "                                     ", "                                     ", "                 CCC                 ", "              CCDDDDDCC              ", "             CKKKKKKKKKC             ", "                  L                  ", "                  L                  ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ")
+                    .aisle("  B                               B  ", "                                     ", "           EHJJJJJJJJJJJHE           ", "         EE               EE         ", "      B  E                 E  B      ", "        D EE             EE D        ", "        D   EEE       EEE   D        ", "               EEEEEEE      D        ", "         FFFIDDFFFFFFFDDIFFF         ", "         FFFIDDFFFFFFFDDIFFF         ", "         CCCCCCCCCCCCCCCCCCC         ", "       AA                   AA       ", "     AA                       AA     ", "    A                           A    ", "   A                             A   ", "AAA                               AAA", "                                     ", "                                     ", "                                     ", "                                     ", "                 CCC                 ", "              CCDDDDDCC              ", "             CKKKKKKKKKC             ", "                  L                  ", "                  L                  ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ")
                     .aisle("  BB                             BB  ", "   BB                           BB   ", "    BB    EEHJJJJJJJJJJJHEE    BB    ", "     BB  EE       M       EE  BB     ", "      B  E        M        E  B      ", "      BBBEEE      M      EEEBBB      ", "         D EEEE   M   EEEE D         ", "         D    EEEEMEEEE    D         ", "        DFFFIDDFFFMFFFDDIFFFD        ", "         FFFIDDFFFMFFFDDIFFF         ", "         CCCCCCCCCCCCCCCCCCC         ", "       AACC               CCAA       ", "     AACCC                 CCCAA     ", "    ACC                       CCA    ", "   AC                           CA   ", "AAAC C                         C CAAA", "      C                       C      ", "       C                     C       ", "        C                   C        ", "         C                 C         ", "          C     CCCCC     C          ", "           C  CDDDDDDDC  C           ", "            CCKKKKKKKKKCC            ", "                 LLL                 ", "                 LLL                 ", "                  L                  ", "                  L                  ", "                  L                  ", "                  L                  ", "                  L                  ", "                                     ")
-                    .aisle("                                  B  ", "                                     ", "           EHJJJJJJJJJJJHE           ", "         EE               EE         ", "      B  E                 E  B      ", "        D EE             EE D        ", "        D   EEE       EEE   D        ", "               EEEEEEE      D        ", "         FFFIDDFFFFFFFDDIFFF         ", "         FFFIDDFFFFFFFDDIFFF         ", "         CCCCCCCCCCCCCCCCCCC         ", "       AA                   AA       ", "     AA                       AA     ", "    A                           A    ", "   A                             A   ", "AAA                               AAA", "                                     ", "                                     ", "                                     ", "                                     ", "                 CCC                 ", "              CCDDDDDCC              ", "             CKKKKKKKKKC             ", "                  L                  ", "                  L                  ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ")
+                    .aisle("  B                               B  ", "                                     ", "           EHJJJJJJJJJJJHE           ", "         EE               EE         ", "      B  E                 E  B      ", "        D EE             EE D        ", "        D   EEE       EEE   D        ", "               EEEEEEE      D        ", "         FFFIDDFFFFFFFDDIFFF         ", "         FFFIDDFFFFFFFDDIFFF         ", "         CCCCCCCCCCCCCCCCCCC         ", "       AA                   AA       ", "     AA                       AA     ", "    A                           A    ", "   A                             A   ", "AAA                               AAA", "                                     ", "                                     ", "                                     ", "                                     ", "                 CCC                 ", "              CCDDDDDCC              ", "             CKKKKKKKKKC             ", "                  L                  ", "                  L                  ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ")
                     .aisle("                                     ", "                                     ", "           EHJJJJJJJJJJJHE           ", "         EE               EE         ", "      BD E                 E DB      ", "       D  EEE           EEE  D       ", "             EE       EE             ", "               GEEEEEG               ", "         FFFIDDFFFFFFFDDIFFF         ", "         FFFIDDFFFFFFFDDIFFF         ", "         CCCCCCCCCCCCCCCCCCC         ", "       AA                   AA       ", "     AA                       AA     ", "    A                           A    ", "   A                             A   ", "AAA                               AAA", "                                     ", "                                     ", "                                     ", "                                     ", "                  C                  ", "               CCDDDDC               ", "             CCKKKKKKKCC             ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ")
                     .aisle("                                     ", "                                     ", "           EHJJJJJJJJJJJHE           ", "          E               E          ", "       B  E               E          ", "           EE           EE           ", "             EGG     GGE             ", "               GGEEEGG               ", "         FFFIDDFFFFFFFDDIFFF         ", "         FFFIDDFFFFFFFDDIFFF         ", "         CCCCCCCCCCCCCCCCCCC         ", "       AA                   AA       ", "     AA                       AA     ", "    A                           A    ", "   A                             A   ", "AAA                               AAA", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ", "                CCDCC                ", "              CCKKKKKCC              ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ")
                     .aisle("          B               B          ", "          B               B          ", "           EEJJJJJJJJJJJEE           ", "          E               E          ", "          E               E          ", "           EE           EE           ", "             GGGEEEEEGGG             ", "                  E                  ", "          FFFDDDDDDDDDDDFFF          ", "          FFFDDDDDDDDDDDFFF          ", "          CCCCCCCCCCCCCCCCC          ", "       AAA                 AAA       ", "     AA                       AA     ", "    A                           A    ", "   A                             A   ", "AAA                               AAA", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ", "                 CCC                 ", "               CCKKKCC               ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ", "                                     ")
@@ -312,6 +314,7 @@ public class AdvancedMultiBlockMachine {
             .tooltips(Component.translatable("gtceu.multiblock.parallelizable.tooltip"))
             .tooltips(Component.translatable("gtceu.machine.available_recipe_map_2.tooltip",
                     Component.translatable("gtceu.dimensionally_transcendent_plasma_forge"), Component.translatable("gtceu.stellar_forge")))
+            .tooltips(Component.translatable("tooltip.gtlcore.structure.source", "GTNH"))
             .tooltipBuilder(GTLMachines.GTL_ADD)
             .recipeModifiers(GTRecipeModifiers.PARALLEL_HATCH, GTRecipeModifiers.ELECTRIC_OVERCLOCK.apply(OverclockingLogic.PERFECT_OVERCLOCK_SUBTICK))
             .appearanceBlock(GTLBlocks.DIMENSIONALLY_TRANSCENDENT_CASING)
@@ -588,6 +591,7 @@ public class AdvancedMultiBlockMachine {
             .tooltips(Component.translatable("gtceu.machine.pcb_factory.tooltip.2"))
             .tooltips(Component.translatable("gtceu.machine.perfect_oc"))
             .tooltips(Component.translatable("gtceu.multiblock.parallelizable.tooltip"))
+            .tooltips(Component.translatable("tooltip.gtlcore.structure.source", "GTNH"))
             .tooltips(Component.translatable("gtceu.machine.available_recipe_map_1.tooltip",
                     Component.translatable("gtceu.pcb_factory")))
             .tooltipBuilder(GTLMachines.GTL_ADD)
@@ -638,6 +642,7 @@ public class AdvancedMultiBlockMachine {
             .tooltips(Component.translatable("gtceu.machine.electric_blast_furnace.tooltip.0"))
             .tooltips(Component.translatable("gtceu.machine.perfect_oc"))
             .tooltips(Component.translatable("gtceu.machine.electric_blast_furnace.tooltip.2"))
+            .tooltips(Component.translatable("tooltip.gtlcore.structure.source", "GT++"))
             .tooltips(Component.translatable("gtceu.machine.available_recipe_map_1.tooltip",
                     Component.translatable("gtceu.electric_blast_furnace")))
             .tooltipBuilder(GTLMachines.GTL_ADD)
@@ -690,6 +695,7 @@ public class AdvancedMultiBlockMachine {
             .tooltips(Component.translatable("gtceu.machine.duration_multiplier.tooltip", 0.5))
             .tooltips(Component.translatable("gtceu.machine.cold_ice_freezer.tooltip.0"))
             .tooltips(Component.translatable("gtceu.machine.blaze_blast_furnace.tooltip.1"))
+            .tooltips(Component.translatable("tooltip.gtlcore.structure.source", "GT++"))
             .tooltips(Component.translatable("gtceu.machine.available_recipe_map_1.tooltip",
                     Component.translatable("gtceu.vacuum_freezer")))
             .tooltipBuilder(GTLMachines.GTL_ADD)
@@ -960,6 +966,7 @@ public class AdvancedMultiBlockMachine {
             .tooltips(Component.translatable("gtceu.multiblock.laser.tooltip"))
             .tooltips(Component.translatable("gtceu.machine.perfect_oc"))
             .tooltips(Component.translatable("gtceu.multiblock.parallelizable.tooltip"))
+            .tooltips(Component.translatable("tooltip.gtlcore.structure.source", "TST"))
             .tooltips(Component.translatable("gtceu.machine.available_recipe_map_3.tooltip",
                     Component.translatable("gtceu.suprachronal_assembly_line"), Component.translatable("gtceu.assembly_line"), Component.translatable("gtceu.circuit_assembly_line")))
             .tooltipBuilder(GTLMachines.GTL_ADD)
@@ -1034,6 +1041,7 @@ public class AdvancedMultiBlockMachine {
             .tooltips(Component.translatable("gtceu.machine.duration_multiplier.tooltip", 0.4))
             .tooltips(Component.translatable("gtceu.machine.suprachronal_assembly_line_module.tooltip.0"))
             .tooltips(Component.translatable("gtceu.multiblock.laser.tooltip"))
+            .tooltips(Component.translatable("tooltip.gtlcore.structure.source", "TST"))
             .tooltips(Component.translatable("gtceu.machine.available_recipe_map_2.tooltip",
                     Component.translatable("gtceu.assembly_line"), Component.translatable("gtceu.circuit_assembly_line")))
             .tooltipBuilder(GTLMachines.GTL_ADD)
@@ -1082,6 +1090,7 @@ public class AdvancedMultiBlockMachine {
             .tooltips(Component.translatable("gtceu.machine.duration_multiplier.tooltip", 0.6))
             .tooltips(Component.translatable("gtceu.machine.processing_plant.tooltip.0"))
             .tooltips(Component.translatable("gtceu.machine.processing_plant.tooltip.1"))
+            .tooltips(Component.translatable("tooltip.gtlcore.structure.source", "GTNH"))
             .tooltips(Component.translatable("gtceu.machine.available_recipe_map_11.tooltip",
                     Component.translatable("gtceu.bender"),
                     Component.translatable("gtceu.compressor"),
@@ -1159,6 +1168,7 @@ public class AdvancedMultiBlockMachine {
             .tooltips(Component.translatable("gtceu.machine.duration_multiplier.tooltip", 0.6))
             .tooltips(Component.translatable("gtceu.machine.processing_plant.tooltip.0"))
             .tooltips(Component.translatable("gtceu.machine.processing_plant.tooltip.1"))
+            .tooltips(Component.translatable("tooltip.gtlcore.structure.source", "GTNH"))
             .tooltips(Component.translatable("gtceu.machine.available_recipe_map_2.tooltip",
                     Component.translatable("gtceu.assembler"), Component.translatable("gtceu.circuit_assembler")))
             .tooltipBuilder(GTLMachines.GTL_ADD)
@@ -1213,6 +1223,7 @@ public class AdvancedMultiBlockMachine {
             .tooltips(Component.translatable("gtceu.machine.duration_multiplier.tooltip", 0.6))
             .tooltips(Component.translatable("gtceu.machine.processing_plant.tooltip.0"))
             .tooltips(Component.translatable("gtceu.machine.processing_plant.tooltip.1"))
+            .tooltips(Component.translatable("tooltip.gtlcore.structure.source", "GTNH"))
             .tooltips(Component.translatable("gtceu.machine.available_recipe_map_7.tooltip",
                     Component.translatable("gtceu.centrifuge"),
                     Component.translatable("gtceu.thermal_centrifuge"),
@@ -1280,6 +1291,7 @@ public class AdvancedMultiBlockMachine {
             .tooltips(Component.translatable("gtceu.machine.duration_multiplier.tooltip", 0.6))
             .tooltips(Component.translatable("gtceu.machine.processing_plant.tooltip.0"))
             .tooltips(Component.translatable("gtceu.machine.processing_plant.tooltip.1"))
+            .tooltips(Component.translatable("tooltip.gtlcore.structure.source", "GTNH"))
             .tooltips(Component.translatable("gtceu.machine.available_recipe_map_4.tooltip",
                     Component.translatable("gtceu.chemical_reactor"),
                     Component.translatable("gtceu.mixer"),
@@ -1386,6 +1398,7 @@ public class AdvancedMultiBlockMachine {
             .tooltips(Component.translatable("gtceu.machine.nano_forge.tooltip.0"))
             .tooltips(Component.translatable("gtceu.machine.nano_forge_1.tooltip.0"))
             .tooltips(Component.translatable("gtceu.multiblock.only.laser.tooltip"))
+            .tooltips(Component.translatable("tooltip.gtlcore.structure.source", "GTNH"))
             .tooltips(Component.translatable("gtceu.machine.available_recipe_map_1.tooltip",
                     Component.translatable("gtceu.nano_forge")))
             .tooltipBuilder(GTLMachines.GTL_ADD)
@@ -1431,6 +1444,7 @@ public class AdvancedMultiBlockMachine {
             .tooltips(Component.translatable("gtceu.machine.nano_forge_2.tooltip.0"))
             .tooltips(Component.translatable("gtceu.machine.nano_forge_2.tooltip.1"))
             .tooltips(Component.translatable("gtceu.multiblock.only.laser.tooltip"))
+            .tooltips(Component.translatable("tooltip.gtlcore.structure.source", "GTNH"))
             .tooltips(Component.translatable("gtceu.machine.available_recipe_map_1.tooltip",
                     Component.translatable("gtceu.nano_forge")))
             .tooltipBuilder(GTLMachines.GTL_ADD)
@@ -1481,6 +1495,7 @@ public class AdvancedMultiBlockMachine {
             .tooltips(Component.translatable("gtceu.machine.nano_forge_3.tooltip.1"))
             .tooltips(Component.translatable("gtceu.machine.nano_forge_3.tooltip.2"))
             .tooltips(Component.translatable("gtceu.multiblock.only.laser.tooltip"))
+            .tooltips(Component.translatable("tooltip.gtlcore.structure.source", "GTNH"))
             .tooltips(Component.translatable("gtceu.machine.available_recipe_map_1.tooltip",
                     Component.translatable("gtceu.nano_forge")))
             .tooltipBuilder(GTLMachines.GTL_ADD)
@@ -1528,6 +1543,7 @@ public class AdvancedMultiBlockMachine {
             .recipeType(GTLRecipeTypes.ISA_MILL_RECIPES)
             .tooltips(Component.translatable("gtceu.machine.isa_mill.tooltip.0"))
             .tooltips(Component.translatable("gtceu.machine.perfect_oc"))
+            .tooltips(Component.translatable("tooltip.gtlcore.structure.source", "GTNH"))
             .tooltips(Component.translatable("gtceu.machine.available_recipe_map_1.tooltip",
                     Component.translatable("gtceu.isa_mill")))
             .tooltipBuilder(GTLMachines.GTL_ADD)
@@ -1584,6 +1600,7 @@ public class AdvancedMultiBlockMachine {
             .tooltips(Component.translatable("gtceu.machine.neutron_activator.tooltip.3"))
             .tooltips(Component.translatable("gtceu.machine.neutron_activator.tooltip.4"))
             .tooltips(Component.translatable("gtceu.multiblock.parallelizable.tooltip"))
+            .tooltips(Component.translatable("tooltip.gtlcore.structure.source", "GTNH"))
             .tooltips(Component.translatable("gtceu.machine.available_recipe_map_1.tooltip",
                     Component.translatable("gtceu.neutron_activator")))
             .tooltipBuilder(GTLMachines.GTL_ADD)
@@ -1622,6 +1639,7 @@ public class AdvancedMultiBlockMachine {
             .langValue("Heat Exchanger")
             .tooltips(Component.translatable("gtceu.machine.heat_exchanger.tooltip.0"))
             .tooltips(Component.translatable("gtceu.machine.heat_exchanger.tooltip.1"))
+            .tooltips(Component.translatable("tooltip.gtlcore.structure.source", "GTNH"))
             .tooltips(Component.translatable("gtceu.machine.available_recipe_map_1.tooltip",
                     Component.translatable("gtceu.heat_exchanger")))
             .tooltipBuilder(GTLMachines.GTL_ADD)
@@ -1779,6 +1797,7 @@ public class AdvancedMultiBlockMachine {
             .tooltips(Component.translatable("gtceu.machine.space_elevator.tooltip.0"))
             .tooltips(Component.translatable("gtceu.machine.space_elevator.tooltip.1"))
             .tooltips(Component.translatable("gtceu.machine.space_elevator.tooltip.2"))
+            .tooltips(Component.translatable("tooltip.gtlcore.structure.source", "GTNH"))
             .tooltips(Component.translatable("gtceu.machine.available_recipe_map_1.tooltip",
                     Component.translatable("gtceu.space_elevator")))
             .tooltipBuilder(GTLMachines.GTL_ADD)
@@ -1991,6 +2010,7 @@ public class AdvancedMultiBlockMachine {
                             Component.translatable("gtceu.machine.fusion_reactor.overclocking"))
                     .tooltips(Component.translatable("gtceu.multiblock.laser.tooltip"))
                     .tooltips(Component.translatable("gtceu.multiblock.parallelizable.tooltip"))
+                    .tooltips(Component.translatable("tooltip.gtlcore.structure.source", "GTNH"))
                     .tooltipBuilder(GTLMachines.GTL_ADD)
                     .appearanceBlock(() -> GTLFusionCasingBlock.getCasingState(tier))
                     .pattern((definition) -> {
