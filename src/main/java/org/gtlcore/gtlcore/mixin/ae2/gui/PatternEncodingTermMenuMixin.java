@@ -2,6 +2,8 @@ package org.gtlcore.gtlcore.mixin.ae2.gui;
 
 import org.gtlcore.gtlcore.client.gui.PatterEncodingTermMenuModify;
 
+import com.gregtechceu.gtceu.common.data.GTItems;
+
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
@@ -23,6 +25,7 @@ import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
@@ -110,6 +113,23 @@ public abstract class PatternEncodingTermMenuMixin extends MEStorageMenu impleme
         } else {
             clearPattern();
         }
+    }
+
+    @Redirect(method = "encodeProcessingPattern",
+              at = @At(value = "INVOKE",
+                       target = "Lappeng/util/ConfigInventory;getStack(I)Lappeng/api/stacks/GenericStack;",
+                       ordinal = 0),
+              remap = false)
+    private GenericStack filterData(ConfigInventory instance, int slot) {
+        var stack = instance.getStack(slot);
+        if (stack != null && stack.what() instanceof AEItemKey aeItemKey) {
+            if (aeItemKey.hasTag() &&
+                    (aeItemKey.getItem() == GTItems.TOOL_DATA_STICK.asItem() ||
+                            aeItemKey.getItem() == GTItems.TOOL_DATA_ORB.asItem() ||
+                            aeItemKey.getItem() == GTItems.TOOL_DATA_MODULE.asItem()))
+                return new GenericStack(AEItemKey.of(aeItemKey.getItem()), stack.amount());
+        }
+        return stack;
     }
 
     @Override
