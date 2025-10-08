@@ -26,7 +26,8 @@ public class ItemIngredientConverterMixin {
             var item = itemStack.getItem();
             boolean b1 = Arrays.stream(SHAPE_MOLDS).map(RegistryEntry::get).anyMatch((i) -> i.equals(item));
             boolean b2 = Arrays.stream(SHAPE_EXTRUDERS).filter(Objects::nonNull).map(RegistryEntry::get).anyMatch((i) -> i.equals(item));
-            if (b1 || b2) return null;
+            boolean b3 = itemStack.getTag() != null && itemStack.getTag().contains("assembly_line_research");
+            if (b1 || b2 || b3) return null;
         }
         return GenericStack.fromItemStack(itemStack);
     }

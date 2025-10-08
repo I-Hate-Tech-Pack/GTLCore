@@ -12,8 +12,10 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 
 import org.jetbrains.annotations.NotNull;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.*;
 
@@ -22,6 +24,10 @@ import static org.gtlcore.gtlcore.utils.TextUtil.GTL_CORE$VC;
 
 @Mixin(GTRecipeWidget.class)
 public class GTRecipeWidgetMixin {
+
+    @Shadow(remap = false)
+    @Final
+    private GTRecipe recipe;
 
     /**
      * @author .
@@ -63,5 +69,10 @@ public class GTRecipeWidgetMixin {
         }
 
         return texts;
+    }
+
+    @Inject(method = "setRecipeOC", at = @At("HEAD"), cancellable = true, remap = false)
+    public void setRecipeOC(int button, boolean isShiftClick, CallbackInfo ci) {
+        if (this.recipe.recipeType.isScanner()) ci.cancel();
     }
 }
