@@ -269,7 +269,7 @@ public abstract class GTRecipeLookupMixin {
             for (var part : parts) {
                 var cachedMERecipes = part.getPatternMachine().getCachedGTRecipe();
                 if (!cachedMERecipes.isEmpty()) {
-                    return cachedMERecipes.get(0);
+                    return cachedMERecipes.iterator().next();
                 }
             }
         }
