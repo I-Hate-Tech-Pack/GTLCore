@@ -766,7 +766,6 @@ public class Lanthanidetreatment {
                     .outputFluids(nanoResin.getFluid(1000))
                     .duration(1200)
                     .EUt(491520)
-                    .addData("special", true)
                     .save(provider);
 
             LARGE_CHEMICAL_RECIPES.recipeBuilder("extraction_nano_resin_a_" + i)
