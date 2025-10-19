@@ -519,7 +519,6 @@ public class SkyTearsAndGregHeart {
                     .inputFluids(PCBCoolant.getFluid(100))
                     .inputFluids(Air.getFluid(64000))
                     .outputItems(Registries.getItem("kubejs:overworld_data"))
-                    .circuitMeta(32)
                     .duration(200)
                     .EUt(8)
                     .save(provider);
