@@ -17,6 +17,6 @@ public class SetProcessingPatternAmountScreenMixin {
      */
     @Overwrite(remap = false)
     private long getMaxAmount() {
-        return (long) Integer.MAX_VALUE * this.currentStack.what().getAmountPerUnit();
+        return (Long.MAX_VALUE >> 16) * this.currentStack.what().getAmountPerUnit();
     }
 }
