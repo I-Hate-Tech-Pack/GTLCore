@@ -7,7 +7,6 @@
   "client": [
     "ae2.client.BuiltInModelHooksAccessor",
     "ae2.client.ModelBakeryMixin",
-    "ae2.gui.CraftAmountScreenMixin",
     "ae2.gui.SetProcessingPatternAmountScreenMixin",
     "gtm.MultiblockInfoWrapperMixin",
     "gtm.MultiblockInWorldPreviewRendererMixin",
@@ -171,8 +170,8 @@
     "ldlib.AsyncThreadDataMixin",
     "ldlib.ClickDataMixin",
     "ldlib.ItemStackTransferMixin",
-    "mc.LevelChunkMixin",
-    "travelanchors.EventListenerMixin"
+    "travelanchors.EventListenerMixin",
+    "mc.LevelChunkMixin"
   ],
   "injectors": {
     "defaultRequire": 1,
