@@ -141,6 +141,10 @@ public abstract class WorkableMultiblockMachineMixin extends MultiblockControlle
     private boolean meOutPutHatch = false;
     private boolean meOutPutDual = false;
     private boolean meOutPutWithFilter = false;
+    private boolean meItemOutPutWithFilter = false;
+    private boolean meFluidOutPutWithFilter = false;
+    private boolean itemOutPutAlwaysMatch = false;
+    private boolean fluidOutPutAlwaysMatch = false;
 
     // ==================== Special Hatch ====================
     private @Nullable IParallelHatch parallelHatch = null;
@@ -170,12 +174,12 @@ public abstract class WorkableMultiblockMachineMixin extends MultiblockControlle
 
     @Override
     public boolean itemOutPutAlwaysMatch() {
-        return meOutPutWithFilter || meOutPutDual;
+        return itemOutPutAlwaysMatch;
     }
 
     @Override
     public boolean fluidOutPutAlwaysMatch() {
-        return meOutPutHatch || meOutPutDual;
+        return fluidOutPutAlwaysMatch;
     }
 
     // ========================================
@@ -215,7 +219,27 @@ public abstract class WorkableMultiblockMachineMixin extends MultiblockControlle
     public void sortMEOutput() {
         if (!meOutputRecipeHandleParts.isEmpty()) {
             meOutputRecipeHandleParts.sort(MEPatternRecipeHandlePart.COMPARATOR.reversed());
-            meOutPutWithFilter = meOutputRecipeHandleParts.get(0).hasFilter();
+
+            boolean allHaveItemFilter = true;
+            boolean allHaveFluidFilter = true;
+            for (MEIORecipeHandlePart<?> meOutputRecipeHandlePart : meOutputRecipeHandleParts) {
+                if (!meOutputRecipeHandlePart.hasItemFilter()) {
+                    allHaveItemFilter = false;
+                }
+                if (!meOutputRecipeHandlePart.hasFluidFilter()) {
+                    allHaveFluidFilter = false;
+                }
+
+                if (!allHaveItemFilter && !allHaveFluidFilter) {
+                    break;
+                }
+            }
+
+            meItemOutPutWithFilter = allHaveItemFilter;
+            meFluidOutPutWithFilter = allHaveFluidFilter;
+            meOutPutWithFilter = meItemOutPutWithFilter || meFluidOutPutWithFilter;
+            itemOutPutAlwaysMatch = !meItemOutPutWithFilter && (meOutPutBus || meOutPutDual);
+            fluidOutPutAlwaysMatch = !meFluidOutPutWithFilter && (meOutPutHatch || meOutPutDual);
         }
     }
 
@@ -392,6 +416,10 @@ public abstract class WorkableMultiblockMachineMixin extends MultiblockControlle
         meOutPutHatch = false;
         meOutPutDual = false;
         meOutPutWithFilter = false;
+        meItemOutPutWithFilter = false;
+        meFluidOutPutWithFilter = false;
+        itemOutPutAlwaysMatch = false;
+        fluidOutPutAlwaysMatch = false;
         parallelHatch = null;
         mufflerMachine = null;
         maintenanceMachine = null;

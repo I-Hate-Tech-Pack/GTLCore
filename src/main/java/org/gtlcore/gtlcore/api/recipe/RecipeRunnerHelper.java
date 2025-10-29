@@ -61,9 +61,8 @@ public class RecipeRunnerHelper {
             } else if (recipe.handleRecipe(io, holder, isTick, contents, chanceCaches)) return RecipeResult.SUCCESS;
         } else {
             var result = RecipeRunner.handle(recipe, io, holder, contents, chanceCaches, isSimulate, cacheStrategy);
-            RecipeResult.of((IRecipeLogicMachine) holder, result.isSuccess() ? result :
-                    (io == IO.IN ? RecipeResult.FAIL_INPUT : null));
-            if (result.isSuccess()) return result;
+            RecipeResult.of((IRecipeLogicMachine) holder, result);
+            return result;
         }
         return RecipeResult.fail(null);
     }

@@ -43,8 +43,12 @@ public class MEIORecipeHandlePart<T extends IMEFilterIOTrait> {
         return new MEIORecipeHandlePart<>(meTrait, pair.left(), pair.right());
     }
 
-    public boolean hasFilter() {
-        return meTrait.hasFilter();
+    public boolean hasItemFilter() {
+        return meTrait.hasItemFilter();
+    }
+
+    public boolean hasFluidFilter() {
+        return meTrait.hasFluidFilter();
     }
 
     @SuppressWarnings("unchecked")
@@ -64,16 +68,21 @@ public class MEIORecipeHandlePart<T extends IMEFilterIOTrait> {
                 continue;
             }
             var cap = entry.getKey();
-            var meHandler = getMECapability(cap);
-            var result = meHandler.meHandleRecipeOutput(content, simulate);
+            var result = meHandleOutput(cap, content, simulate);
             if (result.size() != content.size()) {
                 hasOutput = true;
                 if (result.isEmpty()) it.remove();
-                else entry.setValue(new ObjectArrayList<>(result));
+                else entry.setValue(result);
             }
         }
         if (!simulate && hasOutput) meTrait.notifySelfIO();
         return contents;
+    }
+
+    @SuppressWarnings("unchecked")
+    public <I> List<Object> meHandleOutput(RecipeCapability<?> cap, List<I> content, boolean simulate) {
+        var meHandler = getMECapability(cap);
+        return (List<Object>) (Object) meHandler.meHandleRecipeOutput(content, simulate);
     }
 
     private int getTotalPriority() {
