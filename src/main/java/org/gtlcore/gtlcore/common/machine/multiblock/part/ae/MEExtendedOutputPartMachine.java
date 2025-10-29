@@ -220,8 +220,13 @@ public class MEExtendedOutputPartMachine extends MEExtendedOutputPartMachineBase
         }
 
         @Override
-        public boolean hasFilter() {
-            return filterHandler.hasFilter();
+        public boolean hasItemFilter() {
+            return filterHandler.isHasItemFilter();
+        }
+
+        @Override
+        public boolean hasFluidFilter() {
+            return filterHandler.isHasFluidFilter();
         }
     }
 }

@@ -83,11 +83,11 @@ public class MEOutputFilterHandler implements ITagSerializable<CompoundTag> {
     }
 
     public WidgetGroup createMainWidgetGroup() {
-        final var itemFilter = openItemFilterConfigurator(5, 5, this.row, this.col);
+        final var itemFilter = openItemFilterConfigurator(20, 5, this.row, this.col);
         int height = itemFilter.getSizeHeight() + 5;
-        final var fluidFilter = openFluidFilterConfigurator(5, height + 5, this.row, this.col);
+        final var fluidFilter = openFluidFilterConfigurator(20, height + 5, this.row, this.col);
         height += fluidFilter.getSizeHeight() + 10;
-        final var priorityWidget = new IntInputWidget(new Position(5, height), prioritySupplier, onPriorityChanged)
+        final var priorityWidget = new IntInputWidget(new Position(20, height), prioritySupplier, onPriorityChanged)
                 .setMin(10)
                 .setMax(100000);
         height += priorityWidget.getSizeHeight();
@@ -124,9 +124,9 @@ public class MEOutputFilterHandler implements ITagSerializable<CompoundTag> {
                 group.addWidget(slot);
             }
         }
-        group.addWidget(new ToggleButtonWidget(18 * col + 2, 9, 18, 18,
+        group.addWidget(new ToggleButtonWidget(18 * col + 17, 9, 18, 18,
                 GuiTextures.BUTTON_BLACKLIST, this::isItemBlackList, this::setItemBlackList));
-        group.addWidget(new ToggleButtonWidget(18 * col + 2, (18) + 9, 18, 18,
+        group.addWidget(new ToggleButtonWidget(18 * col + 17, (18) + 9, 18, 18,
                 GuiTextures.BUTTON_FILTER_NBT, this::isIgnoreItemNbt, this::setIgnoreItemNbt));
         return group;
     }
@@ -159,9 +159,9 @@ public class MEOutputFilterHandler implements ITagSerializable<CompoundTag> {
                 group.addWidget(slot);
             }
         }
-        group.addWidget(new ToggleButtonWidget(18 * col + 2, 9, 18, 18,
+        group.addWidget(new ToggleButtonWidget(18 * col + 17, 9, 18, 18,
                 GuiTextures.BUTTON_BLACKLIST, this::isFluidBlackList, this::setFluidBlackList));
-        group.addWidget(new ToggleButtonWidget(18 * col + 2, (18) + 9, 18, 18,
+        group.addWidget(new ToggleButtonWidget(18 * col + 17, (18) + 9, 18, 18,
                 GuiTextures.BUTTON_FILTER_NBT, this::isIgnoreFluidNbt, this::setIgnoreFluidNbt));
         return group;
     }
@@ -206,10 +206,6 @@ public class MEOutputFilterHandler implements ITagSerializable<CompoundTag> {
         if (!hasFluidFilter) return List.of();
         left.removeIf(ingredient -> test(ingredient.getStacks()[0]));
         return left;
-    }
-
-    public boolean hasFilter() {
-        return hasItemFilter || hasFluidFilter;
     }
 
     protected boolean test(ItemStack itemStack) {

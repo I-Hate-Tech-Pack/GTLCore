@@ -5,7 +5,6 @@ import org.gtlcore.gtlcore.api.recipe.chance.LongChanceLogic;
 import org.gtlcore.gtlcore.api.recipe.ingredient.LongIngredient;
 
 import com.gregtechceu.gtceu.api.capability.recipe.*;
-import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.chance.boost.ChanceBoostFunction;
 import com.gregtechceu.gtceu.api.recipe.content.Content;
@@ -31,17 +30,16 @@ public final class RecipeRunner {
     }
 
     public static RecipeResult handle(GTRecipe recipe, IO io, IRecipeCapabilityHolder holder,
-                                      Map<RecipeCapability<?>, List<Content>> entry,
+                                      Map<RecipeCapability<?>, List<Content>> contents,
                                       Map<RecipeCapability<?>, Object2IntMap<?>> chanceCaches,
                                       boolean simulated, RecipeCacheStrategy strategy) {
-        var recipeContent = fillContent(entry, recipe, holder, chanceCaches, simulated);
+        var recipeContent = fillContent(contents, recipe, holder, chanceCaches, simulated);
 
         if (recipeContent.isEmpty()) {
             return RecipeResult.SUCCESS;
         }
 
-        boolean success = handleContentsInternal(io, recipe, holder, recipeContent, simulated, strategy);
-        return success ? RecipeResult.SUCCESS : RecipeResult.fail(null);
+        return handleContentsInternal(io, recipe, holder, recipeContent, simulated, strategy) ? RecipeResult.SUCCESS : io == IO.IN ? RecipeResult.FAIL_INPUT : simulated ? generateOutputFailReason(recipeContent) : RecipeResult.fail(null);
     }
 
     private static Reference2ObjectOpenHashMap<RecipeCapability<?>, List<Object>> fillContent(
@@ -115,31 +113,7 @@ public final class RecipeRunner {
             recipeContent = handleMEOutput(machine.getMEOutputRecipeHandleParts(), recipeContent, simulated);
             if (recipeContent.isEmpty()) return true;
             recipeContent = handleNormalOutput(machine.getNormalRecipeHandlePart(IO.OUT), recipe, recipeContent, simulated);
-            if (recipeContent.isEmpty()) return true;
-            else {
-                if (simulated) {
-                    var builder = new StringBuilder();
-                    for (var it = recipeContent.reference2ObjectEntrySet().fastIterator(); it.hasNext();) {
-                        var entry = it.next();
-                        var cap = entry.getKey();
-                        for (var ing : entry.getValue()) {
-                            if (cap == ItemRecipeCapability.CAP) {
-                                if (ing instanceof LongIngredient li) {
-                                    builder.append(li.getItems()[0].getDisplayName().getString()).append("x ").append(li.getActualAmount()).append(" ");
-                                } else if (ing instanceof SizedIngredient si) {
-                                    builder.append(si.getItems()[0].getDisplayName().getString()).append("x ").append(si.getAmount()).append(" ");
-                                }
-                            } else if (cap == FluidRecipeCapability.CAP) {
-                                if (ing instanceof FluidIngredient fi) {
-                                    builder.append(fi.getStacks()[0].getDisplayName().getString()).append("x ").append(fi.getAmount()).append(" ");
-                                }
-                            }
-                        }
-                    }
-                    RecipeResult.of((IRecipeLogicMachine) machine, RecipeResult.fail(Component.translatable("gtceu.recipe.fail.Output.Content", builder)));
-                }
-                return false;
-            }
+            return recipeContent.isEmpty();
         }
     }
 
@@ -348,6 +322,27 @@ public final class RecipeRunner {
         return recipeContent;
     }
 
+    private static RecipeResult generateOutputFailReason(Reference2ObjectOpenHashMap<RecipeCapability<?>, List<Object>> recipeContent) {
+        var builder = new StringBuilder();
+        for (var entry : Reference2ObjectMaps.fastIterable(recipeContent)) {
+            var cap = entry.getKey();
+            for (var ing : entry.getValue()) {
+                if (cap == ItemRecipeCapability.CAP) {
+                    if (ing instanceof LongIngredient li) {
+                        builder.append(li.getItems()[0].getDisplayName().getString()).append("x ").append(li.getActualAmount()).append(" ");
+                    } else if (ing instanceof SizedIngredient si) {
+                        builder.append(si.getItems()[0].getDisplayName().getString()).append("x ").append(si.getAmount()).append(" ");
+                    }
+                } else if (cap == FluidRecipeCapability.CAP) {
+                    if (ing instanceof FluidIngredient fi) {
+                        builder.append(fi.getStacks()[0].getDisplayName().getString()).append("x ").append(fi.getAmount()).append(" ");
+                    }
+                }
+            }
+        }
+        return RecipeResult.fail(Component.translatable("gtceu.recipe.fail.Output.Content", builder));
+    }
+
     // ========================================
     // No-Cache versions (for DUMMY_RECIPES)
     // Only handles input, output doesn't need nocache
@@ -356,16 +351,16 @@ public final class RecipeRunner {
     private static boolean handleInputDistinctNocache(IRecipeCapabilityMachine machine, GTRecipe recipe,
                                                       Reference2ObjectOpenHashMap<RecipeCapability<?>, List<Object>> recipeContent,
                                                       boolean simulated) {
-        for (var part : machine.getMEPatternRecipeHandleParts()) {
-            var slot = part.handleRecipe(recipe, recipeContent, simulated, false);
-            if (slot >= 0) {
+        for (var part : machine.getNormalRecipeHandlePart(IO.IN)) {
+            var result = part.handleRecipe(IO.IN, recipe, recipeContent, simulated);
+            if (result.isEmpty()) {
                 return true;
             }
         }
 
-        for (var part : machine.getNormalRecipeHandlePart(IO.IN)) {
-            var result = part.handleRecipe(IO.IN, recipe, recipeContent, simulated);
-            if (result.isEmpty()) {
+        for (var part : machine.getMEPatternRecipeHandleParts()) {
+            var slot = part.handleRecipe(recipe, recipeContent, simulated, false);
+            if (slot >= 0) {
                 return true;
             }
         }
@@ -377,38 +372,44 @@ public final class RecipeRunner {
     private static boolean handleInputNotDistinctNocache(IRecipeCapabilityMachine machine, GTRecipe recipe,
                                                          Reference2ObjectOpenHashMap<RecipeCapability<?>, List<Object>> recipeContent,
                                                          boolean simulated) {
+        RecipeHandlePart sharedPart = machine.getSharedRecipeHandlePart();
+        boolean fluidHandled = true;
+
+        List<?> fluidContent = recipeContent.getOrDefault(FluidRecipeCapability.CAP, Collections.emptyList());
+        if (!fluidContent.isEmpty()) {
+            if (sharedPart == null) fluidHandled = false;
+            else {
+                fluidContent = sharedPart.handleRecipe(IO.IN, recipe, FluidRecipeCapability.CAP, fluidContent, simulated);
+                if (fluidContent != null && !fluidContent.isEmpty()) fluidHandled = false;
+            }
+        }
+
+        if (fluidHandled) {
+            List<?> itemContent = recipeContent.getOrDefault(ItemRecipeCapability.CAP, Collections.emptyList());
+            if (itemContent.isEmpty()) {
+                return true;
+            }
+
+            for (var part : machine.getNormalRecipeHandlePart(IO.IN)) {
+                var result = part.handleRecipe(IO.IN, recipe, ItemRecipeCapability.CAP, itemContent, simulated);
+                if (result == null || result.isEmpty()) {
+                    return true;
+                }
+            }
+
+            if (sharedPart != null) {
+                var result = sharedPart.handleRecipe(IO.IN, recipe, ItemRecipeCapability.CAP, itemContent, simulated);
+                if (result == null || result.isEmpty()) {
+                    return true;
+                }
+            }
+        }
+
         for (var part : machine.getMEPatternRecipeHandleParts()) {
             var slot = part.handleRecipe(recipe, recipeContent, simulated, false);
             if (slot >= 0) {
                 return true;
             }
-        }
-
-        RecipeHandlePart sharedPart = machine.getSharedRecipeHandlePart();
-
-        List<?> fluidContent = recipeContent.getOrDefault(FluidRecipeCapability.CAP, Collections.emptyList());
-        if (!fluidContent.isEmpty()) {
-            if (sharedPart == null) return false;
-            fluidContent = sharedPart.handleRecipe(IO.IN, recipe, FluidRecipeCapability.CAP, fluidContent, simulated);
-            if (fluidContent != null && !fluidContent.isEmpty()) return false;
-        }
-
-        List<?> itemContent = recipeContent.getOrDefault(ItemRecipeCapability.CAP, Collections.emptyList());
-        if (itemContent.isEmpty()) {
-            return true;
-        }
-
-        // 直接遍历所有normal parts，不使用cache
-        for (var part : machine.getNormalRecipeHandlePart(IO.IN)) {
-            var result = part.handleRecipe(IO.IN, recipe, ItemRecipeCapability.CAP, itemContent, simulated);
-            if (result == null || result.isEmpty()) {
-                return true;
-            }
-        }
-
-        if (sharedPart != null) {
-            var result = sharedPart.handleRecipe(IO.IN, recipe, ItemRecipeCapability.CAP, itemContent, simulated);
-            return result == null || result.isEmpty();
         }
 
         return false;
