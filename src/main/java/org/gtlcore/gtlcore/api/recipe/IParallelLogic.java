@@ -218,12 +218,24 @@ public interface IParallelLogic {
         if (!(holder instanceof IRecipeCapabilityMachine machine)) return 1;
         if (machine.itemOutPutAlwaysMatch()) return multiplier;
 
-        List<Ingredient> ingredients = new ObjectArrayList<>(contents.size());
+        List<Object> inners = new ObjectArrayList<>(contents.size());
         for (var content : contents) {
-            Ingredient ingredient = ItemRecipeCapability.CAP.of(content.content);
-            if (ingredient instanceof LongIngredient longIngredient && longIngredient.getAmount() <= 0) continue;
-            else if (ingredient instanceof SizedIngredient sizedIngredient && sizedIngredient.getAmount() <= 0) continue;
-            ingredients.add(ingredient);
+            inners.add(content.content);
+        }
+
+        for (var meIOHandler : machine.getMEOutputRecipeHandleParts()) {
+            inners = meIOHandler.meHandleOutput(ItemRecipeCapability.CAP, inners, true);
+            if (inners.isEmpty()) return multiplier;
+        }
+
+        List<Ingredient> ingredients = new ObjectArrayList<>(inners.size());
+        for (var inner : inners) {
+            Ingredient ingredient = ItemRecipeCapability.CAP.of(inner);
+            if (ingredient instanceof LongIngredient longIngredient) {
+                if (longIngredient.getAmount() > 0) ingredients.add(ingredient);
+            } else if (ingredient instanceof SizedIngredient sizedIngredient) {
+                if (sizedIngredient.getAmount() > 0) ingredients.add(ingredient);
+            } else ingredients.add(ingredient);
         }
 
         if (ingredients.isEmpty()) return multiplier;
@@ -236,9 +248,19 @@ public interface IParallelLogic {
         if (!(holder instanceof IRecipeCapabilityMachine machine)) return 1;
         if (machine.fluidOutPutAlwaysMatch()) return multiplier;
 
-        List<FluidIngredient> ingredients = new ObjectArrayList<>(contents.size());
+        List<Object> inners = new ObjectArrayList<>(contents.size());
         for (var content : contents) {
-            FluidIngredient ingredient = FluidRecipeCapability.CAP.of(content.content);
+            inners.add(content.content);
+        }
+
+        for (var meIOHandler : machine.getMEOutputRecipeHandleParts()) {
+            inners = meIOHandler.meHandleOutput(FluidRecipeCapability.CAP, inners, true);
+            if (inners.isEmpty()) return multiplier;
+        }
+
+        List<FluidIngredient> ingredients = new ObjectArrayList<>(inners.size());
+        for (var inner : inners) {
+            FluidIngredient ingredient = FluidRecipeCapability.CAP.of(inner);
             if (ingredient.getAmount() > 0) ingredients.add(ingredient);
         }
 
