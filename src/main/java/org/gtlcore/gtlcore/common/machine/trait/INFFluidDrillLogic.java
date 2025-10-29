@@ -1,10 +1,8 @@
 package org.gtlcore.gtlcore.common.machine.trait;
 
-import org.gtlcore.gtlcore.api.recipe.RecipeRunnerHelper;
 import org.gtlcore.gtlcore.common.machine.multiblock.electric.INFFluidDrillMachine;
 
 import com.gregtechceu.gtceu.api.GTValues;
-import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.data.worldgen.bedrockfluid.BedrockFluidVeinSavedData;
 import com.gregtechceu.gtceu.api.data.worldgen.bedrockfluid.FluidVeinWorldEntry;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
@@ -20,6 +18,8 @@ import net.minecraft.world.level.material.Fluid;
 
 import lombok.Getter;
 import org.jetbrains.annotations.Nullable;
+
+import static org.gtlcore.gtlcore.api.recipe.RecipeRunnerHelper.*;
 
 @Getter
 public class INFFluidDrillLogic extends RecipeLogic {
@@ -70,7 +70,7 @@ public class INFFluidDrillLogic extends RecipeLogic {
                     .outputFluids(FluidStack.create(veinFluid,
                             getFluidToProduce(data.getFluidVeinWorldEntry(getChunkX(), getChunkZ()))))
                     .buildRawRecipe();
-            if (RecipeRunnerHelper.matchRecipeOutput(getMachine(), recipe) && recipe.matchTickRecipe(getMachine()).isSuccess()) {
+            if (matchRecipeOutput(getMachine(), recipe) && recipe.matchTickRecipe(getMachine()).isSuccess()) {
                 return recipe;
             }
         }
@@ -108,10 +108,7 @@ public class INFFluidDrillLogic extends RecipeLogic {
     @Override
     public void onRecipeFinish() {
         machine.afterWorking();
-        if (lastRecipe != null) {
-            lastRecipe.postWorking(this.machine);
-            lastRecipe.handleRecipeIO(IO.OUT, this.machine, this.chanceCaches);
-        }
+        if (lastRecipe != null) handleRecipeOutput(getMachine(), lastRecipe);
         // try it again
         var match = getFluidDrillRecipe();
         if (match != null) {
