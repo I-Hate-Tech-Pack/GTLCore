@@ -1,5 +1,6 @@
 package org.gtlcore.gtlcore.data.recipe;
 
+import com.glodblock.github.extendedae.ExtendedAE;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.common.data.GTMachines;
@@ -80,5 +81,9 @@ public class RemoveRecipe {
                 consumer.accept(GTCEu.id("assembler/" + "dual_export_bus_" + VN[tier].toLowerCase() + "_" + fluidMap[j].getName()));
             }
         }
+
+        consumer.accept(ExtendedAE.id("assembler_matrix_frame"));
+        consumer.accept(ExtendedAE.id("assembler_matrix_wall"));
+        consumer.accept(ExtendedAE.id("assembler_matrix_glass"));
     }
 }
