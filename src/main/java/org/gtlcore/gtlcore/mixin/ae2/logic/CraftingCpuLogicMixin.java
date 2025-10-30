@@ -3,7 +3,6 @@ package org.gtlcore.gtlcore.mixin.ae2.logic;
 import org.gtlcore.gtlcore.api.machine.trait.AECraft.IMECraftIOPart;
 import org.gtlcore.gtlcore.api.machine.trait.MEPart.IMEPatternPartMachine;
 import org.gtlcore.gtlcore.integration.ae2.AEUtils;
-import org.gtlcore.gtlcore.integration.ae2.Ae2CompatMH;
 
 import net.minecraft.world.level.Level;
 
@@ -21,7 +20,7 @@ import appeng.me.service.CraftingService;
 import org.spongepowered.asm.mixin.*;
 
 @Mixin(CraftingCpuLogic.class)
-public abstract class CraftingCpuLogicNewMixin {
+public abstract class CraftingCpuLogicMixin {
 
     @Shadow(remap = false)
     private ExecutingCraftingJob job;
@@ -67,7 +66,7 @@ public abstract class CraftingCpuLogicNewMixin {
                 final boolean autoExpand = isProcessing && (provider instanceof IMEPatternPartMachine || provider instanceof IMECraftIOPart);
 
                 if (needExtract) {
-                    craftingContainer = isProcessing ? (autoExpand ? AEUtils.extractForProcessingPattern((AEProcessingPattern) details, inventory, expectedOutputs, taskProgress.getValue()) : AEUtils.extractForProcessingPattern((AEProcessingPattern) details, inventory, expectedOutputs)) : Ae2CompatMH.extractForCraftPattern5Args(details, inventory, level, expectedOutputs, expectedContainerItems);
+                    craftingContainer = isProcessing ? (autoExpand ? AEUtils.extractForProcessingPattern((AEProcessingPattern) details, inventory, expectedOutputs, taskProgress.getValue()) : AEUtils.extractForProcessingPattern((AEProcessingPattern) details, inventory, expectedOutputs)) : AEUtils.extractForCraftPattern(details, inventory, level, expectedOutputs, expectedContainerItems);
                     needExtract = false;
                     if (craftingContainer == null) {
                         break;
@@ -92,7 +91,7 @@ public abstract class CraftingCpuLogicNewMixin {
                     for (var expectedContainerItem : expectedContainerItems) {
                         job.getWaitingFor().insert(expectedContainerItem.getKey(), expectedContainerItem.getLongValue(),
                                 Actionable.MODULATE);
-                        Ae2CompatMH.elapsedTimeTrackerAddMaxItems(job.getTimeTracker(), expectedContainerItem.getLongValue(),
+                        ((ElapsedTimeTrackerAccessor) job.getTimeTracker()).invokeAddMaxItems(expectedContainerItem.getLongValue(),
                                 expectedContainerItem.getKey().getType());
                     }
 

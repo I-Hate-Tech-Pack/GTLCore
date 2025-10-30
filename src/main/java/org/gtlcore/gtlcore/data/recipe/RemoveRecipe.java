@@ -1,12 +1,13 @@
 package org.gtlcore.gtlcore.data.recipe;
 
-import com.glodblock.github.extendedae.ExtendedAE;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.common.data.GTMachines;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
 
 import net.minecraft.resources.ResourceLocation;
+
+import com.glodblock.github.extendedae.ExtendedAE;
 
 import java.util.function.Consumer;
 
