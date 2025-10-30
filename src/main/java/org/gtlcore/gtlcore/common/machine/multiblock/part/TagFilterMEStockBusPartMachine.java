@@ -5,7 +5,6 @@ import org.gtlcore.gtlcore.api.machine.trait.MEStock.IMEPartMachine;
 import org.gtlcore.gtlcore.api.machine.trait.MEStock.IMESlot;
 import org.gtlcore.gtlcore.api.recipe.ingredient.LongIngredient;
 import org.gtlcore.gtlcore.config.ConfigHolder;
-import org.gtlcore.gtlcore.integration.ae2.Ae2CompatMH;
 
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
@@ -39,6 +38,7 @@ import appeng.api.networking.storage.IStorageService;
 import appeng.api.stacks.*;
 import appeng.api.storage.MEStorage;
 import appeng.util.prioritylist.IPartitionList;
+import com.glodblock.github.extendedae.common.me.taglist.TagPriorityList;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.objects.*;
 import lombok.Getter;
@@ -135,7 +135,7 @@ public class TagFilterMEStockBusPartMachine extends MEInputBusPartMachine {
         }
         IStorageService storageService = grid.getStorageService();
         MEStorage networkStorage = storageService.getInventory();
-        IPartitionList filter = Ae2CompatMH.createTagFilter(this.tagWhite, this.tagBlack);
+        IPartitionList filter = new TagPriorityList(this.tagWhite, this.tagBlack);
 
         List<GenericStack> order = new ObjectArrayList<>();
         final var inventory = this.aeItemHandler.getInventory();

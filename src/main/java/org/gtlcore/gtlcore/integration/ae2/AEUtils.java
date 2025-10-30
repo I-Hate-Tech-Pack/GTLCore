@@ -28,6 +28,7 @@ import appeng.api.stacks.*;
 import appeng.api.storage.MEStorage;
 import appeng.api.storage.StorageHelper;
 import appeng.blockentity.crafting.IMolecularAssemblerSupportedPattern;
+import appeng.crafting.execution.CraftingCpuHelper;
 import appeng.crafting.inv.ICraftingInventory;
 import appeng.crafting.pattern.*;
 import it.unimi.dsi.fastutil.objects.*;
@@ -333,5 +334,49 @@ public class AEUtils {
             throw new IllegalStateException("Failed to correctly extract whole number. Invalid simulation!");
         }
         return extracted;
+    }
+
+    public static KeyCounter[] extractForCraftPattern(IPatternDetails details,
+                                                      ICraftingInventory sourceInv,
+                                                      Level level,
+                                                      KeyCounter expectedOutputs,
+                                                      KeyCounter expectedContainerItems) {
+        var inputs = details.getInputs();
+        KeyCounter[] inputHolder = new KeyCounter[inputs.length];
+        boolean found = true;
+
+        for (int x = 0; x < inputs.length; x++) {
+            var list = inputHolder[x] = new KeyCounter();
+            long remainingMultiplier = inputs[x].getMultiplier();
+            for (var template : getValidItemTemplates(sourceInv, inputs[x], level)) {
+                long extracted = CraftingCpuHelper.extractTemplates(sourceInv, template, remainingMultiplier);
+                list.add(template.key(), extracted * template.amount());
+
+                var containerItem = inputs[x].getRemainingKey(template.key());
+                if (containerItem != null) {
+                    expectedContainerItems.add(containerItem, extracted);
+                }
+
+                remainingMultiplier -= extracted;
+                if (remainingMultiplier == 0)
+                    break;
+            }
+
+            if (remainingMultiplier > 0) {
+                found = false;
+                break;
+            }
+        }
+
+        if (!found) {
+            reinjectPatternInputs(sourceInv, inputHolder);
+            return null;
+        }
+
+        for (GenericStack output : details.getOutputs()) {
+            expectedOutputs.add(output.what(), output.amount());
+        }
+
+        return inputHolder;
     }
 }
