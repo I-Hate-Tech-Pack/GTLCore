@@ -34,10 +34,8 @@ public abstract class ChanceLogicOrMixin {
 
         for (Content entry : chancedEntries) {
             int maxChance = entry.maxChance;
-
             int newChance = LongChanceLogic.getChance(entry, boostFunction, baseTier, machineTier);
-            long totalChance = (long) times * newChance;
-            LongChanceLogic.modifyByChance(cache, times, cap, out, entry, maxChance, totalChance);
+            LongChanceLogic.modifyByChanceSafe(cache, times, cap, out, entry, maxChance, newChance);
         }
 
         return out.isEmpty() ? null : out;
