@@ -67,11 +67,9 @@ public abstract class LongChanceLogic extends ChanceLogic {
         int cached = getCachedChance(entry, cache);
         int chanceSum = newChance + cached;
         if (chanceSum >= maxChance) {
-            do {
-                out.add(entry.copy(cap, preciseDivision(1, times)));
-                chanceSum -= maxChance;
-                newChance -= maxChance;
-            } while (chanceSum >= maxChance);
+            int bonusCount = chanceSum / maxChance;
+            out.add(entry.copy(cap, preciseDivision(bonusCount, times)));
+            newChance -= bonusCount * maxChance;
         }
 
         updateCachedChance(entry.content, cache, newChance / 2 + cached);
