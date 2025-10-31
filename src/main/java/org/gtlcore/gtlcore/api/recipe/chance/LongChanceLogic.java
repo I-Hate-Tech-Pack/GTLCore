@@ -43,19 +43,35 @@ public abstract class LongChanceLogic extends ChanceLogic {
         }
     }
 
-    public static void modifyByChance(@Nullable Object2IntMap<?> cache, long times, RecipeCapability<?> cap, List<Content> out, Content entry, int maxChance, long totalChance) {
-        long guaranteed = totalChance / maxChance;
+    /**
+     * Safe calculation (times * chance) / maxChance and (times * chance) % maxChance
+     * <=> times = q * maxChance + r
+     * <=> times * chance = q * maxChance * chance + r * chance
+     */
+    public static void modifyByChanceSafe(@Nullable Object2IntMap<?> cache, long times, RecipeCapability<?> cap, List<Content> out, Content entry, int maxChance, int chance) {
+        long timesQuotient = times / maxChance;
+        long timesRemainder = times % maxChance;
+
+        // guaranteed = (times * chance) / maxChance
+        // = (timesQuotient * maxChance * chance + timesRemainder * chance) / maxChance
+        // = timesQuotient * chance + (timesRemainder * chance) / maxChance
+        long guaranteed = timesQuotient * chance + (timesRemainder * chance) / maxChance;
+
         if (guaranteed > 0) out.add(entry.copy(cap, preciseDivision(guaranteed, times)));
-        int newChance = (int) (totalChance % maxChance);
+
+        // newChance = (times * chance) % maxChance
+        // = (timesRemainder * chance) % maxChance
+        // timesRemainder < maxChance && chance < maxChance, < Int.MAX
+        int newChance = (int) ((timesRemainder * chance) % maxChance);
 
         int cached = getCachedChance(entry, cache);
-        int chance = newChance + cached;
-        if (chance >= maxChance) {
+        int chanceSum = newChance + cached;
+        if (chanceSum >= maxChance) {
             do {
                 out.add(entry.copy(cap, preciseDivision(1, times)));
-                chance -= maxChance;
+                chanceSum -= maxChance;
                 newChance -= maxChance;
-            } while (chance >= maxChance);
+            } while (chanceSum >= maxChance);
         }
 
         updateCachedChance(entry.content, cache, newChance / 2 + cached);
@@ -86,10 +102,8 @@ public abstract class LongChanceLogic extends ChanceLogic {
 
                 for (Content entry : chancedEntries) {
                     int maxChance = entry.maxChance;
-
                     int newChance = getChance(entry, boostFunction, baseTier, machineTier);
-                    long totalChance = times * newChance;
-                    modifyByChance(cache, times, cap, out, entry, maxChance, totalChance);
+                    modifyByChanceSafe(cache, times, cap, out, entry, maxChance, newChance);
                 }
 
                 return out.isEmpty() ? null : out;
@@ -107,10 +121,8 @@ public abstract class LongChanceLogic extends ChanceLogic {
 
                 for (Content entry : chancedEntries) {
                     int maxChance = entry.maxChance;
-
                     int newChance = getChance(entry, boostFunction, baseTier, machineTier);
-                    long totalChance = (long) times * newChance;
-                    modifyByChance(cache, times, cap, out, entry, maxChance, totalChance);
+                    modifyByChanceSafe(cache, times, cap, out, entry, maxChance, newChance);
                 }
 
                 return out.isEmpty() ? null : out;
