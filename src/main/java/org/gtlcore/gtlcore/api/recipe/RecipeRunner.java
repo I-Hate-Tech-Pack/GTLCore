@@ -328,13 +328,13 @@ public final class RecipeRunner {
             var cap = entry.getKey();
             for (var ing : entry.getValue()) {
                 if (cap == ItemRecipeCapability.CAP) {
-                    if (ing instanceof LongIngredient li) {
+                    if (ing instanceof LongIngredient li && li.getItems().length >= 1) {
                         builder.append(li.getItems()[0].getDisplayName().getString()).append("x ").append(li.getActualAmount()).append(" ");
-                    } else if (ing instanceof SizedIngredient si) {
+                    } else if (ing instanceof SizedIngredient si && si.getItems().length >= 1) {
                         builder.append(si.getItems()[0].getDisplayName().getString()).append("x ").append(si.getAmount()).append(" ");
                     }
                 } else if (cap == FluidRecipeCapability.CAP) {
-                    if (ing instanceof FluidIngredient fi) {
+                    if (ing instanceof FluidIngredient fi && fi.getStacks().length >= 1) {
                         builder.append(fi.getStacks()[0].getDisplayName().getString()).append("x ").append(fi.getAmount()).append(" ");
                     }
                 }
