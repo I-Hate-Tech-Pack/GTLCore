@@ -10,6 +10,7 @@ import org.gtlcore.gtlcore.integration.ae2.handler.PatternCircuitHandler;
 import org.gtlcore.gtlcore.integration.ae2.handler.SlotCacheManager;
 import org.gtlcore.gtlcore.integration.ae2.widget.AEPatternViewExtendSlotWidget;
 import org.gtlcore.gtlcore.utils.GTLUtil;
+import org.gtlcore.gtlcore.utils.Registries;
 
 import com.gregtechceu.gtceu.api.capability.recipe.*;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
@@ -53,7 +54,6 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.server.ServerLifecycleHooks;
 
 import appeng.api.crafting.IPatternDetails;
 import appeng.api.implementations.blockentities.PatternContainerGroup;
@@ -428,7 +428,7 @@ public class MEPatternBufferPartMachine extends MEIOPartMachine implements IInte
         System.arraycopy(byteArray, 0, cacheRecipeCount, 0, byteArray.length);
 
         recipeMultipleCacheMap.clear();
-        var recipeManager = ServerLifecycleHooks.getCurrentServer().getRecipeManager();
+        var recipeManager = Registries.getRecipeManager();
         if (tag.contains("recipeMultipleCacheIdMap")) {
             CompoundTag recipeCacheTag = tag.getCompound("recipeMultipleCacheIdMap");
             for (String key : recipeCacheTag.getAllKeys()) {

@@ -205,6 +205,8 @@ tasks.withType(JavaCompile).configureEach {
     // If Javadoc is generated, this must be specified in that task too.
     options.encoding = "UTF-8"
     options.release.set(17)
+    // 禁用 deprecation 和 removal 警告
+    options.compilerArgs.addAll(["-Xlint:-deprecation", "-Xlint:-removal"])
 }
 
 java {

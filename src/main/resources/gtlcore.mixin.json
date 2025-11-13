@@ -157,6 +157,7 @@
     "gtm.registry.GTRecipeJSMixin",
     "gtm.registry.GTRecipeModifiersMixin",
     "gtm.registry.GTRecipeTypeMixin",
+    "gtm.syncdata.GTRecipePayloadMixin",
     "gtmt.CreativeEnergyHatchPartMachineMixin",
     "gtmt.CreativeLaserHatchPartMachineMixin",
     "gtmt.GTMTRecipeMixin",

@@ -2,17 +2,21 @@ package org.gtlcore.gtlcore.utils;
 
 import org.gtlcore.gtlcore.GTLCore;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.server.ServerLifecycleHooks;
 
 public class Registries {
 
@@ -54,5 +58,14 @@ public class Registries {
     public static ResourceKey<Level> getDimension(String s) {
         return ResourceKey.create(net.minecraft.core.registries.Registries.DIMENSION,
                 new ResourceLocation(s));
+    }
+
+    public static RecipeManager getRecipeManager() {
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+        if (server != null && Thread.currentThread() == server.getRunningThread()) {
+            return server.getRecipeManager();
+        } else {
+            return Minecraft.getInstance().getConnection().getRecipeManager();
+        }
     }
 }
