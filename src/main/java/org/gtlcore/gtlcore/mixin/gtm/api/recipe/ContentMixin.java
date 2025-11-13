@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(Content.class)
-public class ContentMixin {
+public abstract class ContentMixin {
 
     @Shadow(remap = false)
     public int chance;

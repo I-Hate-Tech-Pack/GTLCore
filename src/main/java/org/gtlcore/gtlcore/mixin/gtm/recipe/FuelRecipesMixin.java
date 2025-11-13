@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
  * @author EasterFG on 2024/10/18
  */
 @Mixin(FuelRecipes.class)
-public class FuelRecipesMixin {
+public abstract class FuelRecipesMixin {
 
     @ModifyArg(method = "init",
                at = @At(value = "INVOKE",

@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.Map;
 
 @Mixin(CowMap.class)
-public class MixinCowMap<K, V> {
+public abstract class MixinCowMap<K, V> {
 
     @Shadow(remap = false)
     private volatile Map<K, V> map;

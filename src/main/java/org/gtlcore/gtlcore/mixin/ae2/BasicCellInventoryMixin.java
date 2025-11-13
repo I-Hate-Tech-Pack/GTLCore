@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(BasicCellInventory.class)
-public class BasicCellInventoryMixin {
+public abstract class BasicCellInventoryMixin {
 
     @Shadow(remap = false)
     private int maxItemTypes;

@@ -21,7 +21,7 @@ import static org.gtlcore.gtlcore.api.recipe.IRecipeIterator.diveIngredientTreeF
                        iface = IAdditionalRecipeIterator.class,
                        prefix = "gTLCore$"))
 @Mixin(RecipeIterator.class)
-public class RecipeIteratorMixin {
+public abstract class RecipeIteratorMixin {
 
     @Shadow(remap = false)
     int index;

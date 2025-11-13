@@ -34,7 +34,7 @@ import java.util.function.BiConsumer;
 import static com.gregtechceu.gtceu.api.capability.recipe.FluidRecipeCapability.CAP;
 
 @Mixin(FluidRecipeCapability.class)
-public class FluidRecipeCapabilityMixin extends RecipeCapability<FluidIngredient> {
+public abstract class FluidRecipeCapabilityMixin extends RecipeCapability<FluidIngredient> {
 
     protected FluidRecipeCapabilityMixin(String name, int color, boolean doRenderSlot, int sortIndex, IContentSerializer<FluidIngredient> serializer) {
         super(name, color, doRenderSlot, sortIndex, serializer);

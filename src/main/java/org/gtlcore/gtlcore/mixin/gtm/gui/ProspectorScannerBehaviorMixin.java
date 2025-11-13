@@ -25,7 +25,7 @@ import java.util.List;
  * @author EasterFG on 2024/9/28
  */
 @Mixin(ProspectorScannerBehavior.class)
-public class ProspectorScannerBehaviorMixin {
+public abstract class ProspectorScannerBehaviorMixin {
 
     @Inject(method = "createUI", at = @At("RETURN"), remap = false)
     public void createUIHook(HeldItemUIFactory.HeldItemHolder holder, Player entityPlayer, CallbackInfoReturnable<ModularUI> cir) {

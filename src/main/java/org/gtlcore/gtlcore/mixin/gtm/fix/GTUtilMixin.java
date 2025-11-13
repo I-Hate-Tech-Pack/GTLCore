@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
 @Mixin(GTUtil.class)
-public class GTUtilMixin {
+public abstract class GTUtilMixin {
 
     /**
      * @author mod_author

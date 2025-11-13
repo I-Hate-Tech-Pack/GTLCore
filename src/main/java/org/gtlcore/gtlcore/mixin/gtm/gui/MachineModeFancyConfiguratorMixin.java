@@ -14,7 +14,7 @@ import com.lowdragmc.lowdraglib.gui.widget.*;
 import org.spongepowered.asm.mixin.*;
 
 @Mixin(MachineModeFancyConfigurator.class)
-public class MachineModeFancyConfiguratorMixin {
+public abstract class MachineModeFancyConfiguratorMixin {
 
     @Shadow(remap = false)
     protected IRecipeLogicMachine machine;

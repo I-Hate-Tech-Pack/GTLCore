@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(GenericSlotCapacities.class)
-public class MixinGenericSlotCapacities {
+public abstract class MixinGenericSlotCapacities {
 
     @Final
     @Shadow(remap = false)

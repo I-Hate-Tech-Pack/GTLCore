@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(CraftingService.class)
-public class CraftingServiceMixin {
+public abstract class CraftingServiceMixin {
 
     @Unique
     private static final int CRAFT_MASK = NumberUtils.nearestPow2Lookup(ConfigHolder.INSTANCE.ae2CraftingServiceUpdateInterval) - 1;

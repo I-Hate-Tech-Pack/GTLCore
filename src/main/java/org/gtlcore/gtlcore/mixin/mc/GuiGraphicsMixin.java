@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import static org.gtlcore.gtlcore.utils.NumberUtils.UNITS;
 
 @Mixin(GuiGraphics.class)
-public class GuiGraphicsMixin {
+public abstract class GuiGraphicsMixin {
 
     @Redirect(method = "renderItemDecorations(Lnet/minecraft/client/gui/Font;Lnet/minecraft/world/item/ItemStack;IILjava/lang/String;)V",
               at = @At(value = "INVOKE",

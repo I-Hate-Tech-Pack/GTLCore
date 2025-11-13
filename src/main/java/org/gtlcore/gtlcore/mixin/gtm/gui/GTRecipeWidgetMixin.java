@@ -23,7 +23,7 @@ import static org.gtlcore.gtlcore.utils.NumberUtils.*;
 import static org.gtlcore.gtlcore.utils.TextUtil.GTL_CORE$VC;
 
 @Mixin(GTRecipeWidget.class)
-public class GTRecipeWidgetMixin {
+public abstract class GTRecipeWidgetMixin {
 
     @Shadow(remap = false)
     @Final

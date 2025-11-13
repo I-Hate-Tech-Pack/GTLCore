@@ -22,7 +22,7 @@ import org.spongepowered.asm.mixin.*;
 import java.util.List;
 
 @Mixin(FusionReactorMachine.class)
-public class FusionReactorMachineMixin extends WorkableElectricMultiblockMachine {
+public abstract class FusionReactorMachineMixin extends WorkableElectricMultiblockMachine {
 
     @Shadow(remap = false)
     protected long heat = 0L;

@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(BufferMachine.class)
-public class BufferMachineMixin extends TieredMachine {
+public abstract class BufferMachineMixin extends TieredMachine {
 
     public BufferMachineMixin(IMachineBlockEntity holder, int tier) {
         super(holder, tier);

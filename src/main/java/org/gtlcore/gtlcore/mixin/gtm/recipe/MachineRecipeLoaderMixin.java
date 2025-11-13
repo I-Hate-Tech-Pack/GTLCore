@@ -19,7 +19,7 @@ import static com.gregtechceu.gtceu.api.GTValues.*;
 import static com.gregtechceu.gtceu.common.data.GTMachines.*;
 
 @Mixin(MachineRecipeLoader.class)
-public class MachineRecipeLoaderMixin {
+public abstract class MachineRecipeLoaderMixin {
 
     /**
      * @author .

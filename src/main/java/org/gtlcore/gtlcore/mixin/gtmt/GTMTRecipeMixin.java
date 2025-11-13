@@ -32,7 +32,7 @@ import java.util.function.Consumer;
 import static com.gregtechceu.gtceu.common.data.GTRecipeTypes.ASSEMBLER_RECIPES;
 
 @Mixin(GTMTRecipe.class)
-public class GTMTRecipeMixin {
+public abstract class GTMTRecipeMixin {
 
     /**
      * @author .

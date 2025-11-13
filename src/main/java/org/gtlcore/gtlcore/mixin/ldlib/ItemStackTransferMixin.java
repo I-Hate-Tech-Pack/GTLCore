@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  * @author EasterFG on 2025/4/8
  */
 @Mixin(ItemStackTransfer.class)
-public class ItemStackTransferMixin {
+public abstract class ItemStackTransferMixin {
 
     @Shadow(remap = false)
     protected NonNullList<ItemStack> stacks;

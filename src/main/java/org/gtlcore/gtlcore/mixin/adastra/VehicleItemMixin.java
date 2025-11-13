@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
 @Mixin(VehicleItem.class)
-public class VehicleItemMixin {
+public abstract class VehicleItemMixin {
 
     @ModifyConstant(method = "getFluidContainer(Lnet/minecraft/world/item/ItemStack;)Learth/terrarium/botarium/common/fluid/impl/WrappedItemFluidContainer;", remap = false, constant = @Constant(longValue = 3000L))
     private long modifyContainer(long constant) {

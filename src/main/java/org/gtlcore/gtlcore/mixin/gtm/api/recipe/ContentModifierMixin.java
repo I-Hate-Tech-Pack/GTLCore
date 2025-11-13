@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 @Mixin(ContentModifier.class)
-public class ContentModifierMixin implements IAdvancedContentModifier {
+public abstract class ContentModifierMixin implements IAdvancedContentModifier {
 
     @Unique
     private long numerator = -1;

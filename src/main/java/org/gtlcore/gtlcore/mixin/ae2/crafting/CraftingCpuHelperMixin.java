@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.*;
 import java.util.List;
 
 @Mixin(CraftingCpuHelper.class)
-public class CraftingCpuHelperMixin {
+public abstract class CraftingCpuHelperMixin {
 
     /**
      * @author .

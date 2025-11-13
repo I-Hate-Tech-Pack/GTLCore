@@ -25,7 +25,7 @@ import static com.gregtechceu.gtceu.common.data.GTMaterials.*;
 import static com.gregtechceu.gtceu.common.data.GTRecipeTypes.ASSEMBLER_RECIPES;
 
 @Mixin(WireRecipeHandler.class)
-public class WireRecipeHandlerMixin {
+public abstract class WireRecipeHandlerMixin {
 
     @Shadow(remap = false)
     @Final

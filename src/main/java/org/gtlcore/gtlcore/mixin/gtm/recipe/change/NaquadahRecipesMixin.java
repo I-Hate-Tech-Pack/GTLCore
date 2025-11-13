@@ -17,7 +17,7 @@ import static org.gtlcore.gtlcore.common.data.GTLMaterials.*;
 import static org.gtlcore.gtlcore.common.data.GTLRecipeTypes.NEUTRON_ACTIVATOR_RECIPES;
 
 @Mixin(NaquadahRecipes.class)
-public class NaquadahRecipesMixin {
+public abstract class NaquadahRecipesMixin {
 
     /**
      * @author

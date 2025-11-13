@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
 @Mixin(NumberField.class)
-public class NumberFieldMixin {
+public abstract class NumberFieldMixin {
 
     @ModifyConstant(
                     method = "<init>",

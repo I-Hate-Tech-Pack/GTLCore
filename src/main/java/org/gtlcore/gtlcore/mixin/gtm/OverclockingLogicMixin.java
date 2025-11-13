@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import static com.gregtechceu.gtceu.api.recipe.OverclockingLogic.*;
 
 @Mixin(OverclockingLogic.class)
-public class OverclockingLogicMixin {
+public abstract class OverclockingLogicMixin {
 
     /**
      * @author mod_author

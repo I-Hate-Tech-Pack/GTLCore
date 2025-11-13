@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(LargeBoilerMachine.class)
-public class LargeBoilerMachineMixin {
+public abstract class LargeBoilerMachineMixin {
 
     @Inject(method = "recipeModifier", at = @At("HEAD"), remap = false, cancellable = true)
     private static void recipeModifier(MetaMachine machine, GTRecipe recipe, OCParams params, OCResult result, CallbackInfoReturnable<GTRecipe> cir) {

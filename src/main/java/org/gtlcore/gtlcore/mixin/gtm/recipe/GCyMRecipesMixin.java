@@ -19,7 +19,7 @@ import static com.gregtechceu.gtceu.common.data.GTItems.ELECTRIC_MOTOR_IV;
 import static com.gregtechceu.gtceu.common.data.GTMaterials.*;
 
 @Mixin(GCyMRecipes.class)
-public class GCyMRecipesMixin {
+public abstract class GCyMRecipesMixin {
 
     private GCyMRecipesMixin() {}
 

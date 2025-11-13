@@ -21,7 +21,7 @@ import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(CleanroomCondition.class)
-public class CleanroomConditionMixin {
+public abstract class CleanroomConditionMixin {
 
     @Shadow(remap = false)
     private CleanroomType cleanroom;

@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
  * @author EasterFG on 2024/9/26
  */
 @Mixin(AEFluidConfigSlotWidget.class)
-public class AEFluidConfigSlotWidgetMixin {
+public abstract class AEFluidConfigSlotWidgetMixin {
 
     @ModifyArg(method = "drawInBackground",
                at = @At(value = "INVOKE", target = "Lcom/lowdragmc/lowdraglib/gui/util/DrawerHelper;drawStringFixedCorner(Lnet/minecraft/client/gui/GuiGraphics;Ljava/lang/String;FFIZF)V", ordinal = 0),

@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
 @Mixin(Rocket.class)
-public class RocketMixin {
+public abstract class RocketMixin {
 
     @ModifyConstant(method = "<init>(Lnet/minecraft/world/entity/EntityType;Lnet/minecraft/world/level/Level;Learth/terrarium/adastra/common/entities/vehicles/Rocket$RocketProperties;)V", remap = false, constant = @Constant(longValue = 3000L))
     private long modifyContainer(long constant) {

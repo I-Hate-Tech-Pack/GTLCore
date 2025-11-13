@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(PortableCellItem.class)
-public class PortableCellItemMixin {
+public abstract class PortableCellItemMixin {
 
     @Shadow(remap = false)
     @Final

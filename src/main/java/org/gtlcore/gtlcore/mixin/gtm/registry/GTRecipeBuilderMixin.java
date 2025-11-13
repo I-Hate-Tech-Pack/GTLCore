@@ -24,7 +24,7 @@ import static org.gtlcore.gtlcore.common.data.GTLRecipeTypes.*;
 
 @Mixin(GTRecipeBuilder.class)
 @Accessors(chain = true, fluent = true)
-public class GTRecipeBuilderMixin {
+public abstract class GTRecipeBuilderMixin {
 
     @Shadow(remap = false)
     public GTRecipeType recipeType;

@@ -44,7 +44,7 @@ import java.util.List;
 import static com.gregtechceu.gtceu.api.capability.recipe.ItemRecipeCapability.CAP;
 
 @Mixin(ItemRecipeCapability.class)
-public class ItemRecipeCapabilityMixin extends RecipeCapability<Ingredient> {
+public abstract class ItemRecipeCapabilityMixin extends RecipeCapability<Ingredient> {
 
     protected ItemRecipeCapabilityMixin(String name, int color, boolean doRenderSlot, int sortIndex, IContentSerializer<Ingredient> serializer) {
         super(name, color, doRenderSlot, sortIndex, serializer);

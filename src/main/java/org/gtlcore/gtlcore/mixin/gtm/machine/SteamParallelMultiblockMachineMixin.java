@@ -19,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import static com.gregtechceu.gtceu.common.data.GTMachines.STEAM_OVEN;
 
 @Mixin(SteamParallelMultiblockMachine.class)
-public class SteamParallelMultiblockMachineMixin extends WorkableMultiblockMachine {
+public abstract class SteamParallelMultiblockMachineMixin extends WorkableMultiblockMachine {
 
     public SteamParallelMultiblockMachineMixin(IMachineBlockEntity holder, Object... args) {
         super(holder, args);

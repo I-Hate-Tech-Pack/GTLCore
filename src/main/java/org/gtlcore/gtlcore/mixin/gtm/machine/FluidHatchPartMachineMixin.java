@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(FluidHatchPartMachine.class)
-public class FluidHatchPartMachineMixin extends TieredIOPartMachine {
+public abstract class FluidHatchPartMachineMixin extends TieredIOPartMachine {
 
     public FluidHatchPartMachineMixin(IMachineBlockEntity holder, int tier, IO io) {
         super(holder, tier, io);

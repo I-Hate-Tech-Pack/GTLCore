@@ -20,7 +20,7 @@ import static org.gtlcore.gtlcore.common.data.GTLMaterials.*;
 import static org.gtlcore.gtlcore.common.data.GTLRecipeTypes.DEHYDRATOR_RECIPES;
 
 @Mixin(PlatGroupMetalsRecipes.class)
-public class PlatGroupMetalsRecipesMixin {
+public abstract class PlatGroupMetalsRecipesMixin {
 
     /**
      * @author

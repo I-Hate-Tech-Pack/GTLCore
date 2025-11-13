@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.Set;
 
 @Mixin(TagPrefixItemRenderer.class)
-public class TagPrefixItemRendererMixin {
+public abstract class TagPrefixItemRendererMixin {
 
     @Unique
     private static final Set<String> SPECIAL_ICON_SETS = Set.of("infinity", "cosmic", "cosmicneutronium", "eternity", "magmatter");

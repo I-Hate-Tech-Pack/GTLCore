@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
 @Mixin(CommonProxy.class)
-public class CommonProxyMixin {
+public abstract class CommonProxyMixin {
 
     /**
      * @author .

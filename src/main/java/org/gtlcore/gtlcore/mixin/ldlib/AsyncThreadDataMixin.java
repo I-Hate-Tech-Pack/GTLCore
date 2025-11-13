@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 @Mixin(AsyncThreadData.class)
-public class AsyncThreadDataMixin {
+public abstract class AsyncThreadDataMixin {
 
     @ModifyArg(method = "createExecutorService",
                at = @At(value = "INVOKE",

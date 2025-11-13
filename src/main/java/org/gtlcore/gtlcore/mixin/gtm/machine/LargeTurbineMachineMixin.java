@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
 @Mixin(LargeTurbineMachine.class)
-public class LargeTurbineMachineMixin extends WorkableElectricMultiblockMachine {
+public abstract class LargeTurbineMachineMixin extends WorkableElectricMultiblockMachine {
 
     RotorHolderPartMachine rotorHolderPart;
 

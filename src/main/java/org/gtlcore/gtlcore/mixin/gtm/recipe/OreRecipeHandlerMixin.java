@@ -36,7 +36,7 @@ import static com.gregtechceu.gtceu.common.data.GTRecipeTypes.*;
 import static org.gtlcore.gtlcore.common.data.GTLRecipeTypes.INTEGRATED_ORE_PROCESSOR;
 
 @Mixin(OreRecipeHandler.class)
-public class OreRecipeHandlerMixin {
+public abstract class OreRecipeHandlerMixin {
 
     /**
      * @author

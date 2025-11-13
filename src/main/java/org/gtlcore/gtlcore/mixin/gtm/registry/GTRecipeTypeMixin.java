@@ -19,7 +19,7 @@ import java.util.*;
 import java.util.function.*;
 
 @Mixin(GTRecipeType.class)
-public class GTRecipeTypeMixin {
+public abstract class GTRecipeTypeMixin {
 
     @Shadow(remap = false)
     private GTRecipeBuilder recipeBuilder;

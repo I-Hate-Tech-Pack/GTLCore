@@ -18,7 +18,7 @@ import java.util.Set;
  * @author EasterFG on 2024/10/13
  */
 @Mixin(PatternProviderLogic.class)
-public class PatternProviderLogicMixin {
+public abstract class PatternProviderLogicMixin {
 
     @Shadow(remap = false)
     @Final

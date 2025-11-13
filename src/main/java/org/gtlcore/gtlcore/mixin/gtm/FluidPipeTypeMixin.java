@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(FluidPipeType.class)
-public class FluidPipeTypeMixin {
+public abstract class FluidPipeTypeMixin {
 
     @Shadow(remap = false)
     @Final

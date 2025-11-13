@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
 @Mixin(DualHatchPartMachine.class)
-public class DualHatchPartMachineMixin extends ItemBusPartMachine {
+public abstract class DualHatchPartMachineMixin extends ItemBusPartMachine {
 
     public DualHatchPartMachineMixin(IMachineBlockEntity holder, int tier, IO io, Object... args) {
         super(holder, tier, io, args);

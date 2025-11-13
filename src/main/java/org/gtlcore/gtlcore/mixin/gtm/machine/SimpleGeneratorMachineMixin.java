@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(SimpleGeneratorMachine.class)
-public class SimpleGeneratorMachineMixin {
+public abstract class SimpleGeneratorMachineMixin {
 
     @Inject(method = "recipeModifier", at = @At(value = "HEAD"), remap = false, cancellable = true)
     private static void recipeModifier(MetaMachine machine, GTRecipe recipe, OCParams params, OCResult result, CallbackInfoReturnable<GTRecipe> cir) {

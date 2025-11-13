@@ -5,7 +5,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 @Mixin(targets = "appeng.me.cells.CreativeCellInventory")
-public class CreativeCellInventoryMixin {
+public abstract class CreativeCellInventoryMixin {
 
     @ModifyArg(method = "getAvailableStacks",
                at = @At(value = "INVOKE",

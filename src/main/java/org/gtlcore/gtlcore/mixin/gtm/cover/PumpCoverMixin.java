@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(PumpCover.class)
-public class PumpCoverMixin extends CoverBehavior {
+public abstract class PumpCoverMixin extends CoverBehavior {
 
     @Mutable
     @Shadow(remap = false)

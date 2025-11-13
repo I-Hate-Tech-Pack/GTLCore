@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
 @Mixin(SimpleSteamMachine.class)
-public class SimpleSteamMachineMixin {
+public abstract class SimpleSteamMachineMixin {
 
     /**
      * @author .

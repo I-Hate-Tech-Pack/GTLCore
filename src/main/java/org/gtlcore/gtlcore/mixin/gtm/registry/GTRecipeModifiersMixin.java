@@ -24,7 +24,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
 @Mixin(GTRecipeModifiers.class)
-public class GTRecipeModifiersMixin {
+public abstract class GTRecipeModifiersMixin {
 
     /**
      * @author .

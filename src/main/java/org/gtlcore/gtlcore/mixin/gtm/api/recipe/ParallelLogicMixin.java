@@ -20,7 +20,7 @@ import java.util.Objects;
 import java.util.function.Predicate;
 
 @Mixin(ParallelLogic.class)
-public class ParallelLogicMixin {
+public abstract class ParallelLogicMixin {
 
     /**
      * @author .

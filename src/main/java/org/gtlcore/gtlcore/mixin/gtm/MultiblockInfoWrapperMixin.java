@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 @Mixin(MultiblockInfoWrapper.class)
-public class MultiblockInfoWrapperMixin {
+public abstract class MultiblockInfoWrapperMixin {
 
     @ModifyArg(method = "<init>",
                at = @At(value = "INVOKE",

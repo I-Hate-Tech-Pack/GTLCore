@@ -61,7 +61,7 @@ import static com.gregtechceu.gtceu.common.registry.GTRegistration.REGISTRATE;
 import static com.gregtechceu.gtceu.utils.FormattingUtil.toEnglishName;
 
 @Mixin(GTMachines.class)
-public class GTMachinesMixin {
+public abstract class GTMachinesMixin {
 
     @Inject(method = "init", at = @At(value = "HEAD"), remap = false, cancellable = true)
     private static void init(CallbackInfo ci) {

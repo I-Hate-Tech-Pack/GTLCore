@@ -23,7 +23,7 @@ import static com.gregtechceu.gtceu.integration.jei.multipage.MultiblockInfoCate
  * @author EasterFG on 2024/10/28
  */
 @Mixin(MultiblockInfoCategory.class)
-public class MultiblockInfoCategoryMixin {
+public abstract class MultiblockInfoCategoryMixin {
 
     @Inject(method = "registerRecipes", at = @At("HEAD"), cancellable = true, remap = false)
     private static void registerRecipes(IRecipeRegistration registry, @NotNull CallbackInfo ci) {

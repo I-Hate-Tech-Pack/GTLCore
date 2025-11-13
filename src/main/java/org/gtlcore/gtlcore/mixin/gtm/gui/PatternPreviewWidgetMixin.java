@@ -26,7 +26,7 @@ import static com.gregtechceu.gtceu.api.gui.widget.PatternPreviewWidget.locateNe
 import static org.gtlcore.gtlcore.api.gui.ExtendPatternPreviewWidget.gatherBlockDrops;
 
 @Mixin(PatternPreviewWidget.class)
-public class PatternPreviewWidgetMixin {
+public abstract class PatternPreviewWidgetMixin {
 
     @Shadow(remap = false)
     private static TrackedDummyWorld LEVEL;

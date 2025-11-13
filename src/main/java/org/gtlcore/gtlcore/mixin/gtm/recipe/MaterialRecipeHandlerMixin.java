@@ -30,7 +30,7 @@ import static com.gregtechceu.gtceu.common.data.GTRecipeTypes.*;
 import static org.gtlcore.gtlcore.common.data.GTLRecipeTypes.ELECTRIC_IMPLOSION_COMPRESSOR_RECIPES;
 
 @Mixin(MaterialRecipeHandler.class)
-public class MaterialRecipeHandlerMixin {
+public abstract class MaterialRecipeHandlerMixin {
 
     @Shadow(remap = false)
     private static void processEBFRecipe(Material material, BlastProperty property, ItemStack output, Consumer<FinishedRecipe> provider) {}

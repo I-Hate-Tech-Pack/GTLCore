@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
 @Mixin(TileExPatternProvider.class)
-public class TileExPatternProviderMixin {
+public abstract class TileExPatternProviderMixin {
 
     @ModifyConstant(method = "createLogic", remap = false, constant = @Constant(intValue = 36))
     private int modifyContainer(int constant) {

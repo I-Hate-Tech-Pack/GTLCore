@@ -14,7 +14,7 @@ import java.util.*;
 import static com.gregtechceu.gtceu.common.data.GTItems.*;
 
 @Mixin(ItemIngredientConverter.class)
-public class ItemIngredientConverterMixin {
+public abstract class ItemIngredientConverterMixin {
 
     /**
      * @author .

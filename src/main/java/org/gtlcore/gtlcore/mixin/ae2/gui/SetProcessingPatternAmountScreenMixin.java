@@ -5,7 +5,7 @@ import appeng.client.gui.me.items.SetProcessingPatternAmountScreen;
 import org.spongepowered.asm.mixin.*;
 
 @Mixin(SetProcessingPatternAmountScreen.class)
-public class SetProcessingPatternAmountScreenMixin {
+public abstract class SetProcessingPatternAmountScreenMixin {
 
     @Shadow(remap = false)
     @Final

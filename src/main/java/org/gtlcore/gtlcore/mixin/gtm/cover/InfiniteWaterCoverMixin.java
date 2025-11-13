@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
 @Mixin(InfiniteWaterCover.class)
-public class InfiniteWaterCoverMixin extends CoverBehavior {
+public abstract class InfiniteWaterCoverMixin extends CoverBehavior {
 
     public InfiniteWaterCoverMixin(CoverDefinition definition, ICoverable coverHolder, Direction attachedSide) {
         super(definition, coverHolder, attachedSide);

@@ -30,7 +30,7 @@ import java.util.stream.Stream;
 
 @SuppressWarnings("AddedMixinMembersNamePattern")
 @Mixin(CraftingTreeNode.class)
-public class CraftingTreeNodeMixin implements ICraftingTreeNode {
+public abstract class CraftingTreeNodeMixin implements ICraftingTreeNode {
 
     @Unique
     private IPatternDetails patternDetails;
