@@ -1,7 +1,17 @@
 package org.gtlcore.gtlcore.utils;
 
-import net.minecraft.ChatFormatting;
+import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
+import com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey;
+import com.gregtechceu.gtceu.utils.GTUtil;
 
+import com.lowdragmc.lowdraglib.side.fluid.FluidStack;
+
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+
+import java.util.List;
 import java.util.regex.Pattern;
 
 import static net.minecraft.ChatFormatting.*;
@@ -79,5 +89,31 @@ public class TextUtil {
             }
         }
         return false;
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public static void appendIngotConversionTooltip(
+                                                    FluidStack fluidStack,
+                                                    List<Component> tooltips,
+                                                    long amount) {
+        var material = ChemicalHelper.getMaterial(fluidStack.getFluid());
+        if (material == null) return;
+
+        if (!material.hasProperty(PropertyKey.INGOT)) return;
+        if (!GTUtil.isShiftDown()) return;
+        if (amount < 144L) return;
+
+        long ingots = amount / 144L;
+        long remainder = amount % 144L;
+        String fluidAmount = String.format(" %,d mB = %,d * %d mB", amount, ingots, 144);
+
+        if (remainder != 0L) {
+            fluidAmount = fluidAmount + String.format(" + %d mB", remainder);
+        }
+
+        tooltips.add(
+                Component.translatable("gtceu.gui.fluid_amount")
+                        .withStyle(ChatFormatting.GRAY)
+                        .append(Component.literal(fluidAmount)));
     }
 }
