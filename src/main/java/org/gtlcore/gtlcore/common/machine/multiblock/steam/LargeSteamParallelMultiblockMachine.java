@@ -11,6 +11,7 @@ import com.gregtechceu.gtceu.api.machine.feature.multiblock.IDisplayUIMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableMultiblockMachine;
 import com.gregtechceu.gtceu.api.machine.steam.SteamEnergyRecipeHandler;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableFluidTank;
+import com.gregtechceu.gtceu.api.pattern.MultiblockWorldSavedData;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.RecipeHelper;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
@@ -31,6 +32,7 @@ import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.Style;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 
@@ -154,6 +156,21 @@ public class LargeSteamParallelMultiblockMachine extends WorkableMultiblockMachi
     public void handleDisplayClick(String componentData, ClickData clickData) {
         if (!clickData.isRemote && this.isOC) {
             this.amountOC = Mth.clamp(this.amountOC + (componentData.equals("ocAdd") ? 1 : -1), 0, 4);
+            if (getLevel() instanceof ServerLevel serverLevel) {
+                serverLevel.getServer().execute(() -> {
+                    if (this.isFormed()) {
+                        this.getPatternLock().lock();
+                        try {
+                            this.onStructureInvalid();
+                            var mwsd = MultiblockWorldSavedData.getOrCreate(serverLevel);
+                            mwsd.removeMapping(this.getMultiblockState());
+                            mwsd.addAsyncLogic(this);
+                        } finally {
+                            this.getPatternLock().unlock();
+                        }
+                    }
+                });
+            }
         }
     }
 

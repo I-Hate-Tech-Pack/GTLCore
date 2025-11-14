@@ -3,11 +3,13 @@ package org.gtlcore.gtlcore.common.data.machines;
 import org.gtlcore.gtlcore.GTLCore;
 import org.gtlcore.gtlcore.api.machine.multiblock.GTLPartAbility;
 import org.gtlcore.gtlcore.api.machine.multiblock.MolecularAssemblerMultiblockMachine;
+import org.gtlcore.gtlcore.api.recipe.IGTRecipe;
 import org.gtlcore.gtlcore.common.data.*;
 import org.gtlcore.gtlcore.utils.Registries;
 
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTValues;
+import com.gregtechceu.gtceu.api.capability.recipe.EURecipeCapability;
 import com.gregtechceu.gtceu.api.data.RotationState;
 import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
@@ -20,6 +22,7 @@ import com.gregtechceu.gtceu.api.pattern.Predicates;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.OverclockingLogic;
 import com.gregtechceu.gtceu.api.recipe.RecipeHelper;
+import com.gregtechceu.gtceu.api.recipe.content.Content;
 import com.gregtechceu.gtceu.common.data.GCyMBlocks;
 import com.gregtechceu.gtceu.common.data.GTBlocks;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
@@ -30,6 +33,8 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.world.level.block.Blocks;
+
+import java.util.List;
 
 import static com.gregtechceu.gtceu.api.pattern.Predicates.abilities;
 import static com.gregtechceu.gtceu.api.pattern.Predicates.blocks;
@@ -264,7 +269,9 @@ public class AdditionalMultiBlockMachine {
             .recipeTypes(GTLRecipeTypes.NEUTRON_ACTIVATOR_RECIPES)
             .recipeModifiers(((machine, recipe, params, result) -> {
                 long eu = recipe.data.getInt("evt") * 2000L;
-                RecipeHelper.setInputEUt(recipe, eu);
+                recipe.tickInputs.put(EURecipeCapability.CAP,
+                        List.of(new Content(eu, 10000, 10000, 0, null, null)));
+                ((IGTRecipe) recipe).setHasTick(true);
                 return GTRecipeModifiers.hatchParallel(machine, recipe, false, params, result);
             }))
             .appearanceBlock(GTLBlocks.SPS_CASING)

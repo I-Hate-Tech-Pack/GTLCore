@@ -166,6 +166,7 @@
   "gui.gtlcore.voltage_colon": "电压:%s(%s)",
   "gui.gtlcore.voltage_format": "电压:%s(%s)",
   "gui.gtlcore.wildcard_info": "支持通配符 * 和 ?",
+  "gui.gtlcore.module.show": "点击显示机器模块",
   "item.gtlcore.bifidobacteriumm_petri_dish": "短双歧杆菌培养皿",
   "item.gtlcore.brevibacterium_petri_dish": "黄色短杆菌培养皿",
   "item.gtlcore.cell_component_16m": "16M 存储组件",

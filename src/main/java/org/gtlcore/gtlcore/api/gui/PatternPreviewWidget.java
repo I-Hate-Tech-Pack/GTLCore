@@ -43,7 +43,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * @author KilaBash
@@ -60,11 +59,14 @@ public class PatternPreviewWidget extends WidgetGroup {
     private final DraggableScrollableWidgetGroup scrollableWidgetGroup;
     private final MultiblockMachineDefinition controllerDefinition;
     private final MBPattern[] patterns;
+    private final MBPattern[] modulePatterns;
     private final List<SimplePredicate> predicates;
     private int index;
+    private int moduleIndex;
     private int layer;
     private SlotWidget[] slotWidgets;
     private SlotWidget[] candidates;
+    private boolean isModuleMode = false;
 
     protected PatternPreviewWidget(MultiblockMachineDefinition controllerDefinition) {
         super(0, 0, 160, 160);
@@ -102,14 +104,18 @@ public class PatternPreviewWidget extends WidgetGroup {
                             .setWidth(170)
                             .setDropShadow(true)));
 
-            this.patterns = CACHE.computeIfAbsent(controllerDefinition, definition -> {
-                HashSet<ItemStackKey> drops = new HashSet<>();
-                drops.add(new ItemStackKey(this.controllerDefinition.asStack()));
-                return controllerDefinition.getMatchingShapes().stream()
-                        .map(it -> initializePattern(it, drops))
-                        .filter(Objects::nonNull)
-                        .toArray(MBPattern[]::new);
-            });
+            var mbPatternList = controllerDefinition.getMatchingShapes().stream()
+                    .map(this::initializePattern).toList();
+            int nullIndex = mbPatternList.indexOf(null);
+            if (nullIndex == -1) {
+                this.patterns = CACHE.computeIfAbsent(controllerDefinition,
+                        definition -> mbPatternList.toArray(MBPattern[]::new));
+                this.modulePatterns = null;
+            } else {
+                this.patterns = CACHE.computeIfAbsent(controllerDefinition,
+                        definition -> mbPatternList.subList(0, nullIndex).toArray(MBPattern[]::new));
+                this.modulePatterns = mbPatternList.subList(nullIndex + 1, mbPatternList.size()).toArray(MBPattern[]::new);
+            }
 
             addWidget(new ButtonWidget(138, 30, 18, 18, new GuiTextureGroup(
                     ColorPattern.T_GRAY.rectTexture(),
@@ -123,6 +129,14 @@ public class PatternPreviewWidget extends WidgetGroup {
                     this::updateLayer)
                     .setHoverBorderTexture(1, -1));
 
+            if (this.modulePatterns != null) {
+                addWidget(new ButtonWidget(138, 70, 18, 18, new GuiTextureGroup(
+                        ColorPattern.T_GRAY.rectTexture(),
+                        new TextTexture("1").setSupplier(() -> "M:" + moduleIndex)),
+                        (x) -> setModulePage((moduleIndex + 1 >= modulePatterns.length) ? 0 : moduleIndex + 1))
+                        .setHoverBorderTexture(1, -1)
+                        .setHoverTooltips(Component.translatable("gui.gtlcore.module.show")));
+            }
             setPage(0, null);
         } catch (Exception e) {
             throw new IllegalStateException("The jei preview creation for the Multi Block Machine [" + controllerDefinition.getId().toString() + "] failed! ");
@@ -130,7 +144,7 @@ public class PatternPreviewWidget extends WidgetGroup {
     }
 
     private void updateLayer(ClickData cd) {
-        MBPattern pattern = patterns[index];
+        var pattern = isModuleMode ? modulePatterns[moduleIndex] : patterns[index];
         if (layer + 1 >= -1 && layer + 1 <= pattern.maxY - pattern.minY && !cd.isShiftClick) {
             layer += 1;
             if (pattern.controllerBase.isFormed()) {
@@ -146,12 +160,12 @@ public class PatternPreviewWidget extends WidgetGroup {
     }
 
     private void setupScene(MBPattern pattern) {
-        Stream<BlockPos> stream = pattern.blockMap.keySet().stream()
+        var stream = pattern.blockMap.keySet().stream()
                 .filter(pos -> layer == -1 || layer + pattern.minY == pos.getY());
         if (pattern.controllerBase.isFormed()) {
             LongSet set = pattern.controllerBase.getMultiblockState().getMatchContext().getOrDefault("renderMask",
                     LongSets.EMPTY_SET);
-            Set<BlockPos> modelDisabled = set.longStream().mapToObj(BlockPos::of).collect(Collectors.toSet());
+            var modelDisabled = set.longStream().mapToObj(BlockPos::of).collect(Collectors.toSet());
             if (!modelDisabled.isEmpty()) {
                 sceneWidget.setRenderedCore(
                         stream.filter(pos -> !modelDisabled.contains(pos)).collect(Collectors.toList()), null);
@@ -182,14 +196,41 @@ public class PatternPreviewWidget extends WidgetGroup {
         if (index >= patterns.length || index < 0) return;
         this.index = index;
         this.layer = -1;
+        this.isModuleMode = false;
         MBPattern pattern = patterns[index];
         setupScene(pattern);
         if (slotWidgets != null) {
-            for (SlotWidget slotWidget : slotWidgets) {
+            for (var slotWidget : slotWidgets) {
                 scrollableWidgetGroup.removeWidget(slotWidget);
             }
         }
-        slotWidgets = new SlotWidget[Math.min(pattern.parts.size(), 36)];
+        slotWidgets = new SlotWidget[pattern.parts.size()];
+        var itemHandler = new CycleItemStackHandler(pattern.parts);
+        for (int i = 0; i < slotWidgets.length; i++) {
+            final var itemStack = pattern.parts.get(i).get(0);
+            slotWidgets[i] = new SlotWidget(itemHandler, i, 4 + i * 18, 0, false, false)
+                    .setBackgroundTexture(ColorPattern.T_GRAY.rectTexture())
+                    .setIngredientIO(IngredientIO.INPUT)
+                    .setOnAddedTooltips((w, tips) -> tips.add(Component.translatable("gtceu.machine.quantum_chest.items_stored")
+                            .withStyle(ChatFormatting.DARK_AQUA)
+                            .append(Component.literal(String.valueOf(itemStack.getCount())))));
+            scrollableWidgetGroup.addWidget(slotWidgets[i]);
+        }
+    }
+
+    public void setModulePage(int index) {
+        if (index >= modulePatterns.length || index < 0) return;
+        this.moduleIndex = index;
+        this.layer = -1;
+        this.isModuleMode = true;
+        var pattern = modulePatterns[index];
+        setupScene(pattern);
+        if (slotWidgets != null) {
+            for (var slotWidget : slotWidgets) {
+                scrollableWidgetGroup.removeWidget(slotWidget);
+            }
+        }
+        slotWidgets = new SlotWidget[pattern.parts.size()];
         var itemHandler = new CycleItemStackHandler(pattern.parts);
         for (int i = 0; i < slotWidgets.length; i++) {
             final var itemStack = pattern.parts.get(i).get(0);
@@ -204,8 +245,8 @@ public class PatternPreviewWidget extends WidgetGroup {
     }
 
     private void onFormedSwitch(boolean isFormed) {
-        MBPattern pattern = patterns[index];
-        IMultiController controllerBase = pattern.controllerBase;
+        var pattern = isModuleMode ? modulePatterns[moduleIndex] : patterns[index];
+        var controllerBase = pattern.controllerBase;
         if (isFormed) {
             this.layer = -1;
             loadControllerFormed(pattern.blockMap.keySet(), controllerBase);
@@ -216,8 +257,9 @@ public class PatternPreviewWidget extends WidgetGroup {
     }
 
     private void onPosSelected(BlockPos pos, Direction facing) {
-        if (index >= patterns.length || index < 0) return;
-        TraceabilityPredicate predicate = patterns[index].predicateMap.get(pos);
+        if (isModuleMode && (moduleIndex >= modulePatterns.length || moduleIndex < 0)) return;
+        else if (index >= patterns.length || index < 0) return;
+        var predicate = (isModuleMode ? modulePatterns[moduleIndex] : patterns[index]).predicateMap.get(pos);
         if (predicate != null) {
             predicates.clear();
             predicates.addAll(predicate.common);
@@ -230,8 +272,8 @@ public class PatternPreviewWidget extends WidgetGroup {
             }
             List<List<ItemStack>> candidateStacks = new ObjectArrayList<>();
             List<List<Component>> predicateTips = new ObjectArrayList<>();
-            for (SimplePredicate simplePredicate : predicates) {
-                List<ItemStack> itemStacks = simplePredicate.getCandidates();
+            for (var simplePredicate : predicates) {
+                var itemStacks = simplePredicate.getCandidates();
                 if (!itemStacks.isEmpty()) {
                     candidateStacks.add(itemStacks);
                     predicateTips.add(simplePredicate.getToolTips(predicate));
@@ -264,23 +306,25 @@ public class PatternPreviewWidget extends WidgetGroup {
         super.drawInBackground(graphics, mouseX, mouseY, partialTicks);
     }
 
-    private MBPattern initializePattern(MultiblockShapeInfo shapeInfo, HashSet<ItemStackKey> blockDrops) {
+    private MBPattern initializePattern(MultiblockShapeInfo shapeInfo) {
+        if (shapeInfo == null) return null;
         Map<BlockPos, BlockInfo> blockMap = new Object2ObjectOpenHashMap<>();
         IMultiController controllerBase = null;
-        BlockPos multiPos = locateNextRegion(500);
+        var multiPos = locateNextRegion(500);
 
-        BlockInfo[][][] blocks = shapeInfo.getBlocks();
+        var blocks = shapeInfo.getBlocks();
         for (int x = 0; x < blocks.length; x++) {
-            BlockInfo[][] aisle = blocks[x];
+            var aisle = blocks[x];
             for (int y = 0; y < aisle.length; y++) {
-                BlockInfo[] column = aisle[y];
+                var column = aisle[y];
                 for (int z = 0; z < column.length; z++) {
                     var block = column[z];
                     if (block == null) continue;
-                    BlockState blockState = block.getBlockState();
-                    BlockPos pos = multiPos.offset(x, y, z);
+                    var blockState = block.getBlockState();
+                    var pos = multiPos.offset(x, y, z);
                     if (block.getBlockEntity(pos) instanceof IMachineBlockEntity holder &&
-                            holder.getMetaMachine() instanceof IMultiController controller) {
+                            holder.getMetaMachine() instanceof IMultiController controller &&
+                            this.controllerDefinition == controller.self().getDefinition()) {
                         holder.getSelf().setLevel(LEVEL);
                         controllerBase = controller;
                     }
@@ -294,9 +338,7 @@ public class PatternPreviewWidget extends WidgetGroup {
             LEVEL.setInnerBlockEntity(controllerBase.self().holder.getSelf());
         }
 
-        Map<ItemStackKey, PartInfo> parts = gatherBlockDrops(blockMap);
-        blockDrops.addAll(parts.keySet());
-
+        var parts = gatherBlockDrops(blockMap);
         Map<BlockPos, TraceabilityPredicate> predicateMap = new Object2ObjectOpenHashMap<>();
         if (controllerBase != null) {
             loadControllerFormed(predicateMap.keySet(), controllerBase);

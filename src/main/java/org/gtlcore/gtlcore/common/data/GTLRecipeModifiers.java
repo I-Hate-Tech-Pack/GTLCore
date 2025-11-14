@@ -122,7 +122,7 @@ public class GTLRecipeModifiers {
             GTRecipe hatchedParallel = GTRecipeModifiers.hatchParallel(machine, recipe, false, params, result);
             if (hatchedParallel == null) return null;
             GTRecipe recipe1 = RecipeHelper.applyOverclock(OverclockingLogic.NON_PERFECT_OVERCLOCK_SUBTICK, hatchedParallel, workmachine.getOverclockVoltage(), params, result);
-            if (a / b != fluidStack1.getAmount() / fluidStack2.getAmount()) {
+            if (b / a != fluidStack2.getAmount() / fluidStack1.getAmount()) {
                 RecipeResult.ofWorking((IRecipeLogicMachine) machine, RecipeResult.fail(Component.translatable("gtceu.recipe.fail.no.ratio")));
                 recipe1.outputs.clear();
             } else RecipeResult.ofWorking((IRecipeLogicMachine) machine, RecipeResult.SUCCESS);
