@@ -118,7 +118,7 @@ public class GTLRecipeModifiers {
 
             FluidAmounts amounts = countFluidAmounts(workmachine, recipe, fluidStack1.getFluid(), fluidStack2.getFluid());
             long a = amounts.first(), b = amounts.second();
-            if (b == 0) return null;
+            if (a == 0) return null;
             GTRecipe hatchedParallel = GTRecipeModifiers.hatchParallel(machine, recipe, false, params, result);
             if (hatchedParallel == null) return null;
             GTRecipe recipe1 = RecipeHelper.applyOverclock(OverclockingLogic.NON_PERFECT_OVERCLOCK_SUBTICK, hatchedParallel, workmachine.getOverclockVoltage(), params, result);
