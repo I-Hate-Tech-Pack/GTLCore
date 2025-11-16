@@ -1,14 +1,19 @@
 package org.gtlcore.gtlcore.api.machine.multiblock;
 
+import org.gtlcore.gtlcore.utils.datastructure.ModuleRenderInfo;
+
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import com.google.common.primitives.Ints;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -119,5 +124,13 @@ public interface IModularMachineHost<H extends IModularMachineHost<H>> {
 
     default int getMaxModuleCount() {
         return Integer.MAX_VALUE;
+    }
+
+    // ==================== Rendering Support ====================
+
+    @NotNull
+    @OnlyIn(Dist.CLIENT)
+    default List<ModuleRenderInfo> getModulesForRendering() {
+        return Collections.emptyList();
     }
 }

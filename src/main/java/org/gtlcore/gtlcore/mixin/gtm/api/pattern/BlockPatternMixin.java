@@ -11,7 +11,6 @@ import com.gregtechceu.gtceu.api.pattern.*;
 import com.gregtechceu.gtceu.api.pattern.error.*;
 import com.gregtechceu.gtceu.api.pattern.predicates.SimplePredicate;
 import com.gregtechceu.gtceu.api.pattern.util.PatternMatchContext;
-import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
 
 import com.lowdragmc.lowdraglib.utils.BlockInfo;
 
@@ -37,44 +36,24 @@ import java.util.function.Consumer;
 @Mixin(BlockPattern.class)
 public abstract class BlockPatternMixin {
 
-    @Mutable
     @Shadow(remap = false)
     @Final
-    protected final TraceabilityPredicate[][][] blockMatches;
-    @Mutable
+    protected TraceabilityPredicate[][][] blockMatches;
     @Shadow(remap = false)
     @Final
-    protected final int fingerLength;
-    @Mutable
+    protected int fingerLength;
     @Shadow(remap = false)
     @Final
-    protected final int thumbLength;
-    @Mutable
+    protected int thumbLength;
     @Shadow(remap = false)
     @Final
-    protected final int palmLength;
-    @Mutable
+    protected int palmLength;
     @Shadow(remap = false)
     @Final
-    public final int[][] aisleRepetitions;
-    @Mutable
+    public int[][] aisleRepetitions;
     @Shadow(remap = false)
     @Final
-    public final RelativeDirection[] structureDir;
-    @Mutable
-    @Shadow(remap = false)
-    @Final
-    protected final int[] centerOffset;
-
-    protected BlockPatternMixin(TraceabilityPredicate[][][] blockMatches, int fingerLength, int thumbLength, int palmLength, int[][] aisleRepetitions, RelativeDirection[] structureDir, int[] centerOffset) {
-        this.blockMatches = blockMatches;
-        this.fingerLength = fingerLength;
-        this.thumbLength = thumbLength;
-        this.palmLength = palmLength;
-        this.aisleRepetitions = aisleRepetitions;
-        this.structureDir = structureDir;
-        this.centerOffset = centerOffset;
-    }
+    protected int[] centerOffset;
 
     @Shadow(remap = false)
     protected abstract BlockPos setActualRelativeOffset(int x, int y, int z, Direction facing, Direction upwardsFacing, boolean isFlipped);
@@ -94,6 +73,7 @@ public abstract class BlockPatternMixin {
         PatternMatchContext matchContext = worldState.getMatchContext();
         Map<SimplePredicate, Integer> globalCount = worldState.getGlobalCount();
         Map<SimplePredicate, Integer> layerCount = worldState.getLayerCount();
+
         // Checking aisles
         for (int c = 0, z = minZ++, r; c < this.fingerLength; c++) {
             // Checking repeatable slices

@@ -2,6 +2,7 @@ package org.gtlcore.gtlcore.common.machine.multiblock.electric;
 
 import org.gtlcore.gtlcore.api.machine.multiblock.IModularMachineHost;
 import org.gtlcore.gtlcore.api.machine.multiblock.IModularMachineModule;
+import org.gtlcore.gtlcore.utils.datastructure.ModuleRenderInfo;
 
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
@@ -9,7 +10,10 @@ import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 import org.jetbrains.annotations.NotNull;
@@ -19,6 +23,8 @@ import java.util.List;
 import java.util.Set;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+
+import static org.gtlcore.gtlcore.common.data.machines.AdvancedMultiBlockMachine.SUPRACHRONAL_ASSEMBLY_LINE_MODULE;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
@@ -53,6 +59,26 @@ public class SuprachronalAssemblyLineMachine extends WorkableElectricMultiblockM
                 pos.offset(0, 0, 3),
                 pos.offset(0, 0, -3)
         };
+    }
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public @NotNull List<ModuleRenderInfo> getModulesForRendering() {
+        return List.of(
+                new ModuleRenderInfo(
+                        new BlockPos(0, 0, 3),
+                        Direction.WEST,
+                        Direction.UP,
+                        Direction.WEST,
+                        Direction.UP,
+                        SUPRACHRONAL_ASSEMBLY_LINE_MODULE),
+                new ModuleRenderInfo(
+                        new BlockPos(0, 0, -3),
+                        Direction.WEST,
+                        Direction.UP,
+                        Direction.WEST,
+                        Direction.UP,
+                        SUPRACHRONAL_ASSEMBLY_LINE_MODULE));
     }
 
     @Override

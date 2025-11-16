@@ -7,8 +7,6 @@ import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 import com.gregtechceu.gtceu.api.machine.multiblock.MultiblockControllerMachine;
-import com.gregtechceu.gtceu.api.pattern.BlockPattern;
-import com.gregtechceu.gtceu.api.pattern.MultiblockShapeInfo;
 import com.gregtechceu.gtceu.client.renderer.MultiblockInWorldPreviewRenderer;
 
 import com.lowdragmc.lowdraglib.utils.BlockInfo;
@@ -19,7 +17,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.Rotation;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
@@ -53,7 +50,7 @@ public abstract class MultiblockInWorldPreviewRendererMixin {
         if (!controller.getDefinition().isRenderWorldPreview()) return;
         var front = controller.getFrontFacing();
         var up = controller.getUpwardsFacing();
-        var shapeInfo = getMatchingShapes(controller.getDefinition()).get(0);
+        var shapeInfo = controller.getDefinition().getMatchingShapes().get(0);
 
         Map<BlockPos, BlockInfo> blockMap = new Object2ObjectOpenHashMap<>();
         IMultiController controllerBase = null;
@@ -151,32 +148,5 @@ public abstract class MultiblockInWorldPreviewRendererMixin {
         }
 
         prepareBuffers(LEVEL, blockMap.keySet(), duration);
-    }
-
-    private static List<MultiblockShapeInfo> getMatchingShapes(MultiblockMachineDefinition machineDefinition) {
-        var designs = machineDefinition.getShapes().get();
-        if (!designs.isEmpty() && !designs.contains(null)) return designs;
-        var structurePattern = machineDefinition.getPatternFactory().get();
-        int[][] aisleRepetitions = structurePattern.aisleRepetitions;
-        return repetitionDFS(structurePattern, new ObjectArrayList<>(), aisleRepetitions, new Stack<>());
-    }
-
-    private static List<MultiblockShapeInfo> repetitionDFS(BlockPattern pattern, List<MultiblockShapeInfo> pages,
-                                                           int[][] aisleRepetitions, Stack<Integer> repetitionStack) {
-        if (repetitionStack.size() == aisleRepetitions.length) {
-            int[] repetition = new int[repetitionStack.size()];
-            for (int i = 0; i < repetitionStack.size(); i++) {
-                repetition[i] = repetitionStack.get(i);
-            }
-            pages.add(new MultiblockShapeInfo(pattern.getPreview(repetition)));
-        } else {
-            for (int i = aisleRepetitions[repetitionStack.size()][0]; i <=
-                    aisleRepetitions[repetitionStack.size()][1]; i++) {
-                repetitionStack.push(i);
-                repetitionDFS(pattern, pages, aisleRepetitions, repetitionStack);
-                repetitionStack.pop();
-            }
-        }
-        return pages;
     }
 }

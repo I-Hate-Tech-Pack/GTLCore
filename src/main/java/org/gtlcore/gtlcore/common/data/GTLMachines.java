@@ -113,6 +113,7 @@ public class GTLMachines {
 
     public static void init() {
         TootipsModify.init();
+        ShapeInfosModify.init();
         GeneratorMachine.init();
         MultiBlockMachineA.init();
         AdvancedMultiBlockMachine.init();

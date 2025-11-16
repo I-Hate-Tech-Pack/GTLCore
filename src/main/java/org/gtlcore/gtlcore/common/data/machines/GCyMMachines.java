@@ -721,6 +721,57 @@ public class GCyMMachines {
                         .where('#', any())
                         .build();
             })
+            .shapeInfos(definition -> {
+                List<MultiblockShapeInfo> shapeInfos = new ArrayList<>();
+                var builder = MultiblockShapeInfo.builder()
+                        .where('S', definition, Direction.NORTH)
+                        .where('C', CASING_WATERTIGHT.getDefaultState())
+                        .where('M', MUFFLER_HATCH[IV], Direction.UP)
+                        .where('X', PARALLEL_HATCH[IV], Direction.NORTH)
+                        .where('H', FLUID_IMPORT_HATCH[IV], Direction.NORTH)
+                        .where('B', ITEM_EXPORT_BUS[IV], Direction.NORTH)
+                        .where('N', MAINTENANCE_HATCH, Direction.NORTH)
+                        .where('P', CASING_STEEL_PIPE.getDefaultState())
+                        .where('F', FLUID_EXPORT_HATCH[IV], Direction.SOUTH)
+                        .where('E', ENERGY_INPUT_HATCH[IV], Direction.SOUTH)
+                        .where('#', Blocks.AIR.defaultBlockState());
+                List<String> aisle1 = new ArrayList<>(16);
+                aisle1.add("#HCB#");
+                aisle1.add("#NSX#");
+                aisle1.add("#####");
+                List<String> aisle2 = new ArrayList<>(16);
+                aisle2.add("CCCCC");
+                aisle2.add("C###C");
+                aisle2.add("#CCC#");
+                List<String> aisle3 = new ArrayList<>(16);
+                aisle3.add("CCCCC");
+                aisle3.add("C###C");
+                aisle3.add("#CMC#");
+                List<String> aisle4 = new ArrayList<>(16);
+                aisle4.add("CCCCC");
+                aisle4.add("C###C");
+                aisle4.add("#CCC#");
+                List<String> aisle5 = new ArrayList<>(16);
+                aisle5.add("#CEC#");
+                aisle5.add("#CCC#");
+                aisle5.add("#####");
+                for (int i = 1; i <= 12; ++i) {
+                    aisle1.add(2, "##C##");
+                    aisle2.add(2, "#C#C#");
+                    aisle3.add(2, "C#P#C");
+                    aisle4.add(2, "#C#C#");
+                    aisle5.add(2, "##F##");
+                    var copy = builder.shallowCopy()
+                            .aisle(aisle1.toArray(String[]::new))
+                            .aisle(aisle2.toArray(String[]::new))
+                            .aisle(aisle3.toArray(String[]::new))
+                            .aisle(aisle4.toArray(String[]::new))
+                            .aisle(aisle5.toArray(String[]::new));
+                    shapeInfos.add(copy.build());
+                }
+                return shapeInfos;
+            })
+            .allowExtendedFacing(false)
             .partSorter(Comparator.comparingInt(a -> a.self().getPos().getY()))
             .workableCasingRenderer(GTCEu.id("block/casings/gcym/watertight_casing"),
                     GTCEu.id("block/multiblock/gcym/large_distillery"))

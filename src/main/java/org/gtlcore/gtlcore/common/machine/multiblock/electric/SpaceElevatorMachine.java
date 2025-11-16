@@ -5,6 +5,7 @@ import org.gtlcore.gtlcore.api.machine.multiblock.IModularMachineModule;
 import org.gtlcore.gtlcore.api.recipe.RecipeResult;
 import org.gtlcore.gtlcore.client.gui.widget.IExtendedClickData;
 import org.gtlcore.gtlcore.utils.MachineUtil;
+import org.gtlcore.gtlcore.utils.datastructure.ModuleRenderInfo;
 
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
@@ -16,6 +17,7 @@ import com.lowdragmc.lowdraglib.gui.widget.*;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
@@ -34,6 +36,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+
+import static org.gtlcore.gtlcore.common.data.machines.AdvancedMultiBlockMachine.ASSEMBLER_MODULE;
+import static org.gtlcore.gtlcore.common.data.machines.AdvancedMultiBlockMachine.RESOURCE_COLLECTION;
 
 public class SpaceElevatorMachine extends TierCasingMachine
                                   implements IModularMachineHost<SpaceElevatorMachine>, IMachineLife {
@@ -85,6 +90,67 @@ public class SpaceElevatorMachine extends TierCasingMachine
             };
         }
         return MachineUtil.EMPTY_POS_ARRAY;
+    }
+
+    @Override
+    public @NotNull List<ModuleRenderInfo> getModulesForRendering() {
+        return List.of(
+                new ModuleRenderInfo(
+                        new BlockPos(-3, 0, -5),
+                        Direction.NORTH,
+                        Direction.UP,
+                        Direction.NORTH,
+                        Direction.UP,
+                        RESOURCE_COLLECTION),
+                new ModuleRenderInfo(
+                        new BlockPos(-8, 0, 0),
+                        Direction.NORTH,
+                        Direction.UP,
+                        Direction.WEST,
+                        Direction.UP,
+                        ASSEMBLER_MODULE),
+                new ModuleRenderInfo(
+                        new BlockPos(-8, 0, 6),
+                        Direction.NORTH,
+                        Direction.UP,
+                        Direction.WEST,
+                        Direction.UP,
+                        RESOURCE_COLLECTION),
+                new ModuleRenderInfo(
+                        new BlockPos(-3, 0, 11),
+                        Direction.NORTH,
+                        Direction.UP,
+                        Direction.SOUTH,
+                        Direction.UP,
+                        ASSEMBLER_MODULE),
+                new ModuleRenderInfo(
+                        new BlockPos(3, 0, 11),
+                        Direction.NORTH,
+                        Direction.UP,
+                        Direction.SOUTH,
+                        Direction.UP,
+                        RESOURCE_COLLECTION),
+                new ModuleRenderInfo(
+                        new BlockPos(8, 0, 6),
+                        Direction.NORTH,
+                        Direction.UP,
+                        Direction.EAST,
+                        Direction.UP,
+                        ASSEMBLER_MODULE),
+                new ModuleRenderInfo(
+                        new BlockPos(8, 0, 0),
+                        Direction.NORTH,
+                        Direction.UP,
+                        Direction.EAST,
+                        Direction.UP,
+                        RESOURCE_COLLECTION),
+                new ModuleRenderInfo(
+                        new BlockPos(3, 0, -5),
+                        Direction.NORTH,
+                        Direction.UP,
+                        Direction.NORTH,
+                        Direction.UP,
+                        ASSEMBLER_MODULE));
     }
 
     private BlockPos getPowerCore(BlockPos pos, Level level) {
