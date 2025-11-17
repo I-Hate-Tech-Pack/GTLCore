@@ -9,10 +9,10 @@
     "ae2.gui.SetProcessingPatternAmountScreenMixin",
     "gtm.MultiblockInfoWrapperMixin",
     "gtm.MultiblockInWorldPreviewRendererMixin",
-    "gtm.gui.PatternPreviewWidgetMixin",
     "gtm.TagPrefixItemRendererMixin",
     "gtm.api.recipe.ContentMixin",
     "gtm.gui.AEFluidConfigSlotWidgetMixin",
+    "gtm.gui.PatternPreviewWidgetMixin",
     "gtm.gui.ProspectingMapWidgetMixin",
     "gtm.gui.ProspectingTextureMixin",
     "ldlib.CustomBakedModelFixed",
@@ -97,6 +97,7 @@
     "gtm.api.machine.MetaMachineMixin",
     "gtm.api.machine.MultiblockControllerMachineMixin",
     "gtm.api.machine.MultiblockStateMixin",
+    "gtm.api.machine.MultiblockWorldSavedDataMixin",
     "gtm.api.machine.RecipeLogicMixin",
     "gtm.api.machine.WorkableMultiblockMachineMixin",
     "gtm.api.machine.trait.NotifiableEnergyContainerMixin",
@@ -176,6 +177,7 @@
     "ldlib.ClickDataMixin",
     "ldlib.ItemStackTransferMixin",
     "mc.LevelChunkMixin",
+    "mc.LevelMixin",
     "travelanchors.EventListenerMixin"
   ],
   "injectors": {

@@ -6,6 +6,7 @@ import org.gtlcore.gtlcore.api.machine.trait.MEPart.IMEPatternPartMachine;
 import org.gtlcore.gtlcore.api.recipe.RecipeResult;
 import org.gtlcore.gtlcore.utils.datastructure.FirstFlagRecipePartSet;
 
+import com.gregtechceu.gtceu.api.block.ActiveBlock;
 import com.gregtechceu.gtceu.api.capability.IDataAccessHatch;
 import com.gregtechceu.gtceu.api.capability.IParallelHatch;
 import com.gregtechceu.gtceu.api.capability.recipe.*;
@@ -26,9 +27,12 @@ import com.lowdragmc.lowdraglib.syncdata.ISubscription;
 import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
 import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.block.Block;
 
 import com.hepdd.gtmthings.common.block.machine.multiblock.part.appeng.MEOutputPartMachine;
+import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.objects.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -51,6 +55,8 @@ public abstract class WorkableMultiblockMachineMixin extends MultiblockControlle
     @Shadow(remap = false)
     @Final
     public RecipeLogic recipeLogic;
+    @Shadow(remap = false)
+    protected @Nullable LongSet activeBlocks;
 
     public WorkableMultiblockMachineMixin(IMachineBlockEntity holder) {
         super(holder);
@@ -126,6 +132,26 @@ public abstract class WorkableMultiblockMachineMixin extends MultiblockControlle
         if (maintenanceMachine != null) maintenanceMachine.afterWorking((IWorkableMultiController) this);
         if (mufflerMachine != null) mufflerMachine.afterWorking((IWorkableMultiController) this);
         this.self().getDefinition().getAfterWorking().accept(this);
+    }
+
+    /**
+     * @author screret
+     * @reason Performance
+     */
+    @Overwrite(remap = false)
+    public void updateActiveBlocks(boolean active) {
+        if (activeBlocks != null) {
+            for (long pos : activeBlocks) {
+                var blockPos = BlockPos.of(pos);
+                var blockState = getLevel().getBlockState(blockPos);
+                if (blockState.getBlock() instanceof ActiveBlock block) {
+                    var newState = block.changeActive(blockState, active);
+                    if (newState != blockState) {
+                        getLevel().setBlock(blockPos, newState, Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
+                    }
+                }
+            }
+        }
     }
 
     // ========================================
