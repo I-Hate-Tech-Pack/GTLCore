@@ -3,6 +3,8 @@ package org.gtlcore.gtlcore.api.recipe;
 import org.gtlcore.gtlcore.api.machine.trait.IRecipeStatus;
 
 import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
+import com.gregtechceu.gtceu.common.machine.multiblock.electric.research.DataBankMachine;
+import com.gregtechceu.gtceu.common.machine.multiblock.electric.research.HPCAMachine;
 
 import net.minecraft.network.chat.Component;
 
@@ -16,7 +18,10 @@ import org.jetbrains.annotations.Nullable;
 public record RecipeResult(boolean isSuccess, @Nullable Component reason) {
 
     public static void of(IRecipeLogicMachine machine, RecipeResult result) {
-        if (machine.getRecipeLogic() instanceof IRecipeStatus status) status.setRecipeStatus(result);
+        if (machine.getRecipeLogic() instanceof IRecipeStatus status) {
+            if (machine instanceof HPCAMachine || machine instanceof DataBankMachine) result = null;
+            status.setRecipeStatus(result);
+        }
     }
 
     public static void ofWorking(IRecipeLogicMachine machine, RecipeResult result) {

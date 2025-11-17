@@ -3,6 +3,7 @@ package org.gtlcore.gtlcore.common.machine.multiblock.electric;
 import org.gtlcore.gtlcore.utils.MachineIO;
 import org.gtlcore.gtlcore.utils.TextUtil;
 
+import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.capability.IControllable;
 import com.gregtechceu.gtceu.api.capability.IOpticalComputationProvider;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
@@ -39,7 +40,6 @@ public class ComputationProviderMachine extends WorkableElectricMultiblockMachin
     public int allocatedCWUt = 0;
     @Persisted
     public long totalCWU = 0;
-    public Boolean canBridge = true;
     public int maxCWUt = 0;
     @Nullable
     protected TickableSubscription tickSubs;
@@ -63,8 +63,7 @@ public class ComputationProviderMachine extends WorkableElectricMultiblockMachin
     private int allocatedCWUt(int cwut, boolean simulate) {
         if (totalCWU < getMaxCWUt()) {
             if (inf && inputEU(this, Integer.MAX_VALUE)) return Integer.MAX_VALUE;
-            if (inputEU(this, getOverclockVoltage()))
-                totalCWU += (long) Math.pow(2, getTier());
+            if (inputEU(this, GTValues.VA[getTier()])) totalCWU += (long) Math.pow(2, getTier());
             maxCWUt = 0;
         }
         int maxCWUt = getMaxCWUt();
@@ -86,17 +85,19 @@ public class ComputationProviderMachine extends WorkableElectricMultiblockMachin
         seen.add(this);
         if (inf) return Integer.MAX_VALUE;
         if (maxCWUt == 0) {
-            if (getTier() < 12 && MachineIO.notConsumableItem(this, OPTICAL_MAINFRAME)) {
-                return 1024;
-            }
-            if (getTier() < 13 && MachineIO.notConsumableItem(this, EXOTIC_MAINFRAME)) {
-                return 2048;
-            }
-            if (getTier() < 14 && MachineIO.notConsumableItem(this, COSMIC_MAINFRAME)) {
-                return 4096;
-            }
-            if (MachineIO.notConsumableItem(this, SUPRACAUSAL_MAINFRAME)) {
-                return 8192;
+            switch (getTier()) {
+                case 11 -> {
+                    if (MachineIO.notConsumableItem(this, OPTICAL_MAINFRAME)) return 1024;
+                }
+                case 12 -> {
+                    if (MachineIO.notConsumableItem(this, EXOTIC_MAINFRAME)) return 2048;
+                }
+                case 13 -> {
+                    if (MachineIO.notConsumableItem(this, COSMIC_MAINFRAME)) return 4096;
+                }
+                case 14 -> {
+                    if (MachineIO.notConsumableItem(this, SUPRACAUSAL_MAINFRAME)) return 8192;
+                }
             }
             return 0;
         } else return maxCWUt;
@@ -177,7 +178,7 @@ public class ComputationProviderMachine extends WorkableElectricMultiblockMachin
                     if (isFormed()) {
                         Component cwutInfo = Component.literal(
                                 lastAllocatedCWUt + " / " +
-                                        (inf ? TextUtil.full_color("无尽") : getMaxCWUt()))
+                                        (inf ? TextUtil.full_color("∞") : getMaxCWUt()))
                                 .append(Component.literal(" CWU/t"))
                                 .withStyle(ChatFormatting.AQUA);
                         tl.add(Component.translatable(

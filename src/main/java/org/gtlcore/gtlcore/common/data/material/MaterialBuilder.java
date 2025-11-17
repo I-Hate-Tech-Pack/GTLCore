@@ -3662,6 +3662,7 @@ public class MaterialBuilder {
                 .ore()
                 .color(0xf2a057)
                 .iconSet(METALLIC)
+                .flags(EXCLUDE_BLOCK_CRAFTING_BY_HAND_RECIPES)
                 .buildAndRegister();
 
         Ostrum = new Material.Builder(GTCEu.id("ostrum"))
@@ -3669,6 +3670,7 @@ public class MaterialBuilder {
                 .ore()
                 .color(0xe5939b)
                 .iconSet(METALLIC)
+                .flags(EXCLUDE_BLOCK_CRAFTING_BY_HAND_RECIPES)
                 .buildAndRegister();
 
         Calorite = new Material.Builder(GTCEu.id("calorite"))
@@ -3676,6 +3678,7 @@ public class MaterialBuilder {
                 .ore()
                 .color(0xe65757)
                 .iconSet(METALLIC)
+                .flags(EXCLUDE_BLOCK_CRAFTING_BY_HAND_RECIPES)
                 .buildAndRegister();
 
         LaNdOxidesSolution = new Material.Builder(GTCEu.id("la_nd_oxides_solution"))
