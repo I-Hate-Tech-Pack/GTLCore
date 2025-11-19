@@ -47,6 +47,9 @@ public class Misc {
         VanillaRecipeHelper.addShapelessRecipe(provider, GTLCore.id("me_pattern_buffer_copy"),
                 GTLItems.ME_PATTERN_BUFFER_COPY.asStack(),
                 "A", AEItems.MEMORY_CARD);
+        VanillaRecipeHelper.addShapelessRecipe(provider, GTLCore.id("me_pattern_buffer_cut"),
+                GTLItems.ME_PATTERN_BUFFER_CUT.asStack(),
+                "A", GTLItems.ME_PATTERN_BUFFER_COPY.asStack());
         VanillaRecipeHelper.addShapedRecipe(provider, true, GTLCore.id("heat_sensor"),
                 GTLMachines.HEAT_SENSOR.asStack(),
                 "FDF", "BAB", "CEC",

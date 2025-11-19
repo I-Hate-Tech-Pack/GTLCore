@@ -23,14 +23,13 @@ import java.util.function.Consumer;
  * 样板电路处理模块
  * 负责处理样板中的电路逻辑，包括：
  * - 电路提取和存储
- * - 样板重构（移除电路）
- * - 电路来源判断
+ * - 样板重构（移除电路, 酌情删除副产物）
  */
-public class PatternCircuitHandler {
+public class MEBufferPatternHelper {
 
     private final NotifiableCircuitItemStackHandler mePatternCircuitInventory;
 
-    public PatternCircuitHandler(NotifiableCircuitItemStackHandler mePatternCircuitInventory) {
+    public MEBufferPatternHelper(NotifiableCircuitItemStackHandler mePatternCircuitInventory) {
         this.mePatternCircuitInventory = mePatternCircuitInventory;
     }
 
@@ -42,24 +41,22 @@ public class PatternCircuitHandler {
     }
 
     /**
-     * 处理包含电路的样板：提取电路并返回无电路的样板
+     * 处理包含电路的样板：提取电路并返回无电路并酌情删除副产物的样板
      * 
      * @param originalPatternStack 原始样板
      * @param storedCircuit        存储电路的引用
+     * @param keepByProduct        是否保留副产物
      * @return 处理结果，包含无电路样板和提取的电路
      */
-    public IPatternDetails processPatternWithCircuit(ItemStack originalPatternStack, Consumer<Integer> storedCircuit, Level level) {
+    public IPatternDetails processPatternWithCircuit(ItemStack originalPatternStack, Consumer<Integer> storedCircuit, Level level, boolean keepByProduct) {
         if (PatternDetailsHelper.decodePattern(originalPatternStack, level) instanceof AEProcessingPattern processingPattern) {
-            // 提取电路
             int extractedCircuit = extractCircuitFromPattern(processingPattern);
+
             if (extractedCircuit < 0) {
-                return processingPattern; // 没有电路，直接返回
-            }
+                if (keepByProduct) return processingPattern;
+            } else storedCircuit.accept(extractedCircuit);
 
-            storedCircuit.accept(extractedCircuit);
-
-            // 创建无电路的样板
-            return createPatternWithoutCircuit(processingPattern, level);
+            return createPatternWithoutCircuit(processingPattern, level, keepByProduct);
         } else {
             return null;
         }
@@ -104,12 +101,13 @@ public class PatternCircuitHandler {
      * 创建一个移除了电路的新样板
      *
      * @param pattern 原始处理样板
-     * @return 无电路的样板
+     * @return 无电路并酌情删除副产物的样板
      */
-    private IPatternDetails createPatternWithoutCircuit(AEProcessingPattern pattern, Level level) {
+    private IPatternDetails createPatternWithoutCircuit(AEProcessingPattern pattern, Level level, boolean keepByProduct) {
         var originalInputs = pattern.getSparseInputs();
         var originalOutputs = pattern.getSparseOutputs();
         var filteredInputs = new ObjectArrayList<GenericStack>();
+        GenericStack[] filteredOutputs = originalOutputs;
 
         for (var input : Arrays.stream(originalInputs).filter(Objects::nonNull).toList()) {
             if (input.what() instanceof AEItemKey itemKey) {
@@ -120,6 +118,11 @@ public class PatternCircuitHandler {
             filteredInputs.add(input);
         }
 
-        return PatternDetailsHelper.decodePattern(PatternDetailsHelper.encodeProcessingPattern(filteredInputs.toArray(new GenericStack[0]), originalOutputs), level);
+        if (!keepByProduct) {
+            var primary = Arrays.stream(originalOutputs).filter(Objects::nonNull).findFirst();
+            if (primary.isPresent()) filteredOutputs = new GenericStack[] { primary.get() };
+        }
+
+        return PatternDetailsHelper.decodePattern(PatternDetailsHelper.encodeProcessingPattern(filteredInputs.toArray(new GenericStack[0]), filteredOutputs), level);
     }
 }

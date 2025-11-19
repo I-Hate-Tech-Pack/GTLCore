@@ -6,7 +6,7 @@ import org.gtlcore.gtlcore.api.machine.trait.MEPart.IMEPatternPartMachine;
 import org.gtlcore.gtlcore.api.machine.trait.MEPart.IMEPatternTrait;
 import org.gtlcore.gtlcore.common.data.GTLMachines;
 import org.gtlcore.gtlcore.integration.ae2.AEUtils;
-import org.gtlcore.gtlcore.integration.ae2.handler.PatternCircuitHandler;
+import org.gtlcore.gtlcore.integration.ae2.handler.MEBufferPatternHelper;
 import org.gtlcore.gtlcore.integration.ae2.handler.SlotCacheManager;
 import org.gtlcore.gtlcore.integration.ae2.widget.AEPatternViewExtendSlotWidget;
 import org.gtlcore.gtlcore.utils.GTLUtil;
@@ -15,6 +15,7 @@ import org.gtlcore.gtlcore.utils.Registries;
 import com.gregtechceu.gtceu.api.capability.recipe.*;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.gui.fancy.ConfiguratorPanel;
+import com.gregtechceu.gtceu.api.gui.fancy.IFancyConfiguratorButton;
 import com.gregtechceu.gtceu.api.machine.*;
 import com.gregtechceu.gtceu.api.machine.fancyconfigurator.*;
 import com.gregtechceu.gtceu.api.machine.feature.IInteractedMachine;
@@ -41,9 +42,11 @@ import com.lowdragmc.lowdraglib.syncdata.annotation.LazyManaged;
 import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.*;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -125,6 +128,8 @@ public class MEPatternBufferPartMachine extends MEIOPartMachine implements IInte
     @Setter
     @Getter
     protected String customName = "";
+    @Persisted
+    protected boolean keepByProduct = false;
     protected final int maxPatternCount;
     private final boolean[] hasPatternArray;
     @DescSynced
@@ -171,7 +176,7 @@ public class MEPatternBufferPartMachine extends MEIOPartMachine implements IInte
 
     /** Pattern circuit handler for managing circuit logic */
     @Getter
-    protected final PatternCircuitHandler circuitHandler;
+    protected final MEBufferPatternHelper realPatternHelper;
 
     /** Recipe handler trait for ME Pattern Buffer */
     protected final MEPatternBufferRecipeHandlerTrait recipeHandler;
@@ -234,7 +239,7 @@ public class MEPatternBufferPartMachine extends MEIOPartMachine implements IInte
 
         // Initialize handlers
         this.sharedCircuitInventory = new NotifiableCircuitItemStackHandler(this);
-        this.circuitHandler = new PatternCircuitHandler((NotifiableCircuitItemStackHandler) sharedCircuitInventory);
+        this.realPatternHelper = new MEBufferPatternHelper((NotifiableCircuitItemStackHandler) sharedCircuitInventory);
         this.sharedCatalystInventory = new CatalystItemStackHandler(this, 9, IO.IN, IO.NONE);
         this.sharedCatalystTank = new CatalystFluidStackHandler(this, 9, 16 * FluidHelper.getBucket(), IO.IN, IO.NONE);
         this.recipeHandler = new MEPatternBufferRecipeHandlerTrait(this, io);
@@ -391,6 +396,19 @@ public class MEPatternBufferPartMachine extends MEIOPartMachine implements IInte
         }
     }
 
+    protected void refreshAllByProduct() {
+        this.slot2PatternMap.clear();
+        for (int i = 0; i < patternInventory.getSlots(); i++) {
+            var pattern = patternInventory.getStackInSlot(i);
+            var realPattern = getRealPattern(i, pattern);
+            if (realPattern != null) {
+                this.slot2PatternMap.put(i, realPattern);
+            }
+        }
+        reCalculatePatternSlotMap();
+        needPatternSync = true;
+    }
+
     // ========================================
     // Persist
     // ========================================
@@ -514,6 +532,115 @@ public class MEPatternBufferPartMachine extends MEIOPartMachine implements IInte
         return tags;
     }
 
+    public boolean pasteFromTag(CompoundTag tag) {
+        this.setCustomName(tag.getString("name"));
+        var list = tag.getList("patterns", Tag.TAG_COMPOUND);
+
+        int usedCount = 0;
+        for (ItemStack ignored : internalPatternInventory) {
+            usedCount++;
+        }
+        if (internalPatternInventory.size() - usedCount < list.size()) return false;
+
+        int listIndex = 0;
+        for (int index = 0; index < internalPatternInventory.size() && listIndex < list.size(); index++) {
+            if (!internalPatternInventory.getStackInSlot(index).isEmpty()) {
+                continue;
+            }
+
+            CompoundTag patternData = list.getCompound(listIndex);
+            var patternTag = patternData.getCompound("pattern");
+            var sourceCacheCount = patternData.getByte("cacheCount");
+            var catalystItems = patternData.getCompound("catalystItems");
+            var catalystFluids = patternData.getCompound("catalystFluids");
+
+            internalPatternInventory.setItemDirect(index, ItemStack.of(patternTag));
+            this.catalystItems[index].deserializeNBT(catalystItems);
+            this.catalystFluids[index].deserializeNBT(catalystFluids);
+            if (sourceCacheCount > 0) this.cacheRecipeCount[index] = sourceCacheCount;
+
+            listIndex++;
+        }
+
+        this.keepByProduct = tag.getBoolean("keepByProduct");
+        this.sharedCatalystInventory.storage.deserializeNBT(tag.getCompound("sharedCatalystInventory"));
+        this.sharedCircuitInventory.storage.deserializeNBT(tag.getCompound("sharedCircuitInventory"));
+
+        var catalystTanks = tag.getList("sharedCatalystTank", Tag.TAG_COMPOUND);
+        var tankStorages = this.sharedCatalystTank.getStorages();
+        for (int i = 0; i < Math.min(catalystTanks.size(), tankStorages.length); i++) {
+            tankStorages[i].deserializeNBT(catalystTanks.getCompound(i));
+        }
+
+        for (MEPatternBufferProxyPartMachine proxy : this.getProxies()) {
+            proxy.setBuffer(null);
+        }
+        proxyMachines.clear();
+        proxies.clear();
+
+        for (long l : tag.getLongArray("proxies")) {
+            var pos = BlockPos.of(l);
+            if (MetaMachine.getMachine(Objects.requireNonNull(getLevel()), pos) instanceof MEPatternBufferProxyPartMachine proxy) {
+                proxy.setBuffer(getPos());
+            }
+        }
+
+        refreshAllByProduct();
+
+        return true;
+    }
+
+    public CompoundTag cutToTag(CompoundTag tags) {
+        var tag = new CompoundTag();
+        tag.putString("name", customName);
+
+        var listPattern = new ListTag();
+        for (int slotIndex : patternSlotMap.values().stream().toList()) {
+            ItemStack stack = internalPatternInventory.getStackInSlot(slotIndex);
+
+            if (!stack.isEmpty()) {
+                CompoundTag patternData = new CompoundTag();
+                patternData.put("pattern", stack.serializeNBT());
+                patternData.putByte("cacheCount", cacheRecipeCount[slotIndex]);
+                patternData.put("catalystItems", catalystItems[slotIndex].serializeNBT());
+                patternData.put("catalystFluids", catalystFluids[slotIndex].serializeNBT());
+                listPattern.add(patternData);
+
+                internalPatternInventory.setItemDirect(slotIndex, ItemStack.EMPTY);
+                for (int i = 0; i < catalystItems[slotIndex].getSlots(); i++) {
+                    catalystItems[slotIndex].setStackInSlot(i, ItemStack.EMPTY);
+                }
+                for (int i = 0; i < catalystFluids[slotIndex].getTanks(); i++) {
+                    catalystFluids[slotIndex].setFluidInTank(i, FluidStack.empty());
+                }
+            }
+        }
+
+        tag.put("patterns", listPattern);
+        tag.put("sharedCatalystInventory", sharedCatalystInventory.storage.serializeNBT());
+        tag.put("sharedCircuitInventory", sharedCircuitInventory.storage.serializeNBT());
+        tag.putBoolean("keepByProduct", keepByProduct);
+        tag.put("proxies", new LongArrayTag(proxies.stream().map(BlockPos::asLong).toList()));
+        var tankList = new ListTag();
+        Arrays.stream(sharedCatalystTank.getStorages()).map(FluidStorage::serializeNBT).forEach(tankList::add);
+        tag.put("sharedCatalystTank", tankList);
+
+        for (int i = 0; i < sharedCatalystInventory.getSlots(); i++) {
+            sharedCatalystInventory.setStackInSlot(i, ItemStack.EMPTY);
+        }
+        for (int i = 0; i < sharedCatalystTank.getTanks(); i++) {
+            sharedCatalystTank.setFluidInTank(i, FluidStack.empty());
+        }
+        for (MEPatternBufferProxyPartMachine proxy : this.getProxies()) {
+            proxy.setBuffer(null);
+        }
+        proxyMachines.clear();
+        proxies.clear();
+
+        tags.put("cut", tag);
+        return tags;
+    }
+
     @Override
     @NotNull
     public ManagedFieldHolder getFieldHolder() {
@@ -537,10 +664,11 @@ public class MEPatternBufferPartMachine extends MEIOPartMachine implements IInte
     public Set<MEPatternBufferProxyPartMachine> getProxies() {
         if (proxyMachines.size() != proxies.size()) {
             proxyMachines.clear();
-            for (var pos : proxies) {
+            for (var it = proxies.iterator(); it.hasNext();) {
+                var pos = it.next();
                 if (MetaMachine.getMachine(Objects.requireNonNull(getLevel()), pos) instanceof MEPatternBufferProxyPartMachine proxy) {
                     proxyMachines.add(proxy);
-                }
+                } else it.remove();
             }
         }
         return Collections.unmodifiableSet(proxyMachines);
@@ -639,6 +767,17 @@ public class MEPatternBufferPartMachine extends MEIOPartMachine implements IInte
                 .setTooltips(List.of(
                         Component.translatable("gui.gtceu.share_tank.desc.0"),
                         Component.translatable("gui.gtceu.share_inventory.desc.1"))));
+
+        // By Product configurator
+        configuratorPanel.attachConfigurators(new IFancyConfiguratorButton.Toggle(
+                GuiTextures.BUTTON_SILK_TOUCH_MODE.getSubTexture(0, 0, 1, 0.5),
+                GuiTextures.BUTTON_SILK_TOUCH_MODE.getSubTexture(0, 0.5, 1, 0.5),
+                () -> !this.keepByProduct, (clickData, pressed) -> {
+                    this.keepByProduct = !pressed;
+                    refreshAllByProduct();
+                })
+                .setTooltipsSupplier(pressed -> List.of(Component.translatable("tooltip.gtlcore.disable_by_product").setStyle(Style.EMPTY.withColor(ChatFormatting.YELLOW))
+                        .append(Component.translatable(pressed ? "gtceu.multiblock.universal.distinct.yes" : "gtceu.multiblock.universal.distinct.no")))));
     }
 
     @Override
@@ -694,8 +833,8 @@ public class MEPatternBufferPartMachine extends MEIOPartMachine implements IInte
     private IPatternDetails getRealPattern(int slot, ItemStack stack) {
         if (!stack.isEmpty()) {
             var internalSlot = internalInventory[slot];
-            return circuitHandler.processPatternWithCircuit(
-                    stack, internalSlot.cacheManager::setCircuitCache, getLevel());
+            return realPatternHelper.processPatternWithCircuit(
+                    stack, internalSlot.cacheManager::setCircuitCache, getLevel(), keepByProduct);
         }
         return null;
     }
@@ -707,7 +846,7 @@ public class MEPatternBufferPartMachine extends MEIOPartMachine implements IInte
      * @return 电路ItemStack，可能为空
      */
     public ItemStack getCircuitForRecipe(int slotIndex) {
-        return circuitHandler.getCircuitForRecipe(internalInventory[slotIndex].cacheManager.getCircuitStack());
+        return realPatternHelper.getCircuitForRecipe(internalInventory[slotIndex].cacheManager.getCircuitStack());
     }
 
     // ========================================
@@ -861,7 +1000,7 @@ public class MEPatternBufferPartMachine extends MEIOPartMachine implements IInte
         }
 
         public boolean isItemActive(boolean simulate) {
-            return hasPatternArray[slotIndex] && simulate ? (!itemInventory.isEmpty() || !sharedCatalystInventory.isEmpty() || !circuitHandler.getCircuitForRecipe(cacheManager.getCircuitStack()).isEmpty() || !itemCatalystInventory.isEmpty()) : !itemInventory.isEmpty();
+            return hasPatternArray[slotIndex] && simulate ? (!itemInventory.isEmpty() || !sharedCatalystInventory.isEmpty() || !realPatternHelper.getCircuitForRecipe(cacheManager.getCircuitStack()).isEmpty() || !itemCatalystInventory.isEmpty()) : !itemInventory.isEmpty();
         }
 
         public boolean isFluidActive(boolean simulate) {
