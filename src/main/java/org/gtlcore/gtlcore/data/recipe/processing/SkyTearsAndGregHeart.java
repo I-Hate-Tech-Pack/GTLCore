@@ -519,8 +519,8 @@ public class SkyTearsAndGregHeart {
                     .inputFluids(PCBCoolant.getFluid(100))
                     .inputFluids(Air.getFluid(64000))
                     .outputItems(Registries.getItem("kubejs:overworld_data"))
-                    .duration(200)
-                    .EUt(8)
+                    .duration(4000)
+                    .EUt(32)
                     .save(provider);
 
             WORLD_DATA_SCANNER_RECIPES.recipeBuilder("sky_block_make_nether_data")
@@ -530,8 +530,8 @@ public class SkyTearsAndGregHeart {
                     .inputFluids(PCBCoolant.getFluid(200))
                     .inputFluids(NetherAir.getFluid(64000))
                     .outputItems(Registries.getItem("kubejs:nether_data"))
-                    .duration(200)
-                    .EUt(8)
+                    .duration(4000)
+                    .EUt(128)
                     .save(provider);
 
             WORLD_DATA_SCANNER_RECIPES.recipeBuilder("sky_block_make_end_data")
@@ -541,8 +541,8 @@ public class SkyTearsAndGregHeart {
                     .inputFluids(PCBCoolant.getFluid(400))
                     .inputFluids(EnderAir.getFluid(64000))
                     .outputItems(Registries.getItem("kubejs:end_data"))
-                    .duration(200)
-                    .EUt(8)
+                    .duration(4000)
+                    .EUt(512)
                     .save(provider);
 
             FRAGMENT_WORLD_COLLECTION.recipeBuilder("make_damascus_steel_dust")
