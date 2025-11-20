@@ -73,24 +73,23 @@ public class PatternPreviewWidget extends WidgetGroup {
     private static int LAST_OFFSET_INDEX = 0;
     private static final Map<MultiblockMachineDefinition, MBPattern[]> CACHE = new Object2ObjectOpenHashMap<>();
     private final SceneWidget sceneWidget;
-    private final DraggableScrollableWidgetGroup scrollableWidgetGroup;
+    private DraggableScrollableWidgetGroup scrollableWidgetGroup;
     private final MultiblockMachineDefinition controllerDefinition;
     private final MBPattern[] patterns;
-    private final List<SimplePredicate> predicates;
     private int index;
     private int layer;
-    private SlotWidget[] slotWidgets;
-    private SlotWidget[] candidates;
+    private final List<SlotWidget> slotWidgets;
+    private final List<SlotWidget> candidates;
     private boolean showModules = false;
-    private boolean hasModule = false;
 
     protected PatternPreviewWidget(MultiblockMachineDefinition controllerDefinition) {
         super(0, 0, 160, 160);
         try {
             setClientSideWidget();
             this.controllerDefinition = controllerDefinition;
-            predicates = new ObjectArrayList<>();
             layer = -1;
+            slotWidgets = new ObjectArrayList<>();
+            candidates = new ObjectArrayList<>();
 
             addWidget(sceneWidget = new SceneWidget(3, 3, 150, 150, LEVEL) {
 
@@ -155,14 +154,7 @@ public class PatternPreviewWidget extends WidgetGroup {
                     .setRenderFacing(false)
                     .setRenderFacing(false));
 
-            scrollableWidgetGroup = new DraggableScrollableWidgetGroup(3, 132, 154, 22)
-                    .setXScrollBarHeight(4)
-                    .setXBarStyle(GuiTextures.SLIDER_BACKGROUND, GuiTextures.BUTTON)
-                    .setScrollable(true)
-                    .setDraggable(true);
-            scrollableWidgetGroup.setScrollWheelDirection(DraggableScrollableWidgetGroup.ScrollWheelDirection.HORIZONTAL);
-            scrollableWidgetGroup.setScrollYOffset(0);
-            addWidget(scrollableWidgetGroup);
+            refreshScrollableWidget();
 
             if (ConfigHolder.INSTANCE.client.useVBO) {
                 if (!RenderSystem.isOnRenderThread()) {
@@ -196,7 +188,7 @@ public class PatternPreviewWidget extends WidgetGroup {
                     this::updateLayer)
                     .setHoverBorderTexture(1, -1));
 
-            if (hasModule) {
+            if (this.patterns.length != 0 && this.patterns[0].hasModule) {
                 addWidget(new ButtonWidget(138, 70, 18, 18, new GuiTextureGroup(
                         ColorPattern.T_GRAY.rectTexture(),
                         new TextTexture("1").setSupplier(() -> showModules ? "M:ON" : "M:OFF")),
@@ -261,23 +253,34 @@ public class PatternPreviewWidget extends WidgetGroup {
         this.layer = -1;
         MBPattern pattern = patterns[index];
         setupScene(pattern);
-        if (slotWidgets != null) {
-            for (var slotWidget : slotWidgets) {
-                scrollableWidgetGroup.removeWidget(slotWidget);
-            }
-        }
-        slotWidgets = new SlotWidget[pattern.parts.size()];
+
+        refreshScrollableWidget();
+        slotWidgets.clear();
         var itemHandler = new CycleItemStackHandler(pattern.parts);
-        for (int i = 0; i < slotWidgets.length; i++) {
+        for (int i = 0; i < pattern.parts.size(); i++) {
             final var itemStack = pattern.parts.get(i).get(0);
-            slotWidgets[i] = new SlotWidget(itemHandler, i, 4 + i * 18, 0, false, false)
+            final var widget = new SlotWidget(itemHandler, i, 4 + i * 18, 0, false, false)
                     .setBackgroundTexture(ColorPattern.T_GRAY.rectTexture())
                     .setIngredientIO(IngredientIO.INPUT)
                     .setOnAddedTooltips((w, tips) -> tips.add(Component.translatable("gtceu.machine.quantum_chest.items_stored")
                             .withStyle(ChatFormatting.DARK_AQUA)
                             .append(Component.literal(String.valueOf(itemStack.getCount())))));
-            scrollableWidgetGroup.addWidget(slotWidgets[i]);
+            slotWidgets.add(widget);
+            scrollableWidgetGroup.addWidget(widget);
         }
+    }
+
+    private void refreshScrollableWidget() {
+        if (scrollableWidgetGroup != null) removeWidget(scrollableWidgetGroup);
+        var result = new DraggableScrollableWidgetGroup(3, 132, 154, 22)
+                .setXScrollBarHeight(4)
+                .setXBarStyle(GuiTextures.SLIDER_BACKGROUND, GuiTextures.BUTTON)
+                .setScrollable(true)
+                .setDraggable(true);
+        result.setScrollWheelDirection(DraggableScrollableWidgetGroup.ScrollWheelDirection.HORIZONTAL);
+        result.setScrollYOffset(0);
+        scrollableWidgetGroup = result;
+        addWidget(scrollableWidgetGroup);
     }
 
     private void toggleModules() {
@@ -304,16 +307,17 @@ public class PatternPreviewWidget extends WidgetGroup {
         var predicate = pattern.predicateMap.get(pos);
 
         if (predicate != null) {
-            predicates.clear();
+            var predicates = new ObjectOpenHashSet<SimplePredicate>();
             predicates.addAll(predicate.common);
             predicates.addAll(predicate.limited);
-            predicates.removeIf(p -> p == null || p.candidates == null);
+            predicates.remove(null);
+            predicates.removeIf(p -> p.candidates == null);
 
-            if (candidates != null) {
-                for (SlotWidget candidate : candidates) {
-                    removeWidget(candidate);
-                }
+            for (SlotWidget candidate : candidates) {
+                removeWidget(candidate);
             }
+            candidates.clear();
+
             List<List<ItemStack>> candidateStacks = new ObjectArrayList<>();
             List<List<Component>> predicateTips = new ObjectArrayList<>();
             for (var simplePredicate : predicates) {
@@ -324,17 +328,17 @@ public class PatternPreviewWidget extends WidgetGroup {
                 }
             }
 
-            candidates = new SlotWidget[candidateStacks.size()];
             CycleItemStackHandler itemHandler = new CycleItemStackHandler(candidateStacks);
-            int maxCol = (160 - (((slotWidgets.length - 1) / 9 + 1) * 18) - 35) % 18;
+            int maxCol = (160 - (((slotWidgets.size() - 1) / 9 + 1) * 18) - 35) % 18;
             for (int i = 0; i < candidateStacks.size(); i++) {
                 int finalI = i;
-                candidates[i] = new SlotWidget(itemHandler, i, 3 + (i / maxCol) * 18, 3 + (i % maxCol) * 18, false,
+                final var widget = new SlotWidget(itemHandler, i, 3 + (i / maxCol) * 18, 3 + (i % maxCol) * 18, false,
                         false)
                         .setIngredientIO(IngredientIO.INPUT)
                         .setBackgroundTexture(new ColorRectTexture(0x4fffffff))
                         .setOnAddedTooltips((slot, list) -> list.addAll(predicateTips.get(finalI)));
-                addWidget(candidates[i]);
+                candidates.add(widget);
+                addWidget(widget);
             }
         }
     }
@@ -431,7 +435,6 @@ public class PatternPreviewWidget extends WidgetGroup {
 
             // Form each module pattern and merge their predicateMaps
             if (controllerBase instanceof IModularMachineHost<?> host) {
-                hasModule = true;
                 List<IMultiController> moduleControllers = initializeModules(host, controllerWorldPos,
                         blockMap, hostBlockMap, moduleOnlyBlocks);
 
@@ -449,7 +452,7 @@ public class PatternPreviewWidget extends WidgetGroup {
                 hostBlockMap.forEach((pos, block) -> {
                     if (!modulePos.contains(pos)) LEVEL.addBlock(pos, block);
                 });
-            } else hasModule = false;
+            }
         }
 
         var parts = partsMap.values().stream()
@@ -713,6 +716,7 @@ public class PatternPreviewWidget extends WidgetGroup {
         @NotNull
         final IMultiController controllerBase;
         final int maxY, minY;
+        final boolean hasModule;
 
         public MBPattern(@NotNull Map<BlockPos, BlockInfo> blockMap, @NotNull Set<BlockPos> moduleOnlyBlocks, @NotNull List<List<ItemStack>> parts,
                          @NotNull Map<BlockPos, TraceabilityPredicate> predicateMap,
@@ -729,6 +733,7 @@ public class PatternPreviewWidget extends WidgetGroup {
             }
             minY = min;
             maxY = max;
+            hasModule = controllerBase instanceof IModularMachineHost<?>;
         }
     }
 }
