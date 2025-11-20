@@ -72,3 +72,10 @@ mandatory = false
 versionRange = "[1.4,8,)"
 ordering = "AFTER"
 side = "BOTH"
+
+[[dependencies.${mod_id}]]
+modId = "ldlib"
+mandatory = false
+versionRange = "[1.0.29,)"
+ordering = "AFTER"
+side = "BOTH"
