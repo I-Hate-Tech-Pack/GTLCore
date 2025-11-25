@@ -1,17 +1,21 @@
 package org.gtlcore.gtlcore.mixin.gtm;
 
+import org.gtlcore.gtlcore.api.machine.ISteamMachine;
 import org.gtlcore.gtlcore.api.machine.trait.IRecipeStatus;
 import org.gtlcore.gtlcore.utils.NumberUtils;
 
 import com.gregtechceu.gtceu.api.GTValues;
+import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.integration.jade.provider.CapabilityBlockProvider;
 import com.gregtechceu.gtceu.integration.jade.provider.RecipeLogicProvider;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -55,25 +59,43 @@ public abstract class RecipeLogicProviderMixin extends CapabilityBlockProvider<R
             if (!recipeInfo.isEmpty()) {
                 var EUt = recipeInfo.getLong("EUt");
                 var isInput = recipeInfo.getBoolean("isInput");
-
-                long absEUt = Math.abs(EUt);
-
-                // Default behavior, if this TE is not a steam machine (or somehow not instanceof
-                // IGregTechTileEntity...)
-                var tier = GTUtil.getTierByVoltage(absEUt);
-                Component text = Component.literal(NumberUtils.formatLong(absEUt)).withStyle(RED)
-                        .append(Component.literal(" EU/t").withStyle(RESET)
-                                .append(Component.literal(" (").withStyle(GREEN)
-                                        .append(Component
-                                                .translatable("gtceu.top.electricity",
-                                                        FormattingUtil.formatNumber2Places(absEUt / ((float) GTValues.V[tier])),
-                                                        GTValues.VNF[tier])
-                                                .withStyle(style -> style.withColor(GTL_CORE$VC[tier])))
-                                        .append(Component.literal(")").withStyle(GREEN))));
+                boolean isSteam = false;
 
                 if (EUt > 0) {
+                    if (blockEntity instanceof MetaMachineBlockEntity mbe) {
+                        var machine = mbe.getMetaMachine();
+                        if (machine instanceof ISteamMachine steamMachine) {
+                            EUt = (long) Math.ceil(EUt * steamMachine.getConversionRate());
+                            isSteam = true;
+                        }
+                    }
+
+                    MutableComponent text;
+
+                    if (isSteam) {
+                        text = Component.literal(FormattingUtil.formatNumbers(EUt) + " mB/t")
+                                .withStyle(ChatFormatting.GREEN);
+                    } else {
+                        long absEUt = Math.abs(EUt);
+
+                        // Default behavior, if this TE is not a steam machine (or somehow not instanceof
+                        // IGregTechTileEntity...)
+                        var tier = GTUtil.getTierByVoltage(absEUt);
+                        text = Component.literal(NumberUtils.formatLong(absEUt)).withStyle(RED)
+                                .append(Component.literal(" EU/t").withStyle(RESET)
+                                        .append(Component.literal(" (").withStyle(GREEN)
+                                                .append(Component
+                                                        .translatable("gtceu.top.electricity",
+                                                                FormattingUtil.formatNumber2Places(absEUt / ((float) GTValues.V[tier])),
+                                                                GTValues.VNF[tier])
+                                                        .withStyle(style -> style.withColor(GTL_CORE$VC[tier])))
+                                                .append(Component.literal(")").withStyle(GREEN))));
+                    }
+
                     if (isInput) {
-                        tooltip.add(Component.translatable("gtceu.top.energy_consumption").append(" ").append(text));
+                        var component = isSteam ? Component.translatable("gtceu.jade.steam_consumption") :
+                                Component.translatable("gtceu.top.energy_consumption");
+                        tooltip.add(component.append(" ").append(text));
                     } else {
                         tooltip.add(Component.translatable("gtceu.top.energy_production").append(" ").append(text));
                     }

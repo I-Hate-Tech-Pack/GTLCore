@@ -1,14 +1,19 @@
 package org.gtlcore.gtlcore.mixin.gtm.machine;
 
+import org.gtlcore.gtlcore.api.machine.ISteamMachine;
 import org.gtlcore.gtlcore.api.recipe.RecipeResult;
 
+import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.steam.SimpleSteamMachine;
+import com.gregtechceu.gtceu.api.machine.steam.SteamMachine;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.RecipeHelper;
 import com.gregtechceu.gtceu.api.recipe.logic.OCParams;
 import com.gregtechceu.gtceu.api.recipe.logic.OCResult;
 import com.gregtechceu.gtceu.common.recipe.condition.VentCondition;
+
+import com.lowdragmc.lowdraglib.side.fluid.FluidHelper;
 
 import net.minecraft.network.chat.Component;
 
@@ -18,7 +23,11 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
 @Mixin(SimpleSteamMachine.class)
-public abstract class SimpleSteamMachineMixin {
+public abstract class SimpleSteamMachineMixin extends SteamMachine implements ISteamMachine {
+
+    public SimpleSteamMachineMixin(IMachineBlockEntity holder, boolean isHighPressure, Object... args) {
+        super(holder, isHighPressure, args);
+    }
 
     /**
      * @author .
@@ -44,5 +53,10 @@ public abstract class SimpleSteamMachineMixin {
             }
         }
         return null;
+    }
+
+    @Override
+    public double getConversionRate() {
+        return FluidHelper.getBucket() / 1000.0F;
     }
 }

@@ -1,5 +1,7 @@
 package org.gtlcore.gtlcore.common.machine.multiblock.steam;
 
+import org.gtlcore.gtlcore.api.machine.ISteamMachine;
+
 import com.gregtechceu.gtceu.api.capability.recipe.EURecipeCapability;
 import com.gregtechceu.gtceu.api.capability.recipe.FluidRecipeCapability;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
@@ -24,6 +26,7 @@ import com.lowdragmc.lowdraglib.gui.util.ClickData;
 import com.lowdragmc.lowdraglib.gui.widget.ComponentPanelWidget;
 import com.lowdragmc.lowdraglib.gui.widget.DraggableScrollableWidgetGroup;
 import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
+import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
 import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 
@@ -38,7 +41,6 @@ import net.minecraft.world.entity.player.Player;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -47,16 +49,18 @@ import static org.gtlcore.gtlcore.common.data.GTLMachines.LARGE_STEAM_HATCH;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class LargeSteamParallelMultiblockMachine extends WorkableMultiblockMachine implements IDisplayUIMachine {
+public class LargeSteamParallelMultiblockMachine extends WorkableMultiblockMachine implements IDisplayUIMachine, ISteamMachine {
 
     protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(
             LargeSteamParallelMultiblockMachine.class, WorkableMultiblockMachine.MANAGED_FIELD_HOLDER);
 
     private final int max_parallels;
 
+    @DescSynced
     private boolean isOC;
 
     @Persisted
+    @DescSynced
     private int amountOC;
 
     // if in millibuckets, this is 0.5, Meaning 2mb of steam -> 1 EU
@@ -84,11 +88,8 @@ public class LargeSteamParallelMultiblockMachine extends WorkableMultiblockMachi
                 if (tank.getFluidInTank(0).isFluidEqual(GTMaterials.Steam.getFluid(1))) {
                     this.isOC = tank.getMachine().getDefinition() == LARGE_STEAM_HATCH;
                     itr.remove();
-                    if (!capabilitiesProxy.contains(IO.IN, EURecipeCapability.CAP)) {
-                        capabilitiesProxy.put(IO.IN, EURecipeCapability.CAP, new ArrayList<>());
-                    }
-                    capabilitiesProxy.get(IO.IN, EURecipeCapability.CAP)
-                            .add(new SteamEnergyRecipeHandler(tank, CONVERSION_RATE * (this.isOC ? Math.pow(3, this.amountOC) : 1)));
+                    capabilitiesProxy.put(IO.IN, EURecipeCapability.CAP,
+                            List.of(new SteamEnergyRecipeHandler(tank, CONVERSION_RATE * (this.isOC ? Math.pow(3, this.amountOC) : 1))));
                     return;
                 }
             }
@@ -192,5 +193,10 @@ public class LargeSteamParallelMultiblockMachine extends WorkableMultiblockMachi
                 .widget(UITemplate.bindPlayerInventory(entityPlayer.getInventory(),
                         GuiTextures.SLOT_STEAM.get(ConfigHolder.INSTANCE.machines.steelSteamMultiblocks), 7, 134,
                         true));
+    }
+
+    @Override
+    public double getConversionRate() {
+        return CONVERSION_RATE * (this.isOC ? Math.pow(3, this.amountOC) : 1);
     }
 }

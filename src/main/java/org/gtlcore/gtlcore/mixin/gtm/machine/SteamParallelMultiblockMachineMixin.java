@@ -1,5 +1,7 @@
 package org.gtlcore.gtlcore.mixin.gtm.machine;
 
+import org.gtlcore.gtlcore.api.machine.ISteamMachine;
+
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableMultiblockMachine;
@@ -19,7 +21,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import static com.gregtechceu.gtceu.common.data.GTMachines.STEAM_OVEN;
 
 @Mixin(SteamParallelMultiblockMachine.class)
-public abstract class SteamParallelMultiblockMachineMixin extends WorkableMultiblockMachine {
+public abstract class SteamParallelMultiblockMachineMixin extends WorkableMultiblockMachine implements ISteamMachine {
 
     public SteamParallelMultiblockMachineMixin(IMachineBlockEntity holder, Object... args) {
         super(holder, args);
@@ -38,5 +40,10 @@ public abstract class SteamParallelMultiblockMachineMixin extends WorkableMultib
     @ModifyConstant(method = "addDisplayText", remap = false, constant = @Constant(intValue = 8))
     private int modifyConsume(int constant) {
         return this.getDefinition() == STEAM_OVEN ? 256 : 8;
+    }
+
+    @Override
+    public double getConversionRate() {
+        return 0.5;
     }
 }

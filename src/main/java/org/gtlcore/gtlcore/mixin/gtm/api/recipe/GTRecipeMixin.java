@@ -1,5 +1,6 @@
 package org.gtlcore.gtlcore.mixin.gtm.api.recipe;
 
+import org.gtlcore.gtlcore.api.machine.ISteamMachine;
 import org.gtlcore.gtlcore.api.recipe.IGTRecipe;
 import org.gtlcore.gtlcore.api.recipe.RecipeResult;
 
@@ -11,6 +12,7 @@ import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
 import com.google.common.primitives.Ints;
@@ -74,11 +76,12 @@ public abstract class GTRecipeMixin implements IGTRecipe {
     @Overwrite(remap = false)
     public GTRecipe.ActionResult matchTickRecipe(IRecipeCapabilityHolder holder) {
         if (!this.hasTick()) return GTRecipe.ActionResult.SUCCESS;
+        var rlm = (IRecipeLogicMachine) holder;
         if (holder instanceof WorkableElectricMultiblockMachine machine && this.io == IO.IN) {
             var lastRecipe = machine.getRecipeLogic().getLastOriginRecipe();
             if (lastRecipe == null || !this.id.equals(lastRecipe.id)) {
                 if (this.getEuTier() > GTUtil.getFloorTierByVoltage(machine.getMaxVoltage())) {
-                    RecipeResult.of((IRecipeLogicMachine) holder, RecipeResult.FAIL_VOLTAGE_TIER);
+                    RecipeResult.of(rlm, RecipeResult.FAIL_VOLTAGE_TIER);
                     return GTRecipe.ActionResult.fail(() -> null);
                 }
             }
@@ -87,10 +90,12 @@ public abstract class GTRecipeMixin implements IGTRecipe {
         if (!result.isSuccess() && result.reason() != null) {
             String s = result.reason().get().toString();
             if (s.contains("_in")) {
-                if (s.contains("cwu")) RecipeResult.of((IRecipeLogicMachine) holder, RecipeResult.FAIL_NO_ENOUGH_CWU_IN);
-                else if (s.contains("eu.name")) RecipeResult.of((IRecipeLogicMachine) holder, RecipeResult.FAIL_NO_ENOUGH_EU_IN);
+                if (s.contains("cwu")) RecipeResult.of(rlm, RecipeResult.FAIL_NO_ENOUGH_CWU_IN);
+                else if (s.contains("eu.name"))
+                    RecipeResult.of(rlm, holder instanceof ISteamMachine ?
+                            RecipeResult.fail(Component.translatable("gtceu.recipe.fail.steam.enough")) : RecipeResult.FAIL_NO_ENOUGH_EU_IN);
             } else if (s.contains("_out")) {
-                if (s.contains("eu.name")) RecipeResult.of((IRecipeLogicMachine) holder, RecipeResult.FAIL_NO_ENOUGH_EU_OUT);
+                if (s.contains("eu.name")) RecipeResult.of(rlm, RecipeResult.FAIL_NO_ENOUGH_EU_OUT);
             }
         }
         return result;
