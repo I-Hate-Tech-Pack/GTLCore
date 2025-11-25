@@ -86,7 +86,7 @@ public class Misc {
         }
 
         VanillaRecipeHelper.addShapelessRecipe(provider, "simulation_machine",
-                AdvancedMultiBlockMachine.SIMULATION_MACHINE.asStack(), "A", Blocks.STONE);
+                AdvancedMultiBlockMachine.SIMULATION_MACHINE.asStack(), "A", Blocks.COBBLESTONE);
 
         WOOD_DISTILLATION_RECIPES.recipeBuilder("wood_distillation_recipes")
                 .inputItems(ItemTags.LOGS, 16)

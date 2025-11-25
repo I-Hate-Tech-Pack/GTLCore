@@ -188,7 +188,7 @@ public class GTLRecipeTypes {
                         return ctemp >= temp;
                     }
                 }).map(coil -> new ItemStack(coil.getValue().get())).toList());
-                widgetGroup.addWidget(new SlotWidget(new CycleItemStackHandler(items), 0, widgetGroup.getSize().width - 25, widgetGroup.getSize().height - 32, false, false));
+                widgetGroup.addWidget(new SlotWidget(new CycleItemStackHandler(items), 0, widgetGroup.getSize().width - 35, widgetGroup.getSize().height - 32, false, false));
             });
 
     public static final GTRecipeType PLASMA_CONDENSER_RECIPES = register("plasma_condenser", MULTIBLOCK)
