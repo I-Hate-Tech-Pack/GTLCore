@@ -4,6 +4,7 @@ import org.gtlcore.gtlcore.GTLCore;
 import org.gtlcore.gtlcore.client.ClientUtil;
 import org.gtlcore.gtlcore.client.renderer.RenderBufferHelper;
 import org.gtlcore.gtlcore.common.machine.multiblock.electric.SpaceElevatorMachine;
+import org.gtlcore.gtlcore.utils.RenderUtil;
 
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
@@ -38,7 +39,7 @@ public class SpaceElevatorRenderer extends WorkableCasingMachineRenderer {
                        int combinedLight, int combinedOverlay) {
         if (blockEntity instanceof IMachineBlockEntity machineBlockEntity &&
                 machineBlockEntity.getMetaMachine() instanceof SpaceElevatorMachine machine && machine.isFormed()) {
-            float tick = machine.getOffsetTimer() + partialTicks;
+            float tick = RenderUtil.getSmoothTick(machine, partialTicks);
             double x = 0.5, y = 1, z = 0.5;
             switch (machine.getFrontFacing()) {
                 case NORTH -> z = 3.5;

@@ -1,6 +1,7 @@
 package org.gtlcore.gtlcore.client.renderer.machine;
 
 import org.gtlcore.gtlcore.client.ClientUtil;
+import org.gtlcore.gtlcore.utils.RenderUtil;
 
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
@@ -36,7 +37,7 @@ public class AnnihilateGeneratorRenderer extends WorkableCasingMachineRenderer {
                        int combinedLight, int combinedOverlay) {
         if (blockEntity instanceof IMachineBlockEntity machineBlockEntity &&
                 machineBlockEntity.getMetaMachine() instanceof WorkableElectricMultiblockMachine machine && machine.isActive()) {
-            float tick = machine.getOffsetTimer() + partialTicks;
+            float tick = RenderUtil.getSmoothTick(machine, partialTicks);
             double x = 0.5, y = 36.5, z = 0.5;
             switch (machine.getFrontFacing()) {
                 case NORTH -> z = 39.5;

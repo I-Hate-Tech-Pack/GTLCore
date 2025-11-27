@@ -11,9 +11,9 @@ import net.minecraft.world.level.ChunkPos;
 import org.spongepowered.asm.mixin.*;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Implements(@Interface(
                        iface = INewMultiblockWorldSavedData.class,
@@ -30,13 +30,13 @@ public abstract class MultiblockWorldSavedDataMixin {
 
     /**
      * @author screret
-     * @reason Performance
+     * @reason Performance and thread-safety
      */
     @Overwrite(remap = false)
     public void addMapping(MultiblockState state) {
         this.mapping.put(state.controllerPos, state);
         for (BlockPos blockPos : state.getCache()) {
-            chunkPosMapping.computeIfAbsent(new ChunkPos(blockPos), c -> new HashSet<>()).add(state);
+            chunkPosMapping.computeIfAbsent(new ChunkPos(blockPos), c -> ConcurrentHashMap.newKeySet()).add(state);
         }
     }
 
