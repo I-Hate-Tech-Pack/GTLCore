@@ -59,6 +59,8 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongArrayList;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.objects.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -142,7 +144,7 @@ public class MEMolecularAssemblerIOPartMachine extends MEIOPartMachine implement
     private final Object2LongOpenHashMap<AEKey> buffer;
 
     @DescSynced
-    private final ObjectOpenHashSet<BlockPos> proxies = new ObjectOpenHashSet<>();
+    private final Set<Long> proxies = new LongOpenHashSet();
     private final ReferenceSortedSet<IItemTransfer> proxyStackTransfers = new ReferenceLinkedOpenHashSet<>();
 
     public MEMolecularAssemblerIOPartMachine(IMachineBlockEntity holder) {
@@ -206,7 +208,7 @@ public class MEMolecularAssemblerIOPartMachine extends MEIOPartMachine implement
     public void init(@NotNull Set<BlockPos> proxies) {
         clear();
 
-        this.proxies.addAll(proxies);
+        this.proxies.addAll(proxies.stream().mapToLong(BlockPos::asLong).collect(LongArrayList::new, LongArrayList::add, LongArrayList::addAll));
         mutableItemTransferList.addTransfers(getProxies());
 
         if (!mutableItemTransferList.isEmpty()) {
@@ -262,7 +264,7 @@ public class MEMolecularAssemblerIOPartMachine extends MEIOPartMachine implement
             proxyStackTransfers.clear();
             ObjectList<IItemTransfer> patternInventories = new ObjectArrayList<>();
             for (var pos : proxies) {
-                if (MetaMachine.getMachine(Objects.requireNonNull(getLevel()), pos) instanceof MECraftPatternContainerPartMachine proxy) {
+                if (MetaMachine.getMachine(Objects.requireNonNull(getLevel()), BlockPos.of(pos)) instanceof MECraftPatternContainerPartMachine proxy) {
                     patternInventories.add(proxy.getPatternInventory());
                 }
             }

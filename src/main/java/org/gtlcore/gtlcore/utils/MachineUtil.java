@@ -15,16 +15,30 @@ import com.lowdragmc.lowdraglib.side.fluid.FluidStack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.common.util.Lazy;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import java.util.Map;
 import java.util.Objects;
 
 import static org.gtlcore.gtlcore.api.recipe.RecipeRunnerHelper.*;
+import static org.gtlcore.gtlcore.utils.Registries.getItem;
 
 public class MachineUtil {
 
     public static final BlockPos[] EMPTY_POS_ARRAY = new BlockPos[0];
+
+    private static final Lazy<Map<Item, EquipmentSlot>> armorMap = Lazy.of(() -> Map.of(
+            getItem("kubejs:magnetohydrodynamicallyconstrainedstarmatter_boots"), EquipmentSlot.FEET,
+            getItem("kubejs:magnetohydrodynamicallyconstrainedstarmatter_leggings"), EquipmentSlot.LEGS,
+            getItem("kubejs:magnetohydrodynamicallyconstrainedstarmatter_chestplate"), EquipmentSlot.CHEST,
+            getItem("kubejs:magnetohydrodynamicallyconstrainedstarmatter_helmet"), EquipmentSlot.HEAD));
 
     private MachineUtil() {
         throw new IllegalAccessError();
@@ -92,5 +106,17 @@ public class MachineUtil {
             return recipe.handleTickRecipeIO(IO.IN, machine, machine.recipeLogic.getChanceCaches());
         }
         return false;
+    }
+
+    public static void createItemEntity(ServerLevel level, double x, double y, double z, ItemStack itemStack) {
+        final var newItem = new ItemEntity(level, x, y, z, itemStack);
+        newItem.setDeltaMovement(0.0, 0.2, 0.0);
+        newItem.setPickUpDelay(10);
+        level.addFreshEntity(newItem);
+    }
+
+    public static boolean hasFullArmorSet(ServerPlayer player) {
+        return armorMap.get().entrySet().stream()
+                .allMatch(entry -> player.getItemBySlot(entry.getValue()).is(entry.getKey()));
     }
 }

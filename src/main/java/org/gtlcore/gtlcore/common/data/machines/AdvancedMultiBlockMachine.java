@@ -14,6 +14,7 @@ import org.gtlcore.gtlcore.common.machine.multiblock.electric.*;
 import org.gtlcore.gtlcore.common.machine.multiblock.noenergy.HeatExchangerMachine;
 import org.gtlcore.gtlcore.common.machine.multiblock.noenergy.NeutronActivatorMachine;
 import org.gtlcore.gtlcore.utils.MachineIO;
+import org.gtlcore.gtlcore.utils.MachineUtil;
 import org.gtlcore.gtlcore.utils.Registries;
 
 import com.gregtechceu.gtceu.GTCEu;
@@ -42,13 +43,16 @@ import com.gregtechceu.gtceu.utils.FormattingUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -68,6 +72,8 @@ import static com.gregtechceu.gtceu.api.pattern.util.RelativeDirection.*;
 import static com.gregtechceu.gtceu.common.data.GTMachines.*;
 import static com.gregtechceu.gtceu.common.data.GTRecipeTypes.DUMMY_RECIPES;
 import static com.gregtechceu.gtceu.common.registry.GTRegistration.REGISTRATE;
+import static net.minecraft.core.registries.Registries.DIMENSION;
+import static org.gtlcore.gtlcore.utils.Registries.getItem;
 
 @SuppressWarnings("unused")
 public class AdvancedMultiBlockMachine {
@@ -797,40 +803,50 @@ public class AdvancedMultiBlockMachine {
                     .build())
             .onWorking(machine -> {
                 if (machine.getRecipeLogic().getProgress() == 5 && machine instanceof WorkableElectricMultiblockMachine workableElectricMultiblockMachine) {
-                    BlockPos pos = machine.self().getPos().offset(0, -13, 0);
-                    Level level = machine.self().getLevel();
-                    if (level != null) {
-                        level.getServer().kjs$runCommandSilent("particle minecraft:dragon_breath " + pos.getX() + " " + pos.getY() + " " + pos.getZ() + " 4 4 4 0.01 1000 force");
-                        List<Entity> entities = level.getEntitiesOfClass(Entity.class, new AABB(
-                                pos.getX() - 10,
-                                pos.getY() - 10,
-                                pos.getZ() - 10,
-                                pos.getX() + 10,
-                                pos.getY() + 10,
-                                pos.getZ() + 10));
+                    if (machine.self().getLevel() instanceof ServerLevel level) {
+                        BlockPos pos = machine.self().getPos().offset(0, -13, 0);
+                        level.sendParticles(ParticleTypes.DRAGON_BREATH, pos.getX(), pos.getY(), pos.getZ(), 1000, 4.0, 4.0, 4.0, 0.01);
+
+                        List<Entity> entities = level.getEntitiesOfClass(Entity.class, new AABB(pos.getX() - 10, pos.getY() - 10, pos.getZ() - 10, pos.getX() + 10, pos.getY() + 10, pos.getZ() + 10));
                         for (Entity entity : entities) {
-                            if (entity instanceof Player player) {
-                                if (Objects.equals(player.getArmorSlots().toString(), "[1 magnetohydrodynamicallyconstrainedstarmatter_boots, 1 magnetohydrodynamicallyconstrainedstarmatter_leggings, 1 magnetohydrodynamicallyconstrainedstarmatter_chestplate, 1 magnetohydrodynamicallyconstrainedstarmatter_helmet]")) {
-                                    player.getServer().kjs$runCommandSilent("execute in kubejs:create as " + entity.getName().getString() + " run tp 0 1 0");
+                            if (entity instanceof ItemEntity itemEntity) {
+                                switch (itemEntity.getItem().kjs$getId()) {
+                                    case "gtceu:magnetohydrodynamicallyconstrainedstarmatter_block" -> {
+                                        MachineUtil.createItemEntity(level, itemEntity.getX(), itemEntity.getY(), itemEntity.getZ(), new ItemStack(Blocks.COMMAND_BLOCK, itemEntity.getItem()
+                                                .getCount()));
+                                        itemEntity.discard();
+                                    }
+                                    case "gtceu:magmatter_ingot" -> {
+                                        if (itemEntity.getItem().getCount() >= 64) {
+                                            MachineUtil.createItemEntity(level, itemEntity.getX(), itemEntity.getY(), itemEntity.getZ(), new ItemStack(getItem("gtceu:magmatter_block"), itemEntity.getItem()
+                                                    .getCount() / 64));
+                                            itemEntity.discard();
+                                        }
+                                    }
+                                    case "expatternprovider:fishbig" -> {
+                                        if (itemEntity.getItem().getCount() >= 64) {
+                                            MachineUtil.createItemEntity(level, itemEntity.getX(), itemEntity.getY(), itemEntity.getZ(), new ItemStack(getItem("gtlcore:ultimate_tea"), itemEntity.getItem()
+                                                    .getCount() / 64));
+                                            itemEntity.discard();
+                                        }
+                                    }
+                                    case "gtlcore:ultimate_tea" -> {
+                                        if (itemEntity.getItem().getCount() >= 16) {
+                                            MachineUtil.createItemEntity(level, itemEntity.getX(), itemEntity.getY(), itemEntity.getZ(), new ItemStack(getItem("kubejs:heartofthesmogus"), itemEntity.getItem()
+                                                    .getCount() / 16));
+                                            itemEntity.discard();
+                                        }
+                                    }
+                                }
+                            } else if (entity instanceof ServerPlayer player) {
+                                if (MachineUtil.hasFullArmorSet(player)) {
+                                    var createLevel = level.getServer().getLevel(ResourceKey.create(DIMENSION, new ResourceLocation("kubejs", "create")));
+                                    if (createLevel != null) {
+                                        player.teleportTo(createLevel, 0.0, 1.0, 0.0, player.getXRot(), player.getYRot());
+                                    }
                                 } else {
                                     player.kjs$setStatusMessage(Component.translatable("message.gtlcore.equipment_incompatible_dimension"));
                                 }
-                            }
-                            if (entity instanceof ItemEntity item && Objects.equals(item.getItem().kjs$getId(), "gtceu:magnetohydrodynamicallyconstrainedstarmatter_block")) {
-                                item.getServer().kjs$runCommandSilent("summon minecraft:item " + item.getX() + " " + item.getY() + " " + item.getZ() + " {PickupDelay:10,Motion:[0.0,0.2,0.0],Item:{id:\"minecraft:command_block\",Count:" + item.getItem().getCount() + "b}}");
-                                item.kill();
-                            }
-                            if (entity instanceof ItemEntity item && Objects.equals(item.getItem().kjs$getId(), "gtceu:magmatter_ingot") && item.getItem().getCount() >= 64) {
-                                item.getServer().kjs$runCommandSilent("summon minecraft:item " + item.getX() + " " + item.getY() + " " + item.getZ() + " {PickupDelay:10,Motion:[0.0,0.2,0.0],Item:{id:\"gtceu:magmatter_block\",Count:" + (item.getItem().getCount() / 64) + "b}}");
-                                item.kill();
-                            }
-                            if (entity instanceof ItemEntity item && Objects.equals(item.getItem().kjs$getId(), "expatternprovider:fishbig") && item.getItem().getCount() >= 64) {
-                                item.getServer().kjs$runCommandSilent("summon minecraft:item " + item.getX() + " " + item.getY() + " " + item.getZ() + " {PickupDelay:10,Motion:[0.0,0.2,0.0],Item:{id:\"gtlcore:ultimate_tea\",Count:" + (item.getItem().getCount() / 64) + "b}}");
-                                item.kill();
-                            }
-                            if (entity instanceof ItemEntity item && Objects.equals(item.getItem().kjs$getId(), "gtlcore:ultimate_tea") && item.getItem().getCount() >= 16) {
-                                item.getServer().kjs$runCommandSilent("summon minecraft:item " + item.getX() + " " + item.getY() + " " + item.getZ() + " {PickupDelay:10,Motion:[0.0,0.2,0.0],Item:{id:\"kubejs:heartofthesmogus\",Count:" + (item.getItem().getCount() / 16) + "b}}");
-                                item.kill();
                             }
                         }
                     }
@@ -933,21 +949,27 @@ public class AdvancedMultiBlockMachine {
                     .build())
             .onWorking(machine -> {
                 if (machine.getRecipeLogic().getProgress() == 19) {
-                    Level level = machine.self().getLevel();
-                    if (level != null) {
+                    if (machine.self().getLevel() instanceof ServerLevel level) {
                         BlockPos pos = machine.self().getPos().offset(0, -16, 0);
-                        String block = level.getBlockState(pos).getBlock().kjs$getId();
-                        if (MachineIO.inputItem((WorkableMultiblockMachine) machine, Registries.getItemStack("kubejs:chain_command_block_core")) && Objects.equals(block, "kubejs:command_block_broken")) {
-                            level.setBlockAndUpdate(pos, Blocks.CHAIN_COMMAND_BLOCK.defaultBlockState());
-                        }
-                        if (MachineIO.inputItem((WorkableMultiblockMachine) machine, Registries.getItemStack("kubejs:repeating_command_block_core")) && Objects.equals(block, "kubejs:chain_command_block_broken")) {
-                            level.setBlockAndUpdate(pos, Blocks.REPEATING_COMMAND_BLOCK.defaultBlockState());
-                        }
-                        if (MachineIO.inputItem((WorkableMultiblockMachine) machine, new ItemStack(GTLItems.ULTIMATE_TEA, 8)) && Objects.equals(block, "expatternprovider:fishbig")) {
-                            level.setBlockAndUpdate(pos, GTMachines.CREATIVE_FLUID.defaultBlockState());
-                        }
-                        if (MachineIO.inputItem((WorkableMultiblockMachine) machine, Registries.getItemStack("kubejs:heartofthesmogus", 64)) && Objects.equals(block, "expatternprovider:fishbig")) {
-                            level.setBlockAndUpdate(pos, GTMachines.CREATIVE_ITEM.defaultBlockState());
+                        String blockId = level.getBlockState(pos).getBlock().kjs$getId();
+
+                        switch (blockId) {
+                            case "kubejs:command_block_broken" -> {
+                                if (MachineIO.inputItem((WorkableMultiblockMachine) machine, Registries.getItemStack("kubejs:chain_command_block_core")))
+                                    level.setBlockAndUpdate(pos, Blocks.CHAIN_COMMAND_BLOCK.defaultBlockState());
+                            }
+                            case "kubejs:repeating_command_block_core" -> {
+                                if (MachineIO.inputItem((WorkableMultiblockMachine) machine, Registries.getItemStack("kubejs:repeating_command_block_core")))
+                                    level.setBlockAndUpdate(pos, Blocks.REPEATING_COMMAND_BLOCK.defaultBlockState());
+                            }
+                            case "expatternprovider:fishbig" -> {
+                                if (MachineIO.inputItem((WorkableMultiblockMachine) machine, new ItemStack(GTLItems.ULTIMATE_TEA, 8)))
+                                    level.setBlockAndUpdate(pos, GTMachines.CREATIVE_FLUID.defaultBlockState());
+                            }
+                            case "kubejs:heartofthesmogus" -> {
+                                if (MachineIO.inputItem((WorkableMultiblockMachine) machine, Registries.getItemStack("kubejs:heartofthesmogus", 64)))
+                                    level.setBlockAndUpdate(pos, GTMachines.CREATIVE_ITEM.defaultBlockState());
+                            }
                         }
                     }
                 }
