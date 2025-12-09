@@ -101,7 +101,7 @@ public class MachineUtil {
     }
 
     public static boolean inputEU(WorkableMultiblockMachine machine, long eu) {
-        GTRecipe recipe = new GTRecipeBuilder(GTCEu.id(String.valueOf(eu)), GTRecipeTypes.DUMMY_RECIPES).inputEU(eu).buildRawRecipe();
+        GTRecipe recipe = new GTRecipeBuilder(GTCEu.id(String.valueOf(eu)), GTRecipeTypes.DUMMY_RECIPES).EUt(eu).buildRawRecipe();
         if (recipe.matchTickRecipe(machine).isSuccess()) {
             return recipe.handleTickRecipeIO(IO.IN, machine, machine.recipeLogic.getChanceCaches());
         }

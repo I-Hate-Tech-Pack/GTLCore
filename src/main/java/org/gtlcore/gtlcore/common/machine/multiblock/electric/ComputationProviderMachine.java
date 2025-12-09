@@ -44,7 +44,6 @@ public class ComputationProviderMachine extends WorkableElectricMultiblockMachin
     @Nullable
     protected TickableSubscription tickSubs;
 
-    String lastAllocatedCWUt = "";
     boolean canProvideCWUt = true;
     private boolean inf = false;
 
@@ -111,7 +110,6 @@ public class ComputationProviderMachine extends WorkableElectricMultiblockMachin
 
     public void tick() {
         totalCWU -= allocatedCWUt;
-        lastAllocatedCWUt = String.valueOf(allocatedCWUt);
         if (getRecipeLogic().isSuspend()) {
             allocatedCWUt = 0;
             canProvideCWUt = false;
@@ -177,8 +175,7 @@ public class ComputationProviderMachine extends WorkableElectricMultiblockMachin
                 .addCustom(tl -> {
                     if (isFormed()) {
                         Component cwutInfo = Component.literal(
-                                lastAllocatedCWUt + " / " +
-                                        (inf ? TextUtil.full_color("∞") : getMaxCWUt()))
+                                allocatedCWUt + " / " + (inf ? TextUtil.full_color("∞") : getMaxCWUt()))
                                 .append(Component.literal(" CWU/t"))
                                 .withStyle(ChatFormatting.AQUA);
                         tl.add(Component.translatable(
