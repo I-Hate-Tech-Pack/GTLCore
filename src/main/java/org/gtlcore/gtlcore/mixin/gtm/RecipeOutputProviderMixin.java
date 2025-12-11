@@ -71,7 +71,7 @@ public abstract class RecipeOutputProviderMixin extends CapabilityBlockProvider<
                             if (tag != null) {
                                 long amount = tag.getLong("Count");
                                 if (amount > 0) {
-                                    tag.putLong("Count", amount + longIngredient.getActualAmount());
+                                    tag.putLong("Count", NumberUtils.saturatedAdd(amount, longIngredient.getActualAmount()));
                                 }
                             }
                         } else {
@@ -90,7 +90,7 @@ public abstract class RecipeOutputProviderMixin extends CapabilityBlockProvider<
                             if (tag != null) {
                                 long amount = tag.getLong("Count");
                                 if (amount > 0) {
-                                    tag.putLong("Count", amount + stack.getCount());
+                                    tag.putLong("Count", NumberUtils.saturatedAdd(amount, stack.getCount()));
                                 }
                             }
                         } else {
@@ -117,7 +117,7 @@ public abstract class RecipeOutputProviderMixin extends CapabilityBlockProvider<
                             if (tag != null) {
                                 long amount = tag.getLong("Amount");
                                 if (amount > 0) {
-                                    tag.putLong("Amount", amount + stack.getAmount());
+                                    tag.putLong("Amount", NumberUtils.saturatedAdd(amount, stack.getAmount()));
                                 }
                             }
                         } else {

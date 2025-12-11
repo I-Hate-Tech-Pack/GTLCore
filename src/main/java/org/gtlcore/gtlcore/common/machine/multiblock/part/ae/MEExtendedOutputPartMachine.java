@@ -3,6 +3,7 @@ package org.gtlcore.gtlcore.common.machine.multiblock.part.ae;
 import org.gtlcore.gtlcore.api.machine.MEExtendedOutputFancyConfigurator;
 import org.gtlcore.gtlcore.api.machine.trait.MEPart.IMEFilterIOTrait;
 import org.gtlcore.gtlcore.api.recipe.ingredient.LongIngredient;
+import org.gtlcore.gtlcore.utils.NumberUtils;
 
 import com.gregtechceu.gtceu.api.gui.fancy.TabsWidget;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
@@ -124,7 +125,9 @@ public class MEExtendedOutputPartMachine extends MEExtendedOutputPartMachineBase
                         ItemStack output = items[0];
                         if (output.isEmpty()) it.remove();
                         else if (filterHandler.test(output)) {
-                            buffer.addTo(AEItemKey.of(output), ingredient instanceof LongIngredient longIngredient ? longIngredient.getActualAmount() : output.getCount());
+                            var key = AEItemKey.of(output);
+                            var amount = ingredient instanceof LongIngredient longIngredient ? longIngredient.getActualAmount() : output.getCount();
+                            buffer.put(key, NumberUtils.saturatedAdd(buffer.getOrDefault(key, 0L), amount));
                             it.remove();
                         }
                     } else it.remove();
@@ -159,7 +162,8 @@ public class MEExtendedOutputPartMachine extends MEExtendedOutputPartMachineBase
                             FluidStack output = fluids[0];
                             if (output.isEmpty()) it.remove();
                             else if (filterHandler.test(output)) {
-                                buffer.addTo(AEFluidKey.of(output.getFluid()), output.getAmount());
+                                var key = AEFluidKey.of(output.getFluid());
+                                buffer.put(key, NumberUtils.saturatedAdd(buffer.getOrDefault(key, 0L), output.getAmount()));
                                 it.remove();
                             }
                         } else it.remove();

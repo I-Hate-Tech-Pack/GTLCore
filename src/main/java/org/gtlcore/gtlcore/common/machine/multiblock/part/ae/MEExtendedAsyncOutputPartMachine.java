@@ -4,6 +4,7 @@ import org.gtlcore.gtlcore.api.machine.trait.MEPart.IMEFilterIOTrait;
 import org.gtlcore.gtlcore.integration.ae2.AEUtils;
 import org.gtlcore.gtlcore.integration.ae2.async.AEAccumulator;
 import org.gtlcore.gtlcore.integration.ae2.async.AEWriteService;
+import org.gtlcore.gtlcore.utils.NumberUtils;
 
 import com.gregtechceu.gtceu.api.gui.widget.IntInputWidget;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
@@ -51,7 +52,10 @@ public class MEExtendedAsyncOutputPartMachine extends MEExtendedOutputPartMachin
     private boolean mergeFromPendingData() {
         Object2LongOpenHashMap<AEKey> data = pendingData.getAndSet(null);
         if (data != null && !data.isEmpty()) {
-            data.object2LongEntrySet().fastForEach(e -> buffer.addTo(e.getKey(), e.getLongValue()));
+            data.object2LongEntrySet().fastForEach(e -> {
+                var key = e.getKey();
+                buffer.put(key, NumberUtils.saturatedAdd(buffer.getOrDefault(key, 0L), e.getLongValue()));
+            });
             return true;
         }
         return false;
