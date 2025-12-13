@@ -958,16 +958,14 @@ public class AdvancedMultiBlockMachine {
                                 if (MachineIO.inputItem((WorkableMultiblockMachine) machine, Registries.getItemStack("kubejs:chain_command_block_core")))
                                     level.setBlockAndUpdate(pos, Blocks.CHAIN_COMMAND_BLOCK.defaultBlockState());
                             }
-                            case "kubejs:repeating_command_block_core" -> {
+                            case "kubejs:chain_command_block_broken" -> {
                                 if (MachineIO.inputItem((WorkableMultiblockMachine) machine, Registries.getItemStack("kubejs:repeating_command_block_core")))
                                     level.setBlockAndUpdate(pos, Blocks.REPEATING_COMMAND_BLOCK.defaultBlockState());
                             }
                             case "expatternprovider:fishbig" -> {
                                 if (MachineIO.inputItem((WorkableMultiblockMachine) machine, new ItemStack(GTLItems.ULTIMATE_TEA, 8)))
                                     level.setBlockAndUpdate(pos, GTMachines.CREATIVE_FLUID.defaultBlockState());
-                            }
-                            case "kubejs:heartofthesmogus" -> {
-                                if (MachineIO.inputItem((WorkableMultiblockMachine) machine, Registries.getItemStack("kubejs:heartofthesmogus", 64)))
+                                else if (MachineIO.inputItem((WorkableMultiblockMachine) machine, Registries.getItemStack("kubejs:heartofthesmogus", 64)))
                                     level.setBlockAndUpdate(pos, GTMachines.CREATIVE_ITEM.defaultBlockState());
                             }
                         }
