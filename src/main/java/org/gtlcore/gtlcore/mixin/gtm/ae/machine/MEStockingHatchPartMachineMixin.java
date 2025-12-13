@@ -1,7 +1,8 @@
 package org.gtlcore.gtlcore.mixin.gtm.ae.machine;
 
-import org.gtlcore.gtlcore.api.machine.trait.MEStock.IMEPartMachine;
+import org.gtlcore.gtlcore.api.machine.trait.MEPart.IModifiableSyncOffset;
 import org.gtlcore.gtlcore.api.machine.trait.MEStock.IMESlot;
+import org.gtlcore.gtlcore.api.machine.trait.MEStock.IOptimizedMEList;
 
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.common.item.IntCircuitBehaviour;
@@ -19,11 +20,13 @@ import appeng.api.stacks.*;
 import appeng.api.storage.MEStorage;
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
 import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.injection.Constant;
+import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
 import java.util.function.Predicate;
 
 @Mixin(MEStockingHatchPartMachine.class)
-public abstract class MEStockingHatchPartMachineMixin extends MEInputHatchPartMachine {
+public abstract class MEStockingHatchPartMachineMixin extends MEInputHatchPartMachine implements IModifiableSyncOffset {
 
     @Shadow(remap = false)
     private Predicate<GenericStack> autoPullTest;
@@ -35,6 +38,14 @@ public abstract class MEStockingHatchPartMachineMixin extends MEInputHatchPartMa
 
     public MEStockingHatchPartMachineMixin(IMachineBlockEntity holder, Object... args) {
         super(holder, args);
+    }
+
+    @ModifyConstant(
+                    method = "autoIO",
+                    constant = @Constant(longValue = 100),
+                    remap = false)
+    private long replaceOffset(long constant) {
+        return getOffset() == 0 ? constant : getOffset();
     }
 
     /**
@@ -72,7 +83,7 @@ public abstract class MEStockingHatchPartMachineMixin extends MEInputHatchPartMa
 
             this.aeFluidHandler.clearInventory(index);
 
-            ((IMEPartMachine) this.aeFluidHandler).onConfigChanged();
+            ((IOptimizedMEList) this.aeFluidHandler).onConfigChanged();
         }
     }
 
@@ -98,7 +109,7 @@ public abstract class MEStockingHatchPartMachineMixin extends MEInputHatchPartMa
                     }
                 }
 
-                ((IMEPartMachine) this.aeFluidHandler).onConfigChanged();
+                ((IOptimizedMEList) this.aeFluidHandler).onConfigChanged();
             }
 
             if (tag.contains("GhostCircuit")) {
@@ -111,7 +122,7 @@ public abstract class MEStockingHatchPartMachineMixin extends MEInputHatchPartMa
     public void onLoad() {
         super.onLoad();
         if (getLevel() instanceof ServerLevel serverLevel) {
-            serverLevel.getServer().tell(new TickTask(1, () -> ((IMEPartMachine) this.aeFluidHandler).onConfigChanged()));
+            serverLevel.getServer().tell(new TickTask(1, () -> ((IOptimizedMEList) this.aeFluidHandler).onConfigChanged()));
         }
     }
 }

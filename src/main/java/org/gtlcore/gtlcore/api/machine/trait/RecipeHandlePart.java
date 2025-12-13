@@ -1,6 +1,6 @@
 package org.gtlcore.gtlcore.api.machine.trait;
 
-import org.gtlcore.gtlcore.api.machine.trait.MEStock.IMEPartMachine;
+import org.gtlcore.gtlcore.api.machine.trait.MEStock.IOptimizedMEList;
 
 import com.gregtechceu.gtceu.api.capability.recipe.*;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
@@ -117,7 +117,7 @@ public class RecipeHandlePart implements IRecipeHandlePart {
     private static <T> Object2LongOpenHashMap<ItemStack> createItemMap(List<IRecipeHandler<T>> handlers, Object2LongOpenHashMap<ItemStack> itemContent) {
         for (var handler : handlers) {
             if (handler instanceof CatalystItemStackHandler || handler instanceof NotifiableCircuitItemStackHandler) continue;
-            if (handler instanceof IMEPartMachine aeItemHandler) {
+            if (handler instanceof IOptimizedMEList aeItemHandler) {
                 final var map = aeItemHandler.getMEItemMap();
                 if (map != null) {
                     for (var it = Object2LongMaps.fastIterator(map); it.hasNext();) {

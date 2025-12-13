@@ -1,8 +1,10 @@
 package org.gtlcore.gtlcore.mixin.gtm.ae.machine;
 
-import org.gtlcore.gtlcore.api.machine.trait.MEStock.IMEPartMachine;
+import org.gtlcore.gtlcore.api.machine.trait.MEPart.IModifiableSyncOffset;
 import org.gtlcore.gtlcore.api.machine.trait.MEStock.IMESlot;
+import org.gtlcore.gtlcore.api.machine.trait.MEStock.IOptimizedMEList;
 
+import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.common.item.IntCircuitBehaviour;
 import com.gregtechceu.gtceu.integration.ae2.machine.MEInputBusPartMachine;
@@ -19,27 +21,37 @@ import appeng.api.stacks.*;
 import appeng.api.storage.MEStorage;
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
 import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.injection.Constant;
+import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
 import java.util.function.Predicate;
 
 @Mixin(MEStockingBusPartMachine.class)
-public abstract class MEStockingBusPartMachineMixin extends MEInputBusPartMachine {
+public abstract class MEStockingBusPartMachineMixin extends MEInputBusPartMachine implements IModifiableSyncOffset {
 
     @Shadow(remap = false)
     private Predicate<GenericStack> autoPullTest;
+
+    public MEStockingBusPartMachineMixin(IMachineBlockEntity holder, IO io, Object... args) {
+        super(holder, io, args);
+    }
 
     @Shadow(remap = false)
     public void setAutoPull(boolean autoPull) {
         throw new AssertionError();
     }
 
-    public MEStockingBusPartMachineMixin(IMachineBlockEntity holder, Object... args) {
-        super(holder, args);
+    @ModifyConstant(
+                    method = "autoIO",
+                    constant = @Constant(longValue = 100),
+                    remap = false)
+    private long replaceOffset(long constant) {
+        return getOffset() == 0 ? constant : getOffset();
     }
 
     /**
      * @author Dragons
-     * @reason 设置完所有slot才进行onConfigChanged
+     * @reason performance
      */
     @Overwrite(remap = false)
     private void refreshList() {
@@ -71,11 +83,15 @@ public abstract class MEStockingBusPartMachineMixin extends MEInputBusPartMachin
 
             this.aeItemHandler.clearInventory(index);
 
-            ((IMEPartMachine) this.aeItemHandler).onConfigChanged();
+            ((IOptimizedMEList) this.aeItemHandler).onConfigChanged();
         }
     }
 
-    @Override
+    /**
+     * @author Dragons
+     * @reason performance
+     */
+    @Overwrite(remap = false)
     protected void readConfigFromTag(CompoundTag tag) {
         if (tag.getBoolean("AutoPull")) {
             this.setAutoPull(true);
@@ -97,7 +113,7 @@ public abstract class MEStockingBusPartMachineMixin extends MEInputBusPartMachin
                     }
                 }
 
-                ((IMEPartMachine) this.aeItemHandler).onConfigChanged();
+                ((IOptimizedMEList) this.aeItemHandler).onConfigChanged();
             }
 
             if (tag.contains("GhostCircuit")) {
@@ -110,7 +126,7 @@ public abstract class MEStockingBusPartMachineMixin extends MEInputBusPartMachin
     public void onLoad() {
         super.onLoad();
         if (getLevel() instanceof ServerLevel serverLevel) {
-            serverLevel.getServer().tell(new TickTask(1, () -> ((IMEPartMachine) this.aeItemHandler).onConfigChanged()));
+            serverLevel.getServer().tell(new TickTask(1, () -> ((IOptimizedMEList) this.aeItemHandler).onConfigChanged()));
         }
     }
 }

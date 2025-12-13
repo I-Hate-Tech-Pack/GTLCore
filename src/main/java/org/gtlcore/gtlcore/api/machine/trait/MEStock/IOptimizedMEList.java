@@ -12,7 +12,7 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-public interface IMEPartMachine {
+public interface IOptimizedMEList {
 
     default @Nullable Object2LongMap<ItemStack> getMEItemMap() {
         return null;
@@ -36,5 +36,5 @@ public interface IMEPartMachine {
         return false;
     }
 
-    void onConfigChanged();
+    default void onConfigChanged() {}
 }

@@ -1,6 +1,7 @@
 package org.gtlcore.gtlcore.mixin.gtm.ae.slot;
 
 import org.gtlcore.gtlcore.api.machine.trait.MEStock.IMESlot;
+import org.gtlcore.gtlcore.api.machine.trait.MEStock.IOptimizedMEList;
 import org.gtlcore.gtlcore.config.ConfigHolder;
 import org.gtlcore.gtlcore.integration.ae2.AEUtils;
 import org.gtlcore.gtlcore.mixin.gtm.ae.machine.MEHatchPartMachineAccessor;
@@ -10,6 +11,7 @@ import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.ingredient.FluidIngredient;
 import com.gregtechceu.gtceu.integration.ae2.machine.MEStockingHatchPartMachine;
+import com.gregtechceu.gtceu.integration.ae2.slot.ExportOnlyAEFluidList;
 import com.gregtechceu.gtceu.integration.ae2.slot.ExportOnlyAEFluidSlot;
 import com.gregtechceu.gtceu.integration.ae2.slot.IConfigurableSlot;
 import com.gregtechceu.gtceu.integration.ae2.slot.IConfigurableSlotList;
@@ -37,13 +39,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.List;
 import java.util.Objects;
 
+@SuppressWarnings("DuplicatedCode")
 @Mixin(targets = "com.gregtechceu.gtceu.integration.ae2.machine.MEStockingHatchPartMachine$ExportOnlyAEStockingFluidList", remap = false)
-public abstract class ExportOnlyAEStockingFluidListMixin extends ExportOnlyAEFluidListMixin implements IConfigurableSlotList {
+public abstract class ExportOnlyAEStockingFluidListMixin extends ExportOnlyAEFluidList implements IConfigurableSlotList, IOptimizedMEList {
 
-    protected ObjectArrayList<AEFluidKey> configList;
+    @Unique
+    protected ObjectArrayList<AEFluidKey> gTLCore$configList;
 
-    protected IntArrayList configIndexList;
+    @Unique
+    protected IntArrayList gTLCore$configIndexList;
 
+    @Unique
     private static final boolean ENABLE_ULTIMATE_ME_STOCKING = ConfigHolder.INSTANCE.enableUltimateMEStocking;
 
     @SuppressWarnings("target")
@@ -51,16 +57,16 @@ public abstract class ExportOnlyAEStockingFluidListMixin extends ExportOnlyAEFlu
     @Final
     MEStockingHatchPartMachine this$0;
 
-    public ExportOnlyAEStockingFluidListMixin(MetaMachine machine, int slots, long capacity, IO io, IO capabilityIO) {
-        super(machine, slots, capacity, io, capabilityIO);
+    public ExportOnlyAEStockingFluidListMixin(MetaMachine machine, int slots) {
+        super(machine, slots);
     }
 
     @SuppressWarnings("target")
     @Inject(method = "<init>(Lcom/gregtechceu/gtceu/integration/ae2/machine/MEStockingHatchPartMachine;Lcom/gregtechceu/gtceu/api/machine/MetaMachine;I)V",
             at = @At("TAIL"))
     private void gtl$onInit(MEStockingHatchPartMachine holder, MetaMachine slots, int par3, CallbackInfo ci) {
-        configList = new ObjectArrayList<>();
-        configIndexList = new IntArrayList();
+        gTLCore$configList = new ObjectArrayList<>();
+        gTLCore$configIndexList = new IntArrayList();
         for (ExportOnlyAEFluidSlot exportOnlyAEFluidSlot : inventory) {
             ((IMESlot) exportOnlyAEFluidSlot).setOnConfigChanged(this::onConfigChanged);
         }
@@ -72,20 +78,6 @@ public abstract class ExportOnlyAEStockingFluidListMixin extends ExportOnlyAEFlu
             IConfigurableSlot slot = this.getConfigurableSlot(i);
             ((IMESlot) slot).setConfigWithoutNotify(null);
             slot.setStock(null);
-        }
-    }
-
-    @Unique
-    @Override
-    public void onConfigChanged() {
-        configList.clear();
-        configIndexList.clear();
-        for (int i = 0, inventoryLength = inventory.length; i < inventoryLength; i++) {
-            final var config = inventory[i].getConfig();
-            if (config != null && config.what() instanceof AEFluidKey key) {
-                configList.add(key);
-                configIndexList.add(i);
-            }
         }
     }
 
@@ -111,15 +103,15 @@ public abstract class ExportOnlyAEStockingFluidListMixin extends ExportOnlyAEFlu
                 long amount = ingredient.getAmount();
                 if (amount < 1) listIterator.remove();
                 else {
-                    for (int i = 0, configListSize = configList.size(); i < configListSize; i++) {
-                        AEFluidKey aeFluidKey = configList.get(i);
+                    for (int i = 0, configListSize = gTLCore$configList.size(); i < configListSize; i++) {
+                        AEFluidKey aeFluidKey = gTLCore$configList.get(i);
                         if (AEUtils.testFluidIngredient(ingredient, aeFluidKey)) {
                             long extracted = aeNetwork.extract(aeFluidKey, amount, simulate ? Actionable.SIMULATE : Actionable.MODULATE, ((MEHatchPartMachineAccessor) this$0).getActionSource());
                             if (extracted > 0) {
                                 changed = true;
                                 amount -= extracted;
                                 if (!simulate) {
-                                    var slot = this.inventory[configIndexList.getInt(i)];
+                                    var slot = this.inventory[gTLCore$configIndexList.getInt(i)];
                                     if (slot.getStock() != null) {
                                         long amt = slot.getStock().amount() - extracted;
                                         if (amt == 0) slot.setStock(null);
@@ -143,21 +135,36 @@ public abstract class ExportOnlyAEStockingFluidListMixin extends ExportOnlyAEFlu
         return left.isEmpty() ? null : left;
     }
 
+    @SuppressWarnings("AddedMixinMembersNamePattern")
+    @Override
+    public void onConfigChanged() {
+        gTLCore$configList.clear();
+        gTLCore$configIndexList.clear();
+        for (int i = 0, inventoryLength = inventory.length; i < inventoryLength; i++) {
+            final var config = inventory[i].getConfig();
+            if (config != null && config.what() instanceof AEFluidKey key) {
+                gTLCore$configList.add(key);
+                gTLCore$configIndexList.add(i);
+            }
+        }
+    }
+
+    @SuppressWarnings("AddedMixinMembersNamePattern")
     @Override
     public @NotNull List<FluidStack> getMEFluidList() {
+        final var fluidList = getFluidList();
         if (ENABLE_ULTIMATE_ME_STOCKING || getChanged()) {
             setChanged(false);
-            final var fluidList = getFluidList();
             fluidList.clear();
             final MEStorage aeNetwork = Objects.requireNonNull(this$0.getMainNode().getGrid()).getStorageService().getInventory();
             final IActionSource actionSource = ((MEHatchPartMachineAccessor) this$0).getActionSource();
-            for (var key : configList) {
+            for (var key : gTLCore$configList) {
                 long extracted = aeNetwork.extract(key, Long.MAX_VALUE, Actionable.SIMULATE, actionSource);
                 if (extracted > 0) {
                     fluidList.add(FluidStack.create(key.getFluid(), extracted));
                 }
             }
         }
-        return getFluidList();
+        return fluidList;
     }
 }

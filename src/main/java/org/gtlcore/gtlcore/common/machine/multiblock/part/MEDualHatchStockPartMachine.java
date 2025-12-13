@@ -1,10 +1,12 @@
 package org.gtlcore.gtlcore.common.machine.multiblock.part;
 
+import org.gtlcore.gtlcore.api.gui.AdvancedMEConfigurator;
 import org.gtlcore.gtlcore.api.gui.TurnsConfiguratorButton;
+import org.gtlcore.gtlcore.api.machine.trait.MEPart.IModifiableSyncOffset;
 import org.gtlcore.gtlcore.api.machine.trait.MEStock.ExportOnlyAEConfigureFluidSlot;
 import org.gtlcore.gtlcore.api.machine.trait.MEStock.ExportOnlyAEConfigureItemSlot;
-import org.gtlcore.gtlcore.api.machine.trait.MEStock.IMEPartMachine;
 import org.gtlcore.gtlcore.api.machine.trait.MEStock.IMESlot;
+import org.gtlcore.gtlcore.api.machine.trait.MEStock.IOptimizedMEList;
 import org.gtlcore.gtlcore.api.recipe.ingredient.LongIngredient;
 import org.gtlcore.gtlcore.client.gui.widget.AEDualConfigWidget;
 import org.gtlcore.gtlcore.config.ConfigHolder;
@@ -67,7 +69,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
  */
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class MEDualHatchStockPartMachine extends MEBusPartMachine implements IDataStickInteractable {
+public class MEDualHatchStockPartMachine extends MEBusPartMachine implements IDataStickInteractable, IModifiableSyncOffset {
 
     protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(MEDualHatchStockPartMachine.class,
             MEBusPartMachine.MANAGED_FIELD_HOLDER);
@@ -136,7 +138,7 @@ public class MEDualHatchStockPartMachine extends MEBusPartMachine implements IDa
             updateInventorySubscription();
         }
 
-        if (autoPullMode != AUTO_PULL_OFF && getOffsetTimer() % 50 == 0) {
+        if (autoPullMode != AUTO_PULL_OFF && getOffsetTimer() % (getOffset() == 0 ? 50 : getOffset()) == 0) {
             refreshList();
             syncME();
         }
@@ -193,8 +195,8 @@ public class MEDualHatchStockPartMachine extends MEBusPartMachine implements IDa
         aeItemHandler.clearInventory(index);
         aeFluidHandler.clearInventory(index);
 
-        ((IMEPartMachine) aeItemHandler).onConfigChanged();
-        ((IMEPartMachine) aeFluidHandler).onConfigChanged();
+        ((IOptimizedMEList) aeItemHandler).onConfigChanged();
+        ((IOptimizedMEList) aeFluidHandler).onConfigChanged();
     }
 
     protected void syncME() {
@@ -223,8 +225,8 @@ public class MEDualHatchStockPartMachine extends MEBusPartMachine implements IDa
             }
             slot.setStock(null);
         }
-        ((IMEPartMachine) aeItemHandler).setChanged(true);
-        ((IMEPartMachine) aeFluidHandler).setChanged(true);
+        ((IOptimizedMEList) aeItemHandler).setChanged(true);
+        ((IOptimizedMEList) aeFluidHandler).setChanged(true);
     }
 
     @Override
@@ -232,8 +234,8 @@ public class MEDualHatchStockPartMachine extends MEBusPartMachine implements IDa
         super.onLoad();
         if (getLevel() instanceof ServerLevel serverLevel) {
             serverLevel.getServer().tell(new TickTask(1, () -> {
-                ((IMEPartMachine) this.aeItemHandler).onConfigChanged();
-                ((IMEPartMachine) this.aeFluidHandler).onConfigChanged();
+                ((IOptimizedMEList) this.aeItemHandler).onConfigChanged();
+                ((IOptimizedMEList) this.aeFluidHandler).onConfigChanged();
             }));
         }
     }
@@ -268,6 +270,7 @@ public class MEDualHatchStockPartMachine extends MEBusPartMachine implements IDa
                 AUTO_PULL_ALL_ICON,
                 AUTO_PULL_ITEM_ICON,
                 AUTO_PULL_FLUID_ICON).setTooltipsSupplier(mode -> List.of(Component.translatable("gtlcore.machine.me_dual_hatch_stock.turns." + mode))));
+        configuratorPanel.attachConfigurators(new AdvancedMEConfigurator(this::setOffset, this::getOffset));
     }
 
     protected void setAutoPullMode(int autoPullMode) {
@@ -336,8 +339,8 @@ public class MEDualHatchStockPartMachine extends MEBusPartMachine implements IDa
                 ((IMESlot) fluidInventory[i]).setConfigWithoutNotify(null);
             }
 
-            ((IMEPartMachine) aeItemHandler).onConfigChanged();
-            ((IMEPartMachine) aeFluidHandler).onConfigChanged();
+            ((IOptimizedMEList) aeItemHandler).onConfigChanged();
+            ((IOptimizedMEList) aeFluidHandler).onConfigChanged();
         }
 
         if (tag.contains("GhostCircuit")) {
@@ -372,7 +375,7 @@ public class MEDualHatchStockPartMachine extends MEBusPartMachine implements IDa
         return true;
     }
 
-    private class ExportOnlyAEStockingItemList extends ExportOnlyAEItemList implements IMEPartMachine {
+    private class ExportOnlyAEStockingItemList extends ExportOnlyAEItemList implements IOptimizedMEList {
 
         protected ObjectArrayList<AEItemKey> configList = new ObjectArrayList<>();
 
@@ -538,7 +541,7 @@ public class MEDualHatchStockPartMachine extends MEBusPartMachine implements IDa
         }
     }
 
-    private class ExportOnlyAEStockingFluidList extends ExportOnlyAEFluidList implements IMEPartMachine {
+    private class ExportOnlyAEStockingFluidList extends ExportOnlyAEFluidList implements IOptimizedMEList {
 
         protected ObjectArrayList<AEFluidKey> configList = new ObjectArrayList<>();
 

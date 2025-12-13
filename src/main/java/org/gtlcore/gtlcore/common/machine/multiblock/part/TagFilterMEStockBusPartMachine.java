@@ -1,8 +1,8 @@
 package org.gtlcore.gtlcore.common.machine.multiblock.part;
 
 import org.gtlcore.gtlcore.api.machine.trait.MEStock.ExportOnlyAEConfigureItemSlot;
-import org.gtlcore.gtlcore.api.machine.trait.MEStock.IMEPartMachine;
 import org.gtlcore.gtlcore.api.machine.trait.MEStock.IMESlot;
+import org.gtlcore.gtlcore.api.machine.trait.MEStock.IOptimizedMEList;
 import org.gtlcore.gtlcore.api.recipe.ingredient.LongIngredient;
 import org.gtlcore.gtlcore.config.ConfigHolder;
 
@@ -179,14 +179,14 @@ public class TagFilterMEStockBusPartMachine extends MEInputBusPartMachine {
         }
         aeItemHandler.clearInventory(index);
 
-        ((IMEPartMachine) aeItemHandler).onConfigChanged();
+        ((IOptimizedMEList) aeItemHandler).onConfigChanged();
     }
 
     @Override
     public void onLoad() {
         super.onLoad();
         if (getLevel() instanceof ServerLevel serverLevel) {
-            serverLevel.getServer().tell(new TickTask(1, () -> ((IMEPartMachine) this.aeItemHandler).onConfigChanged()));
+            serverLevel.getServer().tell(new TickTask(1, () -> ((IOptimizedMEList) this.aeItemHandler).onConfigChanged()));
         }
     }
 
@@ -252,7 +252,7 @@ public class TagFilterMEStockBusPartMachine extends MEInputBusPartMachine {
         }
     }
 
-    private class ExportOnlyAEStockingItemList extends ExportOnlyAEItemList implements IMEPartMachine {
+    private class ExportOnlyAEStockingItemList extends ExportOnlyAEItemList implements IOptimizedMEList {
 
         protected ObjectArrayList<AEItemKey> configList = new ObjectArrayList<>();
 
