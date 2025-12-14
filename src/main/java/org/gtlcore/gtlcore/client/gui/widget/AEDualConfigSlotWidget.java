@@ -18,13 +18,13 @@ import com.lowdragmc.lowdraglib.utils.Size;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import appeng.api.stacks.AEFluidKey;
 import appeng.api.stacks.AEItemKey;
@@ -259,7 +259,7 @@ public class AEDualConfigSlotWidget extends Widget implements IGhostItemTarget, 
             this.parentWidget.setItemConfig(index, new GenericStack(AEItemKey.of(item.getItem(), item.getTag()), item.getCount()));
         }
         if (id == FLUID_UPDATE_ID) {
-            FluidStack fluid = FluidStack.create(BuiltInRegistries.FLUID.get(buffer.readResourceLocation()),
+            FluidStack fluid = FluidStack.create(ForgeRegistries.FLUIDS.getValue(buffer.readResourceLocation()),
                     buffer.readVarLong());
             this.parentWidget.setFluidConfig(index, new GenericStack(AEFluidKey.of(fluid.getFluid()), fluid.getAmount()));
         }

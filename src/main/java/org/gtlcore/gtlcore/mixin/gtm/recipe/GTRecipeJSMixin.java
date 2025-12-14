@@ -2,15 +2,17 @@ package org.gtlcore.gtlcore.mixin.gtm.recipe;
 
 import com.gregtechceu.gtceu.integration.kjs.recipe.GTRecipeSchema;
 
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import dev.latvian.mods.kubejs.item.InputItem;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
+
+import java.util.Objects;
 
 @Mixin(GTRecipeSchema.GTRecipeJS.class)
 public abstract class GTRecipeJSMixin {
@@ -35,7 +37,7 @@ public abstract class GTRecipeJSMixin {
                 ItemStack[] items = ingredient.getItems();
 
                 if (items.length > 0) {
-                    String itemId = BuiltInRegistries.ITEM.getKey(items[0].getItem()).toString();
+                    String itemId = Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(items[0].getItem())).toString();
                     if ("kubejs:ingot_field_shape".equals(itemId)) {
                         // Return a new array with modified InputItem (count 8 instead of 64)
                         return new InputItem[] { InputItem.of(ingredient, 8) };

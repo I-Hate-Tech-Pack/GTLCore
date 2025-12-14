@@ -6,13 +6,13 @@ import com.gregtechceu.gtceu.api.recipe.ingredient.SizedIngredient;
 import com.gregtechceu.gtceu.core.mixins.*;
 import com.gregtechceu.gtceu.utils.ItemStackHashStrategy;
 
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.common.crafting.IntersectionIngredient;
 import net.minecraftforge.common.crafting.PartialNBTIngredient;
 import net.minecraftforge.common.crafting.StrictNBTIngredient;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import com.google.common.collect.Lists;
 import it.unimi.dsi.fastutil.Hash;
@@ -119,9 +119,10 @@ public class CacheHashStrategies {
         }
     }
 
-    public class IngredientEquality {
+    public static class IngredientEquality {
 
-        public static final Comparator<Item> ITEM_COMPARATOR = Comparator.comparing(BuiltInRegistries.ITEM::getKey);
+        @SuppressWarnings("DataFlowIssue")
+        public static final Comparator<Item> ITEM_COMPARATOR = Comparator.comparing(ForgeRegistries.ITEMS::getKey);
 
         public static final Comparator<Ingredient.Value> INGREDIENT_VALUE_COMPARATOR = (value1, value2) -> {
             if (value1 instanceof TagValueAccessor first) {

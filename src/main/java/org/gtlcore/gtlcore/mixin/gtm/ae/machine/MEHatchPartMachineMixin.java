@@ -8,6 +8,8 @@ import com.gregtechceu.gtceu.common.machine.multiblock.part.FluidHatchPartMachin
 import com.gregtechceu.gtceu.integration.ae2.machine.MEHatchPartMachine;
 import com.gregtechceu.gtceu.integration.ae2.machine.feature.IGridConnectedMachine;
 
+import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
+
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 
@@ -26,6 +28,7 @@ import java.util.EnumSet;
 public abstract class MEHatchPartMachineMixin extends FluidHatchPartMachine implements IGridConnectedMachine {
 
     @Unique
+    @Persisted
     protected int gTLCore$syncOffset = 0;
 
     public MEHatchPartMachineMixin(IMachineBlockEntity holder, int tier, IO io, long initialCapacity, int slots, Object... args) {

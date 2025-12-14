@@ -8,6 +8,8 @@ import com.gregtechceu.gtceu.common.machine.multiblock.part.ItemBusPartMachine;
 import com.gregtechceu.gtceu.integration.ae2.machine.MEBusPartMachine;
 import com.gregtechceu.gtceu.integration.ae2.machine.feature.IGridConnectedMachine;
 
+import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
+
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 
@@ -26,6 +28,7 @@ import java.util.EnumSet;
 public abstract class MEBusPartMachineMixin extends ItemBusPartMachine implements IGridConnectedMachine {
 
     @Unique
+    @Persisted
     protected int gTLCore$syncOffset = 0;
 
     public MEBusPartMachineMixin(IMachineBlockEntity holder, int tier, IO io, Object... args) {

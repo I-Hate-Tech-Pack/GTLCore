@@ -21,8 +21,12 @@ import appeng.api.stacks.*;
 import appeng.api.storage.MEStorage;
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
 import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Constant;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.function.Predicate;
 
@@ -47,6 +51,22 @@ public abstract class MEStockingBusPartMachineMixin extends MEInputBusPartMachin
                     remap = false)
     private long replaceOffset(long constant) {
         return getOffset() == 0 ? constant : getOffset();
+    }
+
+    @Inject(method = "writeConfigToTag",
+            at = @At("RETURN"),
+            remap = false)
+    public void writesSyncOffset(CallbackInfoReturnable<CompoundTag> cir) {
+        cir.getReturnValue().putInt("SyncOffset", getOffset());
+    }
+
+    @Inject(method = "readConfigFromTag",
+            at = @At("RETURN"),
+            remap = false)
+    public void readSyncOffset(CompoundTag tag, CallbackInfo ci) {
+        if (tag.contains("SyncOffset")) {
+            this.setOffset(tag.getInt("SyncOffset"));
+        }
     }
 
     /**

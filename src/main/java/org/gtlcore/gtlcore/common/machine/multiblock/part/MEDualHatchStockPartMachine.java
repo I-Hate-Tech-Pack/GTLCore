@@ -307,6 +307,7 @@ public class MEDualHatchStockPartMachine extends MEBusPartMachine implements IDa
         }
         tag.putByte("GhostCircuit",
                 (byte) IntCircuitBehaviour.getCircuitConfiguration(circuitInventory.getStackInSlot(0)));
+        tag.putInt("SyncOffset", getOffset());
         return tag;
     }
 
@@ -345,6 +346,10 @@ public class MEDualHatchStockPartMachine extends MEBusPartMachine implements IDa
 
         if (tag.contains("GhostCircuit")) {
             circuitInventory.setStackInSlot(0, IntCircuitBehaviour.stack(tag.getByte("GhostCircuit")));
+        }
+
+        if (tag.contains("SyncOffset")) {
+            this.setOffset(tag.getInt("SyncOffset"));
         }
     }
 

@@ -13,24 +13,26 @@ import com.gregtechceu.gtceu.common.recipe.condition.RockBreakerCondition;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.core.Direction;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
+import java.util.Objects;
+
 @Mixin(RockBreakerCondition.class)
 public abstract class RockBreakerConditionMixin extends RecipeCondition {
 
     /**
-     * @author
-     * @reason
+     * @author .
+     * @reason .
      */
     @Overwrite(remap = false)
     public boolean test(@NotNull GTRecipe recipe, @NotNull RecipeLogic recipeLogic) {
-        var fluidA = BuiltInRegistries.FLUID.get(new ResourceLocation(recipe.data.getString("fluidA")));
-        var fluidB = BuiltInRegistries.FLUID.get(new ResourceLocation(recipe.data.getString("fluidB")));
+        var fluidA = ForgeRegistries.FLUIDS.getValue(new ResourceLocation(recipe.data.getString("fluidA")));
+        var fluidB = ForgeRegistries.FLUIDS.getValue(new ResourceLocation(recipe.data.getString("fluidB")));
         boolean hasFluidA = false, hasFluidB = false;
         if (recipeLogic.machine instanceof WorkableElectricMultiblockMachine MMachine) {
             var handlers = MMachine.getCapabilitiesProxy().get(IO.IN, FluidRecipeCapability.CAP);
@@ -48,7 +50,7 @@ public abstract class RockBreakerConditionMixin extends RecipeCondition {
             var pos = recipeLogic.machine.self().getPos();
             for (Direction side : GTUtil.DIRECTIONS) {
                 if (side.getAxis() != Direction.Axis.Y) {
-                    var fluid = level.getFluidState(pos.relative(side));
+                    var fluid = Objects.requireNonNull(level).getFluidState(pos.relative(side));
                     if (fluid.getType() == fluidA) hasFluidA = true;
                     if (fluid.getType() == fluidB) hasFluidB = true;
                     if (hasFluidA && hasFluidB) return true;

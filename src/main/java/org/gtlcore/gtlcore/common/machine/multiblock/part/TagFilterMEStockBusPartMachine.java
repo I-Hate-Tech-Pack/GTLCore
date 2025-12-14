@@ -1,5 +1,6 @@
 package org.gtlcore.gtlcore.common.machine.multiblock.part;
 
+import org.gtlcore.gtlcore.api.machine.trait.MEPart.IModifiableSyncOffset;
 import org.gtlcore.gtlcore.api.machine.trait.MEStock.ExportOnlyAEConfigureItemSlot;
 import org.gtlcore.gtlcore.api.machine.trait.MEStock.IMESlot;
 import org.gtlcore.gtlcore.api.machine.trait.MEStock.IOptimizedMEList;
@@ -55,7 +56,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @Setter
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-public class TagFilterMEStockBusPartMachine extends MEInputBusPartMachine {
+public class TagFilterMEStockBusPartMachine extends MEInputBusPartMachine implements IModifiableSyncOffset {
 
     protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(TagFilterMEStockBusPartMachine.class,
             MEInputBusPartMachine.MANAGED_FIELD_HOLDER);
@@ -197,6 +198,7 @@ public class TagFilterMEStockBusPartMachine extends MEInputBusPartMachine {
                 (byte) IntCircuitBehaviour.getCircuitConfiguration(circuitInventory.getStackInSlot(0)));
         tag.putString("TagWhite", tagWhite);
         tag.putString("TagBlack", tagBlack);
+        tag.putInt("SyncOffset", getOffset());
         return tag;
     }
 
@@ -212,6 +214,10 @@ public class TagFilterMEStockBusPartMachine extends MEInputBusPartMachine {
 
         if (tag.contains("TagBlack")) {
             tagBlack = tag.getString("TagBlack");
+        }
+
+        if (tag.contains("SyncOffset")) {
+            this.setOffset(tag.getInt("SyncOffset"));
         }
     }
 

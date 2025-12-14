@@ -13,6 +13,8 @@ import com.gregtechceu.gtceu.integration.ae2.machine.MEInputBusPartMachine;
 import com.gregtechceu.gtceu.integration.ae2.slot.ExportOnlyAEItemList;
 import com.gregtechceu.gtceu.integration.ae2.slot.ExportOnlyAEItemSlot;
 
+import net.minecraft.nbt.CompoundTag;
+
 import appeng.api.config.Actionable;
 import appeng.api.networking.IGridNodeListener;
 import appeng.api.stacks.GenericStack;
@@ -24,6 +26,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(MEInputBusPartMachine.class)
 public abstract class MEInputBusPartMachineMixin extends MEBusPartMachine implements IModifiableSyncOffset {
@@ -43,6 +46,22 @@ public abstract class MEInputBusPartMachineMixin extends MEBusPartMachine implem
     public void autoIO(CallbackInfo ci) {
         if (aeItemHandler instanceof IOptimizedMEList machine) {
             machine.setChanged(true);
+        }
+    }
+
+    @Inject(method = "writeConfigToTag",
+            at = @At("RETURN"),
+            remap = false)
+    public void writesSyncOffset(CallbackInfoReturnable<CompoundTag> cir) {
+        cir.getReturnValue().putInt("SyncOffset", getOffset());
+    }
+
+    @Inject(method = "readConfigFromTag",
+            at = @At("RETURN"),
+            remap = false)
+    public void readSyncOffset(CompoundTag tag, CallbackInfo ci) {
+        if (tag.contains("SyncOffset")) {
+            this.setOffset(tag.getInt("SyncOffset"));
         }
     }
 
