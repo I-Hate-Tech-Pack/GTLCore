@@ -263,7 +263,7 @@ public class GTLMachines {
             .overlaySteamHullRenderer("steam_hatch")
             .tooltips(Component.translatable("gtceu.machine.large_steam_input_hatch.tooltip.0"),
                     Component.translatable("gtceu.universal.tooltip.fluid_storage_capacity",
-                            8192 * FluidHelper.getBucket()),
+                            16384 * FluidHelper.getBucket()),
                     Component.translatable("gtceu.machine.steam.steam_hatch.tooltip"))
             .tooltipBuilder(GTL_ADD)
             .compassSections(GTCompassSections.STEAM)
