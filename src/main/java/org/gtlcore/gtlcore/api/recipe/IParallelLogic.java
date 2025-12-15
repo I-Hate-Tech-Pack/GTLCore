@@ -1,10 +1,12 @@
 package org.gtlcore.gtlcore.api.recipe;
 
+import org.gtlcore.gtlcore.api.machine.multiblock.ParallelMachine;
 import org.gtlcore.gtlcore.api.machine.trait.IRecipeCapabilityMachine;
 import org.gtlcore.gtlcore.api.machine.trait.MEPatternRecipeHandlePart;
 import org.gtlcore.gtlcore.api.machine.trait.RecipeHandlePart;
 import org.gtlcore.gtlcore.api.recipe.chance.LongChanceLogic;
 import org.gtlcore.gtlcore.api.recipe.ingredient.LongIngredient;
+import org.gtlcore.gtlcore.utils.NumberUtils;
 
 import com.gregtechceu.gtceu.api.capability.recipe.*;
 import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
@@ -105,6 +107,7 @@ public interface IParallelLogic {
         if (machine.emptyRecipeHandlePart()) return 0;
 
         Object2LongOpenCustomHashMap<Ingredient> countableMap = new Object2LongOpenCustomHashMap<>(IngredientEquality.IngredientHashStrategy.INSTANCE);
+        boolean confirmMEStock = machine instanceof ParallelMachine para && para.needConfirmMEStock();
 
         for (Content content : recipe.getInputContents(ItemRecipeCapability.CAP)) {
             if (content.chance <= 0) continue;
@@ -125,18 +128,21 @@ public interface IParallelLogic {
         var handle = machine.getActiveRecipeHandle(recipe);
         if (handle instanceof MEPatternRecipeHandlePart mePatternRecipeHandlePart) {
             for (var entry : Object2LongMaps.fastIterable(mePatternRecipeHandlePart.getMEContent(ItemRecipeCapability.CAP, recipe))) {
-                ingredientStacks.addTo(entry.getKey(), entry.getLongValue());
+                var key = entry.getKey();
+                ingredientStacks.put(key, NumberUtils.saturatedAdd(ingredientStacks.getOrDefault(key, 0L), entry.getLongValue()));
             }
 
         } else if (handle instanceof RecipeHandlePart recipeHandlePart) {
-            for (var entry : Object2LongMaps.fastIterable(recipeHandlePart.getSelfContent(ItemRecipeCapability.CAP))) {
-                ingredientStacks.addTo(entry.getKey(), entry.getLongValue());
+            for (var entry : Object2LongMaps.fastIterable(recipeHandlePart.getSelfContent(ItemRecipeCapability.CAP, confirmMEStock))) {
+                var key = entry.getKey();
+                ingredientStacks.put(key, NumberUtils.saturatedAdd(ingredientStacks.getOrDefault(key, 0L), entry.getLongValue()));
             }
         } else {
             var sharedRecipeHandlePart = machine.getSharedRecipeHandlePart();
             if (sharedRecipeHandlePart != null) {
-                for (var entry : Object2LongMaps.fastIterable(sharedRecipeHandlePart.getSelfContent(ItemRecipeCapability.CAP))) {
-                    ingredientStacks.addTo(entry.getKey(), entry.getLongValue());
+                for (var entry : Object2LongMaps.fastIterable(sharedRecipeHandlePart.getSelfContent(ItemRecipeCapability.CAP, confirmMEStock))) {
+                    var key = entry.getKey();
+                    ingredientStacks.put(key, NumberUtils.saturatedAdd(ingredientStacks.getOrDefault(key, 0L), entry.getLongValue()));
                 }
             }
         }
@@ -149,6 +155,7 @@ public interface IParallelLogic {
         if (machine.emptyRecipeHandlePart()) return 0;
 
         Object2LongOpenHashMap<FluidIngredient> fluidCountMap = new Object2LongOpenHashMap<>();
+        boolean confirmMEStock = machine instanceof ParallelMachine para && para.needConfirmMEStock();
 
         for (Content content : recipe.getInputContents(FluidRecipeCapability.CAP)) {
             FluidIngredient fluidInput = FluidRecipeCapability.CAP.of(content.content);
@@ -164,11 +171,13 @@ public interface IParallelLogic {
         var handle = machine.getActiveRecipeHandle(recipe);
         if (handle instanceof MEPatternRecipeHandlePart mePatternRecipeHandlePart) {
             for (var entry : Object2LongMaps.fastIterable(mePatternRecipeHandlePart.getMEContent(FluidRecipeCapability.CAP, recipe))) {
-                ingredientStacks.addTo(entry.getKey(), entry.getLongValue());
+                var key = entry.getKey();
+                ingredientStacks.put(key, NumberUtils.saturatedAdd(ingredientStacks.getOrDefault(key, 0L), entry.getLongValue()));
             }
         } else if (handle instanceof RecipeHandlePart recipeHandlePart) {
-            for (var entry : Object2LongMaps.fastIterable(machine.isDistinct() ? recipeHandlePart.getSelfContent(FluidRecipeCapability.CAP) : recipeHandlePart.getContentWithShared(FluidRecipeCapability.CAP))) {
-                ingredientStacks.addTo(entry.getKey(), entry.getLongValue());
+            for (var entry : Object2LongMaps.fastIterable(machine.isDistinct() ? recipeHandlePart.getSelfContent(FluidRecipeCapability.CAP, confirmMEStock) : recipeHandlePart.getContentWithShared(FluidRecipeCapability.CAP, confirmMEStock))) {
+                var key = entry.getKey();
+                ingredientStacks.put(key, NumberUtils.saturatedAdd(ingredientStacks.getOrDefault(key, 0L), entry.getLongValue()));
             }
         } else {
             var sharedRecipeHandlePart = machine.getSharedRecipeHandlePart();
@@ -177,7 +186,7 @@ public interface IParallelLogic {
                     if (handler instanceof CatalystFluidStackHandler) continue;
                     for (var object : handler.getContents()) {
                         if (object instanceof FluidStack fs) {
-                            ingredientStacks.addTo(fs, fs.getAmount());
+                            ingredientStacks.put(fs, NumberUtils.saturatedAdd(ingredientStacks.getOrDefault(fs, 0L), fs.getAmount()));
                         }
                     }
                 }

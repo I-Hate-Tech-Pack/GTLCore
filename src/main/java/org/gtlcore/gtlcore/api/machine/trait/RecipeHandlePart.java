@@ -5,11 +5,14 @@ import org.gtlcore.gtlcore.api.machine.trait.MEStock.IOptimizedMEList;
 import com.gregtechceu.gtceu.api.capability.recipe.*;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.ingredient.FluidIngredient;
+import com.gregtechceu.gtceu.utils.FluidStackHashStrategy;
+import com.gregtechceu.gtceu.utils.ItemStackHashStrategy;
 
 import com.lowdragmc.lowdraglib.side.fluid.FluidStack;
 
 import net.minecraft.world.item.ItemStack;
 
+import com.google.common.collect.Iterables;
 import com.hepdd.gtmthings.common.block.machine.trait.CatalystFluidStackHandler;
 import com.hepdd.gtmthings.common.block.machine.trait.CatalystItemStackHandler;
 import it.unimi.dsi.fastutil.objects.*;
@@ -59,21 +62,21 @@ public class RecipeHandlePart implements IRecipeHandlePart {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends Predicate<S>, S> Object2LongMap<S> getSelfContent(RecipeCapability<T> cap) {
+    public <T extends Predicate<S>, S> Object2LongMap<S> getSelfContent(RecipeCapability<T> cap, boolean confirmMEStock) {
         if (cap == ItemRecipeCapability.CAP) {
-            return (Object2LongMap<S>) createItemMap(this.getCapability(cap), new Object2LongOpenHashMap<>());
+            return (Object2LongMap<S>) createItemMap(this.getCapability(cap), new Object2LongOpenHashMap<>(), confirmMEStock);
         } else if (cap == FluidRecipeCapability.CAP) {
-            return (Object2LongMap<S>) createFluidMap(this.getCapability(cap), new Object2LongOpenHashMap<>());
+            return (Object2LongMap<S>) createFluidMap(this.getCapability(cap), new Object2LongOpenHashMap<>(), confirmMEStock);
         }
         return Object2LongMaps.EMPTY_MAP;
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends Predicate<S>, S> Object2LongMap<S> getContentWithShared(RecipeCapability<T> cap) {
+    public <T extends Predicate<S>, S> Object2LongMap<S> getContentWithShared(RecipeCapability<T> cap, boolean confirmMEStock) {
         if (cap == ItemRecipeCapability.CAP) {
-            return (Object2LongMap<S>) createItemMap(this.getCapability(cap), new Object2LongOpenHashMap<>());
+            return (Object2LongMap<S>) createItemMap(this.getCapability(ItemRecipeCapability.CAP), new Object2LongOpenHashMap<>(), confirmMEStock);
         } else if (cap == FluidRecipeCapability.CAP) {
-            return (Object2LongMap<S>) createFluidMap(this.sharedFluidHandlers, createFluidMap(this.getCapability(cap), new Object2LongOpenHashMap<>()));
+            return (Object2LongMap<S>) createFluidMap(Iterables.concat(this.getCapability(FluidRecipeCapability.CAP), this.sharedFluidHandlers), new Object2LongOpenHashMap<>(), confirmMEStock);
         }
         return Object2LongMaps.EMPTY_MAP;
     }
@@ -114,15 +117,23 @@ public class RecipeHandlePart implements IRecipeHandlePart {
         return contents;
     }
 
-    private static <T> Object2LongOpenHashMap<ItemStack> createItemMap(List<IRecipeHandler<T>> handlers, Object2LongOpenHashMap<ItemStack> itemContent) {
+    private static <T> Object2LongOpenHashMap<ItemStack> createItemMap(Iterable<IRecipeHandler<T>> handlers, Object2LongOpenHashMap<ItemStack> itemContent, boolean confirmME) {
+        var meAddedKeys = confirmME ? new ObjectOpenCustomHashSet<>(ItemStackHashStrategy.comparingAllButCount()) : null;
         for (var handler : handlers) {
             if (handler instanceof CatalystItemStackHandler || handler instanceof NotifiableCircuitItemStackHandler) continue;
             if (handler instanceof IOptimizedMEList aeItemHandler) {
                 final var map = aeItemHandler.getMEItemMap();
                 if (map != null) {
-                    for (var it = Object2LongMaps.fastIterator(map); it.hasNext();) {
-                        var entry = it.next();
-                        itemContent.addTo(entry.getKey(), entry.getLongValue());
+                    if (confirmME && aeItemHandler.isStocking()) {
+                        for (var entry : Object2LongMaps.fastIterable(map)) {
+                            var key = entry.getKey();
+                            if (!meAddedKeys.add(key)) continue;
+                            itemContent.addTo(key, entry.getLongValue());
+                        }
+                    } else {
+                        for (var entry : Object2LongMaps.fastIterable(map)) {
+                            itemContent.addTo(entry.getKey(), entry.getLongValue());
+                        }
                     }
                 }
             } else {
@@ -136,12 +147,27 @@ public class RecipeHandlePart implements IRecipeHandlePart {
         return itemContent;
     }
 
-    private static <T> Object2LongOpenHashMap<FluidStack> createFluidMap(List<IRecipeHandler<T>> handlers, Object2LongOpenHashMap<FluidStack> fluidContent) {
+    private static <T> Object2LongOpenHashMap<FluidStack> createFluidMap(Iterable<IRecipeHandler<T>> handlers, Object2LongOpenHashMap<FluidStack> fluidContent, boolean confirmMEStock) {
+        var meAddedKeys = confirmMEStock ? new ObjectOpenCustomHashSet<>(FluidStackHashStrategy.comparingAllButAmount()) : null;
         for (var fluid : handlers) {
             if (fluid instanceof CatalystFluidStackHandler) continue;
-            for (var o : fluid.getContents()) {
-                if (o instanceof FluidStack stack) {
-                    fluidContent.addTo(stack, stack.getAmount());
+            if (fluid instanceof IOptimizedMEList aeFluidHandler) {
+                final var list = aeFluidHandler.getMEFluidList();
+                if (confirmMEStock && aeFluidHandler.isStocking()) {
+                    for (FluidStack fluidStack : list) {
+                        if (!meAddedKeys.add(fluidStack)) continue;
+                        fluidContent.addTo(fluidStack, fluidStack.getAmount());
+                    }
+                } else {
+                    for (FluidStack fluidStack : list) {
+                        fluidContent.addTo(fluidStack, fluidStack.getAmount());
+                    }
+                }
+            } else {
+                for (var o : fluid.getContents()) {
+                    if (o instanceof FluidStack stack) {
+                        fluidContent.addTo(stack, stack.getAmount());
+                    }
                 }
             }
         }

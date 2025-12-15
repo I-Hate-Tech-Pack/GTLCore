@@ -37,4 +37,8 @@ public interface IOptimizedMEList {
     }
 
     default void onConfigChanged() {}
+
+    default boolean isStocking() {
+        return false;
+    }
 }

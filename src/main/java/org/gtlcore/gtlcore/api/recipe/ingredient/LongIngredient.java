@@ -64,6 +64,14 @@ public class LongIngredient extends SizedIngredient {
         return new LongIngredient(inner, 1);
     }
 
+    public static LongIngredient create(ItemStack inner) {
+        return new LongIngredient(inner, 1);
+    }
+
+    public static LongIngredient create(TagKey<Item> tag, long amount) {
+        return new LongIngredient(tag, amount);
+    }
+
     public static Ingredient copy(Ingredient ingredient) {
         if (ingredient instanceof LongIngredient longIngredient) {
             var copy = LongIngredient.create(longIngredient.inner, longIngredient.actualAmount);
