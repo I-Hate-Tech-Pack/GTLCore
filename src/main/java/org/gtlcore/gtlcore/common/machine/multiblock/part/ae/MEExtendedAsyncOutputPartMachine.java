@@ -52,10 +52,7 @@ public class MEExtendedAsyncOutputPartMachine extends MEExtendedOutputPartMachin
     private boolean mergeFromPendingData() {
         Object2LongOpenHashMap<AEKey> data = pendingData.getAndSet(null);
         if (data != null && !data.isEmpty()) {
-            data.object2LongEntrySet().fastForEach(e -> {
-                var key = e.getKey();
-                buffer.put(key, NumberUtils.saturatedAdd(buffer.getOrDefault(key, 0L), e.getLongValue()));
-            });
+            data.object2LongEntrySet().fastForEach(e -> buffer.mergeLong(e.getKey(), e.getLongValue(), NumberUtils::saturatedAdd));
             return true;
         }
         return false;

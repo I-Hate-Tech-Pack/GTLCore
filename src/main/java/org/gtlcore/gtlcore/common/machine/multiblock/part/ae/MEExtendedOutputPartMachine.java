@@ -125,9 +125,9 @@ public class MEExtendedOutputPartMachine extends MEExtendedOutputPartMachineBase
                         ItemStack output = items[0];
                         if (output.isEmpty()) it.remove();
                         else if (filterHandler.test(output)) {
-                            var key = AEItemKey.of(output);
-                            var amount = ingredient instanceof LongIngredient longIngredient ? longIngredient.getActualAmount() : output.getCount();
-                            buffer.put(key, NumberUtils.saturatedAdd(buffer.getOrDefault(key, 0L), amount));
+                            buffer.mergeLong(AEItemKey.of(output),
+                                    ingredient instanceof LongIngredient longIngredient ? longIngredient.getActualAmount() : output.getCount(),
+                                    NumberUtils::saturatedAdd);
                             it.remove();
                         }
                     } else it.remove();
@@ -162,8 +162,7 @@ public class MEExtendedOutputPartMachine extends MEExtendedOutputPartMachineBase
                             FluidStack output = fluids[0];
                             if (output.isEmpty()) it.remove();
                             else if (filterHandler.test(output)) {
-                                var key = AEFluidKey.of(output.getFluid());
-                                buffer.put(key, NumberUtils.saturatedAdd(buffer.getOrDefault(key, 0L), output.getAmount()));
+                                buffer.mergeLong(AEFluidKey.of(output.getFluid()), output.getAmount(), NumberUtils::saturatedAdd);
                                 it.remove();
                             }
                         } else it.remove();

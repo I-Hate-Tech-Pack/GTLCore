@@ -128,21 +128,18 @@ public interface IParallelLogic {
         var handle = machine.getActiveRecipeHandle(recipe);
         if (handle instanceof MEPatternRecipeHandlePart mePatternRecipeHandlePart) {
             for (var entry : Object2LongMaps.fastIterable(mePatternRecipeHandlePart.getMEContent(ItemRecipeCapability.CAP, recipe))) {
-                var key = entry.getKey();
-                ingredientStacks.put(key, NumberUtils.saturatedAdd(ingredientStacks.getOrDefault(key, 0L), entry.getLongValue()));
+                ingredientStacks.mergeLong(entry.getKey(), entry.getLongValue(), NumberUtils::saturatedAdd);
             }
 
         } else if (handle instanceof RecipeHandlePart recipeHandlePart) {
             for (var entry : Object2LongMaps.fastIterable(recipeHandlePart.getSelfContent(ItemRecipeCapability.CAP, confirmMEStock))) {
-                var key = entry.getKey();
-                ingredientStacks.put(key, NumberUtils.saturatedAdd(ingredientStacks.getOrDefault(key, 0L), entry.getLongValue()));
+                ingredientStacks.mergeLong(entry.getKey(), entry.getLongValue(), NumberUtils::saturatedAdd);
             }
         } else {
             var sharedRecipeHandlePart = machine.getSharedRecipeHandlePart();
             if (sharedRecipeHandlePart != null) {
                 for (var entry : Object2LongMaps.fastIterable(sharedRecipeHandlePart.getSelfContent(ItemRecipeCapability.CAP, confirmMEStock))) {
-                    var key = entry.getKey();
-                    ingredientStacks.put(key, NumberUtils.saturatedAdd(ingredientStacks.getOrDefault(key, 0L), entry.getLongValue()));
+                    ingredientStacks.mergeLong(entry.getKey(), entry.getLongValue(), NumberUtils::saturatedAdd);
                 }
             }
         }
@@ -171,13 +168,11 @@ public interface IParallelLogic {
         var handle = machine.getActiveRecipeHandle(recipe);
         if (handle instanceof MEPatternRecipeHandlePart mePatternRecipeHandlePart) {
             for (var entry : Object2LongMaps.fastIterable(mePatternRecipeHandlePart.getMEContent(FluidRecipeCapability.CAP, recipe))) {
-                var key = entry.getKey();
-                ingredientStacks.put(key, NumberUtils.saturatedAdd(ingredientStacks.getOrDefault(key, 0L), entry.getLongValue()));
+                ingredientStacks.mergeLong(entry.getKey(), entry.getLongValue(), NumberUtils::saturatedAdd);
             }
         } else if (handle instanceof RecipeHandlePart recipeHandlePart) {
             for (var entry : Object2LongMaps.fastIterable(machine.isDistinct() ? recipeHandlePart.getSelfContent(FluidRecipeCapability.CAP, confirmMEStock) : recipeHandlePart.getContentWithShared(FluidRecipeCapability.CAP, confirmMEStock))) {
-                var key = entry.getKey();
-                ingredientStacks.put(key, NumberUtils.saturatedAdd(ingredientStacks.getOrDefault(key, 0L), entry.getLongValue()));
+                ingredientStacks.mergeLong(entry.getKey(), entry.getLongValue(), NumberUtils::saturatedAdd);
             }
         } else {
             var sharedRecipeHandlePart = machine.getSharedRecipeHandlePart();
@@ -186,7 +181,7 @@ public interface IParallelLogic {
                     if (handler instanceof CatalystFluidStackHandler) continue;
                     for (var object : handler.getContents()) {
                         if (object instanceof FluidStack fs) {
-                            ingredientStacks.put(fs, NumberUtils.saturatedAdd(ingredientStacks.getOrDefault(fs, 0L), fs.getAmount()));
+                            ingredientStacks.mergeLong(fs, fs.getAmount(), NumberUtils::saturatedAdd);
                         }
                     }
                 }
