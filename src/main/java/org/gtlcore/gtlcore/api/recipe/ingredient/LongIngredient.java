@@ -31,6 +31,7 @@ public class LongIngredient extends SizedIngredient {
     @Getter
     protected long actualAmount;
     private int hashCode = 0;
+    private int innerHashCode = 0;
     private boolean changed = true;
     @Getter
     private final boolean isEmpty;
@@ -155,6 +156,13 @@ public class LongIngredient extends SizedIngredient {
             this.hashCode = Objects.hash(this.actualAmount, Objects.hashCode(this.inner));
         }
         return this.hashCode;
+    }
+
+    public int getInnerHashCode() {
+        if (this.innerHashCode == 0) {
+            this.innerHashCode = Objects.hashCode(this.inner);
+        }
+        return this.innerHashCode;
     }
 
     public void setActualAmount(long actualAmount) {

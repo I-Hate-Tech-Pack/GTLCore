@@ -110,6 +110,7 @@
     "gtm.api.recipe.ContentModifierMixin",
     "gtm.api.recipe.GTRecipeLookupMixin",
     "gtm.api.recipe.GTRecipeMixin",
+    "gtm.api.recipe.IngredientHashStrategyMixin",
     "gtm.api.recipe.OCResultMixin",
     "gtm.api.recipe.ParallelLogicMixin",
     "gtm.api.recipe.RecipeIteratorAccessor",
