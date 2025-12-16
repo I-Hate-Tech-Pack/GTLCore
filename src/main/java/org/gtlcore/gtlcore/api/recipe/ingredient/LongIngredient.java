@@ -163,7 +163,11 @@ public class LongIngredient extends SizedIngredient {
             int hash = 0;
             for (var v : ((IngredientAccessor) this.inner).getValues()) {
                 if (v instanceof TagValueAccessor tag) hash += tag.getTag().hashCode();
-                else if (v instanceof ItemValueAccessor item) hash += item.getItem().hashCode();
+                else if (v instanceof ItemValueAccessor item) {
+                    var i = item.getItem();
+                    if (i.isEmpty()) continue;
+                    hash += i.getItem().hashCode() + (i.getTag() != null ? i.getTag().hashCode() : 0);
+                }
             }
             this.innerHashCode = hash;
         }
