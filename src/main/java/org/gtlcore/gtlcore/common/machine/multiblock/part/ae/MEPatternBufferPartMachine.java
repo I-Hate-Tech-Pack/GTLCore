@@ -534,35 +534,38 @@ public class MEPatternBufferPartMachine extends MEIOPartMachine implements IInte
 
     public boolean pasteFromTag(CompoundTag tag) {
         this.setCustomName(tag.getString("name"));
-        var list = tag.getList("patterns", Tag.TAG_COMPOUND);
+        this.keepByProduct = tag.getBoolean("keepByProduct");
 
+        var patternList = tag.getList("patterns", Tag.TAG_COMPOUND);
         int usedCount = 0;
         for (ItemStack ignored : internalPatternInventory) {
             usedCount++;
         }
-        if (internalPatternInventory.size() - usedCount < list.size()) return false;
+        if (internalPatternInventory.size() - usedCount < patternList.size()) return false;
 
         int listIndex = 0;
-        for (int index = 0; index < internalPatternInventory.size() && listIndex < list.size(); index++) {
-            if (!internalPatternInventory.getStackInSlot(index).isEmpty()) {
+        for (int slotIndex = 0; slotIndex < internalPatternInventory.size() && listIndex < patternList.size(); slotIndex++) {
+            if (!internalPatternInventory.getStackInSlot(slotIndex).isEmpty()) {
                 continue;
             }
 
-            CompoundTag patternData = list.getCompound(listIndex);
+            CompoundTag patternData = patternList.getCompound(listIndex);
             var patternTag = patternData.getCompound("pattern");
             var sourceCacheCount = patternData.getByte("cacheCount");
             var catalystItems = patternData.getCompound("catalystItems");
             var catalystFluids = patternData.getCompound("catalystFluids");
 
-            internalPatternInventory.setItemDirect(index, ItemStack.of(patternTag));
-            this.catalystItems[index].deserializeNBT(catalystItems);
-            this.catalystFluids[index].deserializeNBT(catalystFluids);
-            if (sourceCacheCount > 0) this.cacheRecipeCount[index] = sourceCacheCount;
+            internalPatternInventory.setItemDirect(slotIndex, ItemStack.of(patternTag));
+            this.catalystItems[slotIndex].deserializeNBT(catalystItems);
+            this.catalystFluids[slotIndex].deserializeNBT(catalystFluids);
+            if (sourceCacheCount > 0) this.cacheRecipeCount[slotIndex] = sourceCacheCount;
+
+            this.catalystItems[slotIndex].onContentsChanged();
+            this.catalystFluids[slotIndex].onContentsChanged();
 
             listIndex++;
         }
 
-        this.keepByProduct = tag.getBoolean("keepByProduct");
         this.sharedCatalystInventory.storage.deserializeNBT(tag.getCompound("sharedCatalystInventory"));
         this.sharedCircuitInventory.storage.deserializeNBT(tag.getCompound("sharedCircuitInventory"));
 
@@ -571,6 +574,9 @@ public class MEPatternBufferPartMachine extends MEIOPartMachine implements IInte
         for (int i = 0; i < Math.min(catalystTanks.size(), tankStorages.length); i++) {
             tankStorages[i].deserializeNBT(catalystTanks.getCompound(i));
         }
+
+        this.sharedCatalystTank.onContentsChanged();
+        this.sharedCatalystInventory.onContentsChanged();
 
         for (MEPatternBufferProxyPartMachine proxy : this.getProxies()) {
             proxy.setBuffer(null);
@@ -597,32 +603,36 @@ public class MEPatternBufferPartMachine extends MEIOPartMachine implements IInte
         var listPattern = new ListTag();
         for (int slotIndex : patternSlotMap.values().stream().toList()) {
             ItemStack stack = internalPatternInventory.getStackInSlot(slotIndex);
+            if (stack.isEmpty()) continue;
 
-            if (!stack.isEmpty()) {
-                CompoundTag patternData = new CompoundTag();
-                patternData.put("pattern", stack.serializeNBT());
-                patternData.putByte("cacheCount", cacheRecipeCount[slotIndex]);
-                patternData.put("catalystItems", catalystItems[slotIndex].serializeNBT());
-                patternData.put("catalystFluids", catalystFluids[slotIndex].serializeNBT());
-                listPattern.add(patternData);
+            CompoundTag patternData = new CompoundTag();
+            patternData.put("pattern", stack.serializeNBT());
+            patternData.putByte("cacheCount", cacheRecipeCount[slotIndex]);
+            patternData.put("catalystItems", catalystItems[slotIndex].serializeNBT());
+            patternData.put("catalystFluids", catalystFluids[slotIndex].serializeNBT());
+            listPattern.add(patternData);
 
-                internalPatternInventory.setItemDirect(slotIndex, ItemStack.EMPTY);
-                for (int i = 0; i < catalystItems[slotIndex].getSlots(); i++) {
-                    catalystItems[slotIndex].setStackInSlot(i, ItemStack.EMPTY);
-                }
-                for (int i = 0; i < catalystFluids[slotIndex].getTanks(); i++) {
-                    catalystFluids[slotIndex].setFluidInTank(i, FluidStack.empty());
-                }
+            internalPatternInventory.setItemDirect(slotIndex, ItemStack.EMPTY);
+            for (int i = 0; i < catalystItems[slotIndex].getSlots(); i++) {
+                catalystItems[slotIndex].setStackInSlot(i, ItemStack.EMPTY);
             }
-        }
+            for (int i = 0; i < catalystFluids[slotIndex].getTanks(); i++) {
+                catalystFluids[slotIndex].setFluidInTank(i, FluidStack.empty());
+            }
 
+            catalystItems[slotIndex].onContentsChanged();
+            catalystFluids[slotIndex].onContentsChanged();
+        }
         tag.put("patterns", listPattern);
         tag.put("sharedCatalystInventory", sharedCatalystInventory.storage.serializeNBT());
         tag.put("sharedCircuitInventory", sharedCircuitInventory.storage.serializeNBT());
         tag.putBoolean("keepByProduct", keepByProduct);
         tag.put("proxies", new LongArrayTag(proxies.stream().map(BlockPos::asLong).toList()));
+
         var tankList = new ListTag();
-        Arrays.stream(sharedCatalystTank.getStorages()).map(FluidStorage::serializeNBT).forEach(tankList::add);
+        Arrays.stream(sharedCatalystTank.getStorages())
+                .map(FluidStorage::serializeNBT)
+                .forEach(tankList::add);
         tag.put("sharedCatalystTank", tankList);
 
         for (int i = 0; i < sharedCatalystInventory.getSlots(); i++) {
@@ -631,6 +641,9 @@ public class MEPatternBufferPartMachine extends MEIOPartMachine implements IInte
         for (int i = 0; i < sharedCatalystTank.getTanks(); i++) {
             sharedCatalystTank.setFluidInTank(i, FluidStack.empty());
         }
+        sharedCatalystInventory.onContentsChanged();
+        sharedCatalystTank.onContentsChanged();
+
         for (MEPatternBufferProxyPartMachine proxy : this.getProxies()) {
             proxy.setBuffer(null);
         }
