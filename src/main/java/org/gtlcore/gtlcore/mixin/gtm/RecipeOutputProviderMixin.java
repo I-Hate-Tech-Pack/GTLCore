@@ -3,6 +3,7 @@ package org.gtlcore.gtlcore.mixin.gtm;
 import org.gtlcore.gtlcore.api.recipe.ingredient.LongIngredient;
 import org.gtlcore.gtlcore.utils.GTLUtil;
 import org.gtlcore.gtlcore.utils.NumberUtils;
+import org.gtlcore.gtlcore.utils.Registries;
 
 import com.gregtechceu.gtceu.api.capability.recipe.ItemRecipeCapability;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
@@ -64,7 +65,7 @@ public abstract class RecipeOutputProviderMixin extends CapabilityBlockProvider<
                 for (Ingredient outputContent : RecipeHelper.getOutputContents(recipe, ItemRecipeCapability.CAP)) {
                     final var stack = outputContent.getItems()[0];
                     if (stack == null || stack.isEmpty()) continue;
-                    String sid = GTLUtil.getItemId(stack.getItem());
+                    String sid = Registries.getItemId(stack);
                     if (outputContent instanceof LongIngredient longIngredient) {
                         if (cache.containsKey(sid)) {
                             CompoundTag tag = cache.get(sid);
@@ -111,7 +112,7 @@ public abstract class RecipeOutputProviderMixin extends CapabilityBlockProvider<
                 ListTag fluidTags = new ListTag();
                 for (var stack : RecipeHelper.getOutputFluids(recipe)) {
                     if (stack != null && !stack.isEmpty()) {
-                        var fid = GTLUtil.getFluidId(stack.getFluid());
+                        var fid = Registries.getFluidId(stack);
                         if (cache.containsKey(fid)) {
                             CompoundTag tag = cache.get(fid);
                             if (tag != null) {

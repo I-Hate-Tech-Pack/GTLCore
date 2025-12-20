@@ -1,6 +1,7 @@
 package org.gtlcore.gtlcore.data.recipe;
 
 import org.gtlcore.gtlcore.GTLCore;
+import org.gtlcore.gtlcore.utils.Registries;
 
 import com.gregtechceu.gtceu.api.capability.recipe.FluidRecipeCapability;
 import com.gregtechceu.gtceu.api.capability.recipe.ItemRecipeCapability;
@@ -49,7 +50,7 @@ public class GenerateDisassembly {
                 .of(c.get(0).getContent()).getItems();
         if (outputs.length == 0) return;
         ItemStack output = outputs[0];
-        String id = output.kjs$getId();
+        String id = Registries.getItemId(output);
         boolean cal = r.recipeType == GTRecipeTypes.get("circuit_assembly_line");
         if (isExcludeItems(id, outputItem)) return;
         GTRecipeBuilder builder = DISASSEMBLY_RECIPES.recipeBuilder(new ResourceLocation(id))
@@ -69,7 +70,7 @@ public class GenerateDisassembly {
                     if (items.length == 0) return;
                     ItemStack item = items[0];
                     if (content.chance == ChanceLogic.getMaxChancedValue() && !item.isEmpty() && !item.hasTag()) {
-                        if (cal || !isExcludeItems(item.kjs$getId(), inputItem)) {
+                        if (cal || !isExcludeItems(Registries.getItemId(item), inputItem)) {
                             builder.outputItems(item);
                         }
                     }

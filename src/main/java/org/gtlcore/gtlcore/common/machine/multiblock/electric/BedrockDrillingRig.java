@@ -1,6 +1,7 @@
 package org.gtlcore.gtlcore.common.machine.multiblock.electric;
 
 import org.gtlcore.gtlcore.common.util.BlockStateWatcher;
+import org.gtlcore.gtlcore.utils.Registries;
 
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.feature.IMachineLife;
@@ -65,7 +66,7 @@ public class BedrockDrillingRig extends WorkableElectricMultiblockMachine implem
         watcherHandle = BlockStateWatcher.addWatcher(getLevel(), targetPos, this::onBlockStateChanged);
 
         BlockState currentState = level.getBlockState(targetPos);
-        hasBedrockAtTarget = currentState.getBlock().kjs$getId().equals("minecraft:bedrock");
+        hasBedrockAtTarget = Registries.getBlockId(currentState.getBlock()).equals("minecraft:bedrock");
         if (hasBedrockAtTarget) this.recipeLogic.updateTickSubscription();
     }
 
@@ -77,7 +78,7 @@ public class BedrockDrillingRig extends WorkableElectricMultiblockMachine implem
     }
 
     protected void onBlockStateChanged(BlockState newState) {
-        hasBedrockAtTarget = newState != null && newState.getBlock().kjs$getId().equals("minecraft:bedrock");
+        hasBedrockAtTarget = newState != null && Registries.getBlockId(newState.getBlock()).equals("minecraft:bedrock");
         if (hasBedrockAtTarget) this.recipeLogic.updateTickSubscription();
     }
 

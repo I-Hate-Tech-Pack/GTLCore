@@ -4,8 +4,8 @@ import org.gtlcore.gtlcore.GTLCore;
 import org.gtlcore.gtlcore.common.data.GTLBlocks;
 import org.gtlcore.gtlcore.common.data.GTLItems;
 import org.gtlcore.gtlcore.config.ConfigHolder;
+import org.gtlcore.gtlcore.utils.Registries;
 
-import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.monster.EnderMan;
@@ -38,7 +38,7 @@ public class ForgeCommonEventListener {
         if (event.getEntity().level().getBlockState(event.getPos()).getBlock() == Blocks.END_PORTAL_FRAME &&
                 event.getEntity().getItemInHand(event.getHand()).getItem() == Items.ENDER_EYE) {
             if (event.getEntity() instanceof ServerPlayer player &&
-                    Objects.equals(player.getOffhandItem().kjs$getId(), "kubejs:end_data")) {
+                    Objects.equals(Registries.getItemId(player.getOffhandItem()), "kubejs:end_data")) {
                 player.getOffhandItem().setCount(player.getOffhandItem().getCount() - 1);
                 return;
             }
@@ -68,7 +68,7 @@ public class ForgeCommonEventListener {
 
     @SubscribeEvent
     public static void remapIds(MissingMappingsEvent event) {
-        event.getMappings(Registries.BLOCK, KubeJS.MOD_ID).forEach(mapping -> {
+        event.getMappings(net.minecraft.core.registries.Registries.BLOCK, KubeJS.MOD_ID).forEach(mapping -> {
             if (mapping.getKey().equals(KubeJS.id("multi_functional_casing"))) {
                 mapping.remap(GTLBlocks.MULTI_FUNCTIONAL_CASING.get());
             }
@@ -160,7 +160,7 @@ public class ForgeCommonEventListener {
                 mapping.remap(GTLBlocks.HSSS_REINFORCED_BOROSILICATE_GLASS.get());
             }
         });
-        event.getMappings(Registries.ITEM, "infinitycells").forEach(mapping -> {
+        event.getMappings(net.minecraft.core.registries.Registries.ITEM, "infinitycells").forEach(mapping -> {
             if (mapping.getKey().equals(new ResourceLocation("infinitycells:infinity_cell"))) {
                 mapping.remap(GTLItems.ITEM_INFINITY_CELL.get());
             }

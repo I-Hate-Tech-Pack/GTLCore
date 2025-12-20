@@ -1,6 +1,7 @@
 package org.gtlcore.gtlcore.mixin.gtm;
 
 import org.gtlcore.gtlcore.api.recipe.RecipeResult;
+import org.gtlcore.gtlcore.utils.Registries;
 
 import com.gregtechceu.gtceu.api.capability.recipe.FluidRecipeCapability;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
@@ -13,8 +14,6 @@ import com.gregtechceu.gtceu.common.recipe.condition.RockBreakerCondition;
 import com.gregtechceu.gtceu.utils.GTUtil;
 
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
@@ -31,8 +30,8 @@ public abstract class RockBreakerConditionMixin extends RecipeCondition {
      */
     @Overwrite(remap = false)
     public boolean test(@NotNull GTRecipe recipe, @NotNull RecipeLogic recipeLogic) {
-        var fluidA = ForgeRegistries.FLUIDS.getValue(new ResourceLocation(recipe.data.getString("fluidA")));
-        var fluidB = ForgeRegistries.FLUIDS.getValue(new ResourceLocation(recipe.data.getString("fluidB")));
+        var fluidA = Registries.getFluid(recipe.data.getString("fluidA"));
+        var fluidB = Registries.getFluid(recipe.data.getString("fluidB"));
         boolean hasFluidA = false, hasFluidB = false;
         if (recipeLogic.machine instanceof WorkableElectricMultiblockMachine MMachine) {
             var handlers = MMachine.getCapabilitiesProxy().get(IO.IN, FluidRecipeCapability.CAP);

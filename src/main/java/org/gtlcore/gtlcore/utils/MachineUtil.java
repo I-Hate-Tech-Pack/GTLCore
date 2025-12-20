@@ -22,10 +22,8 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.util.Lazy;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.Map;
-import java.util.Objects;
 
 import static org.gtlcore.gtlcore.api.recipe.RecipeRunnerHelper.*;
 import static org.gtlcore.gtlcore.utils.Registries.getItem;
@@ -56,7 +54,7 @@ public class MachineUtil {
     }
 
     public static boolean inputItem(WorkableMultiblockMachine machine, ItemStack item) {
-        GTRecipe recipe = new GTRecipeBuilder(item.kjs$getIdLocation(), GTRecipeTypes.DUMMY_RECIPES).inputItems(item).buildRawRecipe();
+        GTRecipe recipe = new GTRecipeBuilder(Registries.getResourceKey(item), GTRecipeTypes.DUMMY_RECIPES).inputItems(item).buildRawRecipe();
         if (matchRecipeInputNocache(machine, recipe)) {
             return handleRecipeInputNocache(machine, recipe);
         } else RecipeResult.of(machine, RecipeResult.fail(Component.translatable("gtceu.recipe.fail.no.input.item", item.getDisplayName())));
@@ -65,7 +63,7 @@ public class MachineUtil {
 
     public static boolean outputItem(WorkableMultiblockMachine machine, ItemStack item) {
         if (!item.isEmpty()) {
-            GTRecipe recipe = new GTRecipeBuilder(item.kjs$getIdLocation(), GTRecipeTypes.DUMMY_RECIPES).outputItems(item).buildRawRecipe();
+            GTRecipe recipe = new GTRecipeBuilder(Registries.getResourceKey(item), GTRecipeTypes.DUMMY_RECIPES).outputItems(item).buildRawRecipe();
             if (matchRecipeOutput(machine, recipe)) {
                 return handleRecipeOutput(machine, recipe);
             }
@@ -74,7 +72,7 @@ public class MachineUtil {
     }
 
     public static boolean notConsumableItem(WorkableMultiblockMachine machine, ItemStack item) {
-        return new GTRecipeBuilder(item.kjs$getIdLocation(), GTRecipeTypes.DUMMY_RECIPES).inputItems(item).buildRawRecipe().matchRecipe(machine).isSuccess();
+        return new GTRecipeBuilder(Registries.getResourceKey(item), GTRecipeTypes.DUMMY_RECIPES).inputItems(item).buildRawRecipe().matchRecipe(machine).isSuccess();
     }
 
     public static boolean notConsumableCircuit(WorkableMultiblockMachine machine, int configuration) {
@@ -83,7 +81,7 @@ public class MachineUtil {
     }
 
     public static boolean inputFluid(WorkableMultiblockMachine machine, FluidStack fluid) {
-        GTRecipe recipe = new GTRecipeBuilder(Objects.requireNonNull(ForgeRegistries.FLUIDS.getKey(fluid.getFluid())), GTRecipeTypes.DUMMY_RECIPES).inputFluids(fluid).buildRawRecipe();
+        GTRecipe recipe = new GTRecipeBuilder(Registries.getResourceKey(fluid), GTRecipeTypes.DUMMY_RECIPES).inputFluids(fluid).buildRawRecipe();
         if (matchRecipeInputNocache(machine, recipe)) {
             return handleRecipeInputNocache(machine, recipe);
         } else RecipeResult.of(machine, RecipeResult.fail(Component.translatable("gtceu.recipe.fail.no.input.fluid", fluid.getDisplayName())));
@@ -92,7 +90,7 @@ public class MachineUtil {
 
     public static boolean outputFluid(WorkableMultiblockMachine machine, FluidStack fluid) {
         if (!fluid.isEmpty()) {
-            GTRecipe recipe = new GTRecipeBuilder(Objects.requireNonNull(ForgeRegistries.FLUIDS.getKey(fluid.getFluid())), GTRecipeTypes.DUMMY_RECIPES).outputFluids(fluid).buildRawRecipe();
+            GTRecipe recipe = new GTRecipeBuilder(Registries.getResourceKey(fluid), GTRecipeTypes.DUMMY_RECIPES).outputFluids(fluid).buildRawRecipe();
             if (matchRecipeOutput(machine, recipe)) {
                 return handleRecipeOutput(machine, recipe);
             }

@@ -1,5 +1,7 @@
 package org.gtlcore.gtlcore.common.machine.multiblock.part;
 
+import org.gtlcore.gtlcore.utils.Registries;
+
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
@@ -62,7 +64,7 @@ public class BallHatchPartMachine extends MultiblockPartMachine implements IMach
 
     protected NotifiableItemStackHandler createInventoryItemHandler(Object... args) {
         NotifiableItemStackHandler storage = new NotifiableItemStackHandler(this, 1, IO.NONE, IO.BOTH);
-        storage.setFilter(i -> i.getItem().kjs$getId().contains("kubejs:grindball_"));
+        storage.setFilter(i -> Registries.getItemId(i).contains("kubejs:grindball_"));
         return storage;
     }
 

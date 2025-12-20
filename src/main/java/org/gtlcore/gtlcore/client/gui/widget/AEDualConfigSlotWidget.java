@@ -1,5 +1,7 @@
 package org.gtlcore.gtlcore.client.gui.widget;
 
+import org.gtlcore.gtlcore.utils.Registries;
+
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.gui.misc.IGhostFluidTarget;
 import com.gregtechceu.gtceu.api.gui.misc.IGhostItemTarget;
@@ -24,7 +26,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import appeng.api.stacks.AEFluidKey;
 import appeng.api.stacks.AEItemKey;
@@ -259,7 +260,7 @@ public class AEDualConfigSlotWidget extends Widget implements IGhostItemTarget, 
             this.parentWidget.setItemConfig(index, new GenericStack(AEItemKey.of(item.getItem(), item.getTag()), item.getCount()));
         }
         if (id == FLUID_UPDATE_ID) {
-            FluidStack fluid = FluidStack.create(ForgeRegistries.FLUIDS.getValue(buffer.readResourceLocation()),
+            FluidStack fluid = FluidStack.create(Registries.getFluid(buffer.readResourceLocation()),
                     buffer.readVarLong());
             this.parentWidget.setFluidConfig(index, new GenericStack(AEFluidKey.of(fluid.getFluid()), fluid.getAmount()));
         }

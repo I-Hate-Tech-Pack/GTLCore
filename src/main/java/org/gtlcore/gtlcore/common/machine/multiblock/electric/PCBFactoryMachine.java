@@ -1,6 +1,7 @@
 package org.gtlcore.gtlcore.common.machine.multiblock.electric;
 
 import org.gtlcore.gtlcore.common.data.GTLRecipeModifiers;
+import org.gtlcore.gtlcore.utils.Registries;
 
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
@@ -35,7 +36,7 @@ public class PCBFactoryMachine extends StorageMachine {
 
     private void getPCBReduction() {
         ItemStack itemStack = getMachineStorageItem();
-        String item = itemStack.kjs$getId();
+        String item = Registries.getItemId(itemStack);
         if (Objects.equals(item, "gtceu:vibranium_nanoswarm")) {
             reductionDuration = (double) (100 - itemStack.getCount()) / 100;
             reductionEUt = 0.25;

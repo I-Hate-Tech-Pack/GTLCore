@@ -48,7 +48,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -69,11 +68,9 @@ import java.util.*;
 import static com.gregtechceu.gtceu.api.GTValues.IV;
 import static com.gregtechceu.gtceu.api.pattern.Predicates.*;
 import static com.gregtechceu.gtceu.api.pattern.util.RelativeDirection.*;
-import static com.gregtechceu.gtceu.common.data.GTMachines.*;
 import static com.gregtechceu.gtceu.common.data.GTRecipeTypes.DUMMY_RECIPES;
 import static com.gregtechceu.gtceu.common.registry.GTRegistration.REGISTRATE;
 import static net.minecraft.core.registries.Registries.DIMENSION;
-import static org.gtlcore.gtlcore.utils.Registries.getItem;
 
 @SuppressWarnings("unused")
 public class AdvancedMultiBlockMachine {
@@ -368,13 +365,11 @@ public class AdvancedMultiBlockMachine {
                     .build())
             .beforeWorking((machine, recipe) -> {
                 if (machine instanceof CoilWorkableElectricMultiblockMachine coilWorkableElectricMultiblockMachine) {
-                    if (coilWorkableElectricMultiblockMachine.getCoilType().getCoilTemperature() == 273) {
-                        if (machine.getRecipeType() == GTLRecipeTypes.STELLAR_FORGE_RECIPES) {
-                            return true;
-                        } else if (recipe.data.getInt("ebf_temp") <= 32000) {
-                            return true;
-                        }
-                    } else if (recipe.data.getInt("ebf_temp") <= coilWorkableElectricMultiblockMachine.getCoilType().getCoilTemperature()) {
+                    int coilTemp = coilWorkableElectricMultiblockMachine.getCoilType().getCoilTemperature();
+                    coilTemp = coilTemp == 273 ? 32000 : coilTemp;
+                    if (machine.getRecipeType() == GTLRecipeTypes.STELLAR_FORGE_RECIPES) {
+                        if (coilTemp == 32000) return true;
+                    } else if (recipe.data.getInt("ebf_temp") <= coilTemp) {
                         return true;
                     }
                 }
@@ -383,9 +378,10 @@ public class AdvancedMultiBlockMachine {
             })
             .additionalDisplay((controller, components) -> {
                 if (controller.isFormed() && controller instanceof CoilWorkableElectricMultiblockMachine machine) {
-                    int temp = machine.getCoilType().getCoilTemperature();
-                    components.add(Component.translatable("gtceu.multiblock.blast_furnace.max_temperature", Component.literal(FormattingUtil.formatNumbers((temp == 273 ? 32000 : temp)) + "K").withStyle(ChatFormatting.BLUE)));
-                    if (machine.getRecipeType() == GTLRecipeTypes.STELLAR_FORGE_RECIPES && temp != 273) {
+                    int coilTemp = machine.getCoilType().getCoilTemperature();
+                    coilTemp = coilTemp == 273 ? 32000 : coilTemp;
+                    components.add(Component.translatable("gtceu.multiblock.blast_furnace.max_temperature", Component.literal(FormattingUtil.formatNumbers(coilTemp) + "K").withStyle(ChatFormatting.BLUE)));
+                    if (machine.getRecipeType() == GTLRecipeTypes.STELLAR_FORGE_RECIPES && coilTemp != 32000) {
                         components.add(Component.translatable("message.gtlcore.coil_incompatible_recipe_mode").withStyle(ChatFormatting.RED));
                     }
                 }
@@ -408,15 +404,15 @@ public class AdvancedMultiBlockMachine {
                     p = item.getCount() * 2;
                     long inputEUt = RecipeHelper.getInputEUt(recipe);
                     if (inputEUt == GTValues.VA[GTValues.UV]) {
-                        isParallel = Objects.equals(item.kjs$getId(), "kubejs:precision_circuit_assembly_robot_mk1");
+                        isParallel = Objects.equals(Registries.getItemId(item), "kubejs:precision_circuit_assembly_robot_mk1");
                     } else if (inputEUt == GTValues.VA[GTValues.UHV]) {
-                        isParallel = Objects.equals(item.kjs$getId(), "kubejs:precision_circuit_assembly_robot_mk2");
+                        isParallel = Objects.equals(Registries.getItemId(item), "kubejs:precision_circuit_assembly_robot_mk2");
                     } else if (inputEUt == GTValues.VA[GTValues.UEV]) {
-                        isParallel = Objects.equals(item.kjs$getId(), "kubejs:precision_circuit_assembly_robot_mk3");
+                        isParallel = Objects.equals(Registries.getItemId(item), "kubejs:precision_circuit_assembly_robot_mk3");
                     } else if (inputEUt == GTValues.VA[GTValues.UIV]) {
-                        isParallel = Objects.equals(item.kjs$getId(), "kubejs:precision_circuit_assembly_robot_mk4");
+                        isParallel = Objects.equals(Registries.getItemId(item), "kubejs:precision_circuit_assembly_robot_mk4");
                     } else if (inputEUt == GTValues.VA[GTValues.UXV]) {
-                        isParallel = Objects.equals(item.kjs$getId(), "kubejs:precision_circuit_assembly_robot_mk5");
+                        isParallel = Objects.equals(Registries.getItemId(item), "kubejs:precision_circuit_assembly_robot_mk5");
                     }
                 }
                 if (isParallel) {
@@ -514,7 +510,7 @@ public class AdvancedMultiBlockMachine {
                         if (pos_0 != pos) {
                             pos = pos_0;
                             BlockPos blockPos = machine.self().getPos().offset(pos[0], pos[1], pos[2]);
-                            String block = level.getBlockState(blockPos).getBlock().kjs$getId();
+                            String block = Registries.getBlockId(level.getBlockState(blockPos).getBlock());
                             if (COV_RECIPE.containsKey(block)) {
                                 level.setBlockAndUpdate(blockPos, Registries.getBlock(COV_RECIPE.get(block)).defaultBlockState());
                             }
@@ -810,7 +806,7 @@ public class AdvancedMultiBlockMachine {
                         List<Entity> entities = level.getEntitiesOfClass(Entity.class, new AABB(pos.getX() - 10, pos.getY() - 10, pos.getZ() - 10, pos.getX() + 10, pos.getY() + 10, pos.getZ() + 10));
                         for (Entity entity : entities) {
                             if (entity instanceof ItemEntity itemEntity) {
-                                switch (itemEntity.getItem().kjs$getId()) {
+                                switch (Registries.getItemId(itemEntity.getItem())) {
                                     case "gtceu:magnetohydrodynamicallyconstrainedstarmatter_block" -> {
                                         MachineUtil.createItemEntity(level, itemEntity.getX(), itemEntity.getY(), itemEntity.getZ(), new ItemStack(Blocks.COMMAND_BLOCK, itemEntity.getItem()
                                                 .getCount()));
@@ -818,21 +814,21 @@ public class AdvancedMultiBlockMachine {
                                     }
                                     case "gtceu:magmatter_ingot" -> {
                                         if (itemEntity.getItem().getCount() >= 64) {
-                                            MachineUtil.createItemEntity(level, itemEntity.getX(), itemEntity.getY(), itemEntity.getZ(), new ItemStack(getItem("gtceu:magmatter_block"), itemEntity.getItem()
+                                            MachineUtil.createItemEntity(level, itemEntity.getX(), itemEntity.getY(), itemEntity.getZ(), new ItemStack(Registries.getItem("gtceu:magmatter_block"), itemEntity.getItem()
                                                     .getCount() / 64));
                                             itemEntity.discard();
                                         }
                                     }
                                     case "expatternprovider:fishbig" -> {
                                         if (itemEntity.getItem().getCount() >= 64) {
-                                            MachineUtil.createItemEntity(level, itemEntity.getX(), itemEntity.getY(), itemEntity.getZ(), new ItemStack(getItem("gtlcore:ultimate_tea"), itemEntity.getItem()
+                                            MachineUtil.createItemEntity(level, itemEntity.getX(), itemEntity.getY(), itemEntity.getZ(), new ItemStack(Registries.getItem("gtlcore:ultimate_tea"), itemEntity.getItem()
                                                     .getCount() / 64));
                                             itemEntity.discard();
                                         }
                                     }
                                     case "gtlcore:ultimate_tea" -> {
                                         if (itemEntity.getItem().getCount() >= 16) {
-                                            MachineUtil.createItemEntity(level, itemEntity.getX(), itemEntity.getY(), itemEntity.getZ(), new ItemStack(getItem("kubejs:heartofthesmogus"), itemEntity.getItem()
+                                            MachineUtil.createItemEntity(level, itemEntity.getX(), itemEntity.getY(), itemEntity.getZ(), new ItemStack(Registries.getItem("kubejs:heartofthesmogus"), itemEntity.getItem()
                                                     .getCount() / 16));
                                             itemEntity.discard();
                                         }
@@ -845,7 +841,7 @@ public class AdvancedMultiBlockMachine {
                                         player.teleportTo(createLevel, 0.0, 1.0, 0.0, player.getXRot(), player.getYRot());
                                     }
                                 } else {
-                                    player.kjs$setStatusMessage(Component.translatable("message.gtlcore.equipment_incompatible_dimension"));
+                                    player.displayClientMessage(Component.translatable("message.gtlcore.equipment_incompatible_dimension"), true);
                                 }
                             }
                         }
@@ -951,7 +947,7 @@ public class AdvancedMultiBlockMachine {
                 if (machine.getRecipeLogic().getProgress() == 19) {
                     if (machine.self().getLevel() instanceof ServerLevel level) {
                         BlockPos pos = machine.self().getPos().offset(0, -16, 0);
-                        String blockId = level.getBlockState(pos).getBlock().kjs$getId();
+                        String blockId = Registries.getBlockId(level.getBlockState(pos).getBlock());
 
                         switch (blockId) {
                             case "kubejs:command_block_broken" -> {
@@ -1146,27 +1142,27 @@ public class AdvancedMultiBlockMachine {
                         return false;
                     }
                     if (recipeType.equals(GTRecipeTypes.BENDER_RECIPES)) {
-                        isrecipe = Objects.equals(storageMachine.getMachineStorageItem().kjs$getId(), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_bender");
+                        isrecipe = Objects.equals(Registries.getItemId(storageMachine.getMachineStorageItem()), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_bender");
                     } else if (recipeType.equals(GTRecipeTypes.COMPRESSOR_RECIPES)) {
-                        isrecipe = Objects.equals(storageMachine.getMachineStorageItem().kjs$getId(), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_compressor");
+                        isrecipe = Objects.equals(Registries.getItemId(storageMachine.getMachineStorageItem()), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_compressor");
                     } else if (recipeType.equals(GTRecipeTypes.FORGE_HAMMER_RECIPES)) {
-                        isrecipe = Objects.equals(storageMachine.getMachineStorageItem().kjs$getId(), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_forge_hammer");
+                        isrecipe = Objects.equals(Registries.getItemId(storageMachine.getMachineStorageItem()), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_forge_hammer");
                     } else if (recipeType.equals(GTRecipeTypes.CUTTER_RECIPES)) {
-                        isrecipe = Objects.equals(storageMachine.getMachineStorageItem().kjs$getId(), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_cutter");
+                        isrecipe = Objects.equals(Registries.getItemId(storageMachine.getMachineStorageItem()), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_cutter");
                     } else if (recipeType.equals(GTRecipeTypes.EXTRUDER_RECIPES)) {
-                        isrecipe = Objects.equals(storageMachine.getMachineStorageItem().kjs$getId(), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_extruder");
+                        isrecipe = Objects.equals(Registries.getItemId(storageMachine.getMachineStorageItem()), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_extruder");
                     } else if (recipeType.equals(GTRecipeTypes.LATHE_RECIPES)) {
-                        isrecipe = Objects.equals(storageMachine.getMachineStorageItem().kjs$getId(), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_lathe");
+                        isrecipe = Objects.equals(Registries.getItemId(storageMachine.getMachineStorageItem()), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_lathe");
                     } else if (recipeType.equals(GTRecipeTypes.WIREMILL_RECIPES)) {
-                        isrecipe = Objects.equals(storageMachine.getMachineStorageItem().kjs$getId(), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_wiremill");
+                        isrecipe = Objects.equals(Registries.getItemId(storageMachine.getMachineStorageItem()), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_wiremill");
                     } else if (recipeType.equals(GTRecipeTypes.FORMING_PRESS_RECIPES)) {
-                        isrecipe = Objects.equals(storageMachine.getMachineStorageItem().kjs$getId(), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_forming_press");
+                        isrecipe = Objects.equals(Registries.getItemId(storageMachine.getMachineStorageItem()), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_forming_press");
                     } else if (recipeType.equals(GTRecipeTypes.POLARIZER_RECIPES)) {
-                        isrecipe = Objects.equals(storageMachine.getMachineStorageItem().kjs$getId(), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_polarizer");
+                        isrecipe = Objects.equals(Registries.getItemId(storageMachine.getMachineStorageItem()), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_polarizer");
                     } else if (recipeType.equals(GTRecipeTypes.FLUID_SOLIDFICATION_RECIPES)) {
-                        isrecipe = Objects.equals(storageMachine.getMachineStorageItem().kjs$getId(), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_fluid_solidifier");
+                        isrecipe = Objects.equals(Registries.getItemId(storageMachine.getMachineStorageItem()), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_fluid_solidifier");
                     } else if (recipeType.equals(GTRecipeTypes.LASER_ENGRAVER_RECIPES)) {
-                        isrecipe = Objects.equals(storageMachine.getMachineStorageItem().kjs$getId(), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_laser_engraver");
+                        isrecipe = Objects.equals(Registries.getItemId(storageMachine.getMachineStorageItem()), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_laser_engraver");
                     }
                     if (!isrecipe) {
                         RecipeResult.of(machine, RecipeResult.FAIL_PROCESSING_PLANT_WRONG_INPUT);
@@ -1214,9 +1210,9 @@ public class AdvancedMultiBlockMachine {
                         return false;
                     }
                     if (recipeType.equals(GTRecipeTypes.ASSEMBLER_RECIPES)) {
-                        isrecipe = Objects.equals(storageMachine.getMachineStorageItem().kjs$getId(), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_assembler");
+                        isrecipe = Objects.equals(Registries.getItemId(storageMachine.getMachineStorageItem()), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_assembler");
                     } else if (recipeType.equals(GTRecipeTypes.CIRCUIT_ASSEMBLER_RECIPES)) {
-                        isrecipe = Objects.equals(storageMachine.getMachineStorageItem().kjs$getId(), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_circuit_assembler");
+                        isrecipe = Objects.equals(Registries.getItemId(storageMachine.getMachineStorageItem()), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_circuit_assembler");
                     }
                     if (!isrecipe) {
                         RecipeResult.of(machine, RecipeResult.FAIL_PROCESSING_PLANT_WRONG_INPUT);
@@ -1275,19 +1271,19 @@ public class AdvancedMultiBlockMachine {
                         return false;
                     }
                     if (recipeType.equals(GTRecipeTypes.CENTRIFUGE_RECIPES)) {
-                        isrecipe = Objects.equals(storageMachine.getMachineStorageItem().kjs$getId(), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_centrifuge");
+                        isrecipe = Objects.equals(Registries.getItemId(storageMachine.getMachineStorageItem()), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_centrifuge");
                     } else if (recipeType.equals(GTRecipeTypes.THERMAL_CENTRIFUGE_RECIPES)) {
-                        isrecipe = Objects.equals(storageMachine.getMachineStorageItem().kjs$getId(), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_thermal_centrifuge");
+                        isrecipe = Objects.equals(Registries.getItemId(storageMachine.getMachineStorageItem()), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_thermal_centrifuge");
                     } else if (recipeType.equals(GTRecipeTypes.ELECTROLYZER_RECIPES)) {
-                        isrecipe = Objects.equals(storageMachine.getMachineStorageItem().kjs$getId(), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_electrolyzer");
+                        isrecipe = Objects.equals(Registries.getItemId(storageMachine.getMachineStorageItem()), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_electrolyzer");
                     } else if (recipeType.equals(GTRecipeTypes.SIFTER_RECIPES)) {
-                        isrecipe = Objects.equals(storageMachine.getMachineStorageItem().kjs$getId(), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_sifter");
+                        isrecipe = Objects.equals(Registries.getItemId(storageMachine.getMachineStorageItem()), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_sifter");
                     } else if (recipeType.equals(GTRecipeTypes.MACERATOR_RECIPES)) {
-                        isrecipe = Objects.equals(storageMachine.getMachineStorageItem().kjs$getId(), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_macerator");
+                        isrecipe = Objects.equals(Registries.getItemId(storageMachine.getMachineStorageItem()), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_macerator");
                     } else if (recipeType.equals(GTRecipeTypes.EXTRACTOR_RECIPES)) {
-                        isrecipe = Objects.equals(storageMachine.getMachineStorageItem().kjs$getId(), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_extractor");
+                        isrecipe = Objects.equals(Registries.getItemId(storageMachine.getMachineStorageItem()), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_extractor");
                     } else if (recipeType.equals(GTLRecipeTypes.DEHYDRATOR_RECIPES)) {
-                        isrecipe = Objects.equals(storageMachine.getMachineStorageItem().kjs$getId(), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_dehydrator");
+                        isrecipe = Objects.equals(Registries.getItemId(storageMachine.getMachineStorageItem()), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_dehydrator");
                     }
                     if (!isrecipe) {
                         RecipeResult.of(machine, RecipeResult.FAIL_PROCESSING_PLANT_WRONG_INPUT);
@@ -1340,13 +1336,13 @@ public class AdvancedMultiBlockMachine {
                         return false;
                     }
                     if (recipeType.equals(GTRecipeTypes.CHEMICAL_RECIPES)) {
-                        isrecipe = Objects.equals(storageMachine.getMachineStorageItem().kjs$getId(), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_chemical_reactor");
+                        isrecipe = Objects.equals(Registries.getItemId(storageMachine.getMachineStorageItem()), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_chemical_reactor");
                     } else if (recipeType.equals(GTRecipeTypes.MIXER_RECIPES)) {
-                        isrecipe = Objects.equals(storageMachine.getMachineStorageItem().kjs$getId(), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_mixer");
+                        isrecipe = Objects.equals(Registries.getItemId(storageMachine.getMachineStorageItem()), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_mixer");
                     } else if (recipeType.equals(GTRecipeTypes.CHEMICAL_BATH_RECIPES)) {
-                        isrecipe = Objects.equals(storageMachine.getMachineStorageItem().kjs$getId(), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_chemical_bath");
+                        isrecipe = Objects.equals(Registries.getItemId(storageMachine.getMachineStorageItem()), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_chemical_bath");
                     } else if (recipeType.equals(GTRecipeTypes.ORE_WASHER_RECIPES)) {
-                        isrecipe = Objects.equals(storageMachine.getMachineStorageItem().kjs$getId(), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_ore_washer");
+                        isrecipe = Objects.equals(Registries.getItemId(storageMachine.getMachineStorageItem()), "gtceu:" + GTValues.VN[tier].toLowerCase() + "_ore_washer");
                     }
                     if (!isrecipe) {
                         RecipeResult.of(machine, RecipeResult.FAIL_PROCESSING_PLANT_WRONG_INPUT);
@@ -1395,16 +1391,17 @@ public class AdvancedMultiBlockMachine {
                     .build())
             .afterWorking(machine -> {
                 Level level = machine.self().getLevel();
-                String dim = level.kjs$getDimension().toString();
-                MinecraftServer server = level.getServer();
-                if (MachineIO.notConsumableCircuit((WorkableMultiblockMachine) machine, 1)) {
-                    server.kjs$runCommandSilent("execute in " + dim + " run weather clear");
-                }
-                if (MachineIO.notConsumableCircuit((WorkableMultiblockMachine) machine, 2)) {
-                    server.kjs$runCommandSilent("execute in " + dim + " run weather rain");
-                }
-                if (MachineIO.notConsumableCircuit((WorkableMultiblockMachine) machine, 3)) {
-                    server.kjs$runCommandSilent("execute in " + dim + " run weather thunder");
+                if (level instanceof ServerLevel serverLevel) {
+                    if (MachineIO.notConsumableCircuit((WorkableMultiblockMachine) machine, 1)) {
+                        int duration = 6000 + serverLevel.random.nextInt(6000);
+                        serverLevel.setWeatherParameters(duration, 0, false, false);
+                    } else if (MachineIO.notConsumableCircuit((WorkableMultiblockMachine) machine, 2)) {
+                        int duration = 6000 + serverLevel.random.nextInt(12000);
+                        serverLevel.setWeatherParameters(0, duration, true, false);
+                    } else if (MachineIO.notConsumableCircuit((WorkableMultiblockMachine) machine, 3)) {
+                        int duration = 6000 + serverLevel.random.nextInt(12000);
+                        serverLevel.setWeatherParameters(0, duration, true, true);
+                    }
                 }
             })
             .workableCasingRenderer(GTCEu.id("block/casings/steam/steel/side"), GTCEu.id("block/multiblock/gcym/large_maceration_tower"))
@@ -1445,7 +1442,7 @@ public class AdvancedMultiBlockMachine {
                     .build())
             .additionalDisplay((controller, components) -> {
                 if (controller.isFormed() && controller instanceof StorageMachine machine) {
-                    if (Objects.equals(machine.getMachineStorageItem().kjs$getId(), "gtceu:carbon_nanoswarm")) {
+                    if (Objects.equals(Registries.getItemId(machine.getMachineStorageItem()), "gtceu:carbon_nanoswarm")) {
                         components.add(Component.translatable("gtceu.multiblock.parallel", Component.literal(String.valueOf(machine.getMachineStorageItem().getCount())).withStyle(ChatFormatting.DARK_PURPLE)).withStyle(ChatFormatting.GRAY));
                     } else {
                         components.add(Component.translatable("message.gtlcore.need_carbon_nano_swarm_red").withStyle(ChatFormatting.RED));
@@ -1495,7 +1492,7 @@ public class AdvancedMultiBlockMachine {
                     .build())
             .additionalDisplay((controller, components) -> {
                 if (controller.isFormed() && controller instanceof StorageMachine machine) {
-                    if (Objects.equals(machine.getMachineStorageItem().kjs$getId(), "gtceu:neutronium_nanoswarm")) {
+                    if (Objects.equals(Registries.getItemId(machine.getMachineStorageItem()), "gtceu:neutronium_nanoswarm")) {
                         components.add(Component.translatable("gtceu.multiblock.parallel", Component.literal(String.valueOf(machine.getMachineStorageItem().getCount())).withStyle(ChatFormatting.DARK_PURPLE)).withStyle(ChatFormatting.GRAY));
                     } else {
                         components.add(Component.translatable("message.gtlcore.need_neutronium_nano_swarm_red").withStyle(ChatFormatting.RED));
@@ -1547,7 +1544,7 @@ public class AdvancedMultiBlockMachine {
                     .build())
             .additionalDisplay((controller, components) -> {
                 if (controller.isFormed() && controller instanceof StorageMachine machine) {
-                    if (Objects.equals(machine.getMachineStorageItem().kjs$getId(), "gtceu:draconium_nanoswarm")) {
+                    if (Objects.equals(Registries.getItemId(machine.getMachineStorageItem()), "gtceu:draconium_nanoswarm")) {
                         components.add(Component.translatable("gtceu.multiblock.parallel", Component.literal(String.valueOf(machine.getMachineStorageItem().getCount())).withStyle(ChatFormatting.DARK_PURPLE)).withStyle(ChatFormatting.GRAY));
                     } else {
                         components.add(Component.translatable("message.gtlcore.need_dragon_nano_swarm_red").withStyle(ChatFormatting.RED));
@@ -1569,7 +1566,7 @@ public class AdvancedMultiBlockMachine {
             .recipeModifier((machine, recipe, params, result) -> {
                 if (machine instanceof StorageMachine storageMachine) {
                     ItemStack item = storageMachine.getMachineStorageItem();
-                    int tier = switch (item.kjs$getId()) {
+                    int tier = switch (Registries.getItemId(item)) {
                         case "kubejs:grindball_aluminium" -> 2;
                         case "kubejs:grindball_soapstone" -> 1;
                         default -> 0;

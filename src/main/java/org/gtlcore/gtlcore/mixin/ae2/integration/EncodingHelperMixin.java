@@ -1,5 +1,7 @@
 package org.gtlcore.gtlcore.mixin.ae2.integration;
 
+import org.gtlcore.gtlcore.utils.Registries;
+
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
@@ -44,7 +46,7 @@ public abstract class EncodingHelperMixin {
                 .map(gi -> Pair.of(gi, ingredientPriorities.getOrDefault(gi.what(), Integer.MIN_VALUE)))
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder())).map(Pair::getLeft).toList();
         return list.stream().filter(gi -> gi.what() instanceof AEItemKey aeItemKey &&
-                aeItemKey.getItem().kjs$getId().contains("universal_circuit"))
+                Registries.getItemId(aeItemKey.getItem()).contains("universal_circuit"))
                 .findFirst().orElseGet(() -> list.stream().findFirst().orElseThrow());
     }
 
@@ -88,7 +90,7 @@ public abstract class EncodingHelperMixin {
                         .map(entry -> entry.getKey() instanceof AEItemKey itemKey ? itemKey.toStack() : null).toList();
 
                 var bestIngredient = bestNetworkIngredient.stream()
-                        .filter(itemStack -> itemStack.getItem().kjs$getId().contains("universal_circuit"))
+                        .filter(itemStack -> Registries.getItemId(itemStack).contains("universal_circuit"))
                         .findFirst().orElseGet(() -> bestNetworkIngredient.stream().findFirst().orElseGet(() -> {
 
                             // To avoid encoding hidden entries, we'll cycle through the ingredient and try to find a

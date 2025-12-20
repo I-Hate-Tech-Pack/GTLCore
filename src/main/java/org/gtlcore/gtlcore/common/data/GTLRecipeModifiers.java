@@ -6,6 +6,7 @@ import org.gtlcore.gtlcore.api.machine.trait.RecipeHandlePart;
 import org.gtlcore.gtlcore.api.recipe.RecipeResult;
 import org.gtlcore.gtlcore.common.machine.multiblock.electric.StorageMachine;
 import org.gtlcore.gtlcore.common.machine.multiblock.steam.LargeSteamParallelMultiblockMachine;
+import org.gtlcore.gtlcore.utils.Registries;
 
 import com.gregtechceu.gtceu.api.capability.recipe.EURecipeCapability;
 import com.gregtechceu.gtceu.api.capability.recipe.FluidRecipeCapability;
@@ -85,19 +86,19 @@ public class GTLRecipeModifiers {
                 return null;
             }
             if (tier == 1) {
-                if (!Objects.equals(storageMachine.getMachineStorageItem().kjs$getId(), "gtceu:carbon_nanoswarm")) {
+                if (!Objects.equals(Registries.getItemId(storageMachine.getMachineStorageItem()), "gtceu:carbon_nanoswarm")) {
                     RecipeResult.of((IRecipeLogicMachine) machine,
                             RecipeResult.fail(Component.translatable("message.gtlcore.need_carbon_nano_swarm")));
                     return null;
                 }
             } else if (tier == 2) {
-                if (!Objects.equals(storageMachine.getMachineStorageItem().kjs$getId(), "gtceu:neutronium_nanoswarm")) {
+                if (!Objects.equals(Registries.getItemId(storageMachine.getMachineStorageItem()), "gtceu:neutronium_nanoswarm")) {
                     RecipeResult.of((IRecipeLogicMachine) machine,
                             RecipeResult.fail(Component.translatable("message.gtlcore.need_neutronium_nano_swarm")));
                     return null;
                 }
             } else if (tier == 3) {
-                if (!Objects.equals(storageMachine.getMachineStorageItem().kjs$getId(), "gtceu:draconium_nanoswarm")) {
+                if (!Objects.equals(Registries.getItemId(storageMachine.getMachineStorageItem()), "gtceu:draconium_nanoswarm")) {
                     RecipeResult.of((IRecipeLogicMachine) machine,
                             RecipeResult.fail(Component.translatable("message.gtlcore.need_dragon_nano_swarm")));
                     return null;

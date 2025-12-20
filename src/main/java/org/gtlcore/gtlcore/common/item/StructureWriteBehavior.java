@@ -2,6 +2,7 @@ package org.gtlcore.gtlcore.common.item;
 
 import org.gtlcore.gtlcore.GTLCore;
 import org.gtlcore.gtlcore.api.pattern.DebugBlockPattern;
+import org.gtlcore.gtlcore.utils.Registries;
 
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.item.ComponentItem;
@@ -127,7 +128,7 @@ public class StructureWriteBehavior implements IItemUIFactory {
             blockPattern.legend.forEach((b, c) -> {
                 if (c.equals(' ')) return;
                 builder.append(".where(\"").append(c).append("\", Predicates.blocks(Registries.getBlock(\"")
-                        .append(b.kjs$getId()).append("\")))\n");
+                        .append(Registries.getBlockId(b)).append("\")))\n");
             });
             GTLCore.LOGGER.info(builder.toString());
         }

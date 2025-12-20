@@ -2,6 +2,7 @@ package org.gtlcore.gtlcore.common.machine.multiblock.electric;
 
 import org.gtlcore.gtlcore.config.ConfigHolder;
 import org.gtlcore.gtlcore.utils.MachineIO;
+import org.gtlcore.gtlcore.utils.Registries;
 
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
@@ -13,7 +14,6 @@ import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -21,8 +21,10 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.loot.LootParams;
@@ -61,7 +63,7 @@ public class SlaughterhouseMachine extends WorkableElectricMultiblockMachine {
 
     private void getItem(ServerLevel level, BlockPos Pos) {
         var fp = Platform.getFakePlayer(level, null);
-        final DamageSource Source = new DamageSource(level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE)
+        final DamageSource Source = new DamageSource(level.registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.DAMAGE_TYPE)
                 .getHolderOrThrow(DamageTypes.GENERIC_KILL), fp);
         List<Entity> entities = level.getEntitiesOfClass(Entity.class, new AABB(
                 Pos.getX() - 3,
@@ -71,9 +73,9 @@ public class SlaughterhouseMachine extends WorkableElectricMultiblockMachine {
                 Pos.getY() + 6,
                 Pos.getZ() + 3));
         for (Entity en : entities) {
-            if (!en.kjs$isPlayer()) {
-                if (en.kjs$isLiving()) {
-                    en.hurt(Source, 10000);
+            if (!(en instanceof Player)) {
+                if (en instanceof LivingEntity livingEntity) {
+                    livingEntity.hurt(Source, 10000);
                 } else if (en instanceof ItemEntity itemEntity) {
                     MachineIO.outputItem(this, itemEntity.getItem());
                     itemEntity.kill();
@@ -94,7 +96,7 @@ public class SlaughterhouseMachine extends WorkableElectricMultiblockMachine {
                 new BlockPos[] { pos.offset(0, 0, -1), pos.offset(0, 1, -3) } };
         for (BlockPos[] blockPos : coordinates) {
             if (level instanceof ServerLevel serverLevel &&
-                    Objects.equals(serverLevel.kjs$getBlock(blockPos[0]).getId(), "gtceu:steel_gearbox")) {
+                    Objects.equals(Registries.getBlockId(level.getBlockState(blockPos[0]).getBlock()), "gtceu:steel_gearbox")) {
                 BlockPos mobPos = blockPos[1];
                 final String[] mobList = MachineIO.notConsumableCircuit(this, 1) ? this.mobList1 : this.mobList2;
                 if (!this.isSpawn) {

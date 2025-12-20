@@ -5,6 +5,7 @@ import org.gtlcore.gtlcore.api.machine.multiblock.IModularMachineModule;
 import org.gtlcore.gtlcore.api.recipe.RecipeResult;
 import org.gtlcore.gtlcore.client.gui.widget.IExtendedClickData;
 import org.gtlcore.gtlcore.utils.MachineUtil;
+import org.gtlcore.gtlcore.utils.Registries;
 import org.gtlcore.gtlcore.utils.datastructure.ModuleRenderInfo;
 
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
@@ -159,7 +160,7 @@ public class SpaceElevatorMachine extends TierCasingMachine
                 pos.offset(0, -2, 3),
                 pos.offset(0, -2, -3) };
         for (BlockPos blockPos : coordinates) {
-            if (Objects.equals(level.kjs$getBlock(blockPos).getId(), "gtlcore:power_core")) {
+            if (Objects.equals(Registries.getBlockId(level.getBlockState(blockPos).getBlock()), "gtlcore:power_core")) {
                 return blockPos;
             }
         }

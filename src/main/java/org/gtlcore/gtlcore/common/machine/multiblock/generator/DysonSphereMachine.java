@@ -1,5 +1,7 @@
 package org.gtlcore.gtlcore.common.machine.multiblock.generator;
 
+import org.gtlcore.gtlcore.utils.Registries;
+
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.capability.recipe.CWURecipeCapability;
 import com.gregtechceu.gtceu.api.capability.recipe.EURecipeCapability;
@@ -21,6 +23,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -40,6 +43,9 @@ public class DysonSphereMachine extends WorkableElectricMultiblockMachine {
     private int DysonSpheredamageData;
 
     protected ConditionalSubscriptionHandler nightSubs;
+
+    @Nullable
+    private List<@NotNull BlockPos> cachedCheckPositions;
 
     public DysonSphereMachine(IMachineBlockEntity holder) {
         super(holder);
@@ -61,6 +67,42 @@ public class DysonSphereMachine extends WorkableElectricMultiblockMachine {
     public void onStructureFormed() {
         super.onStructureFormed();
         nightSubs.initialize(getLevel());
+        cachedCheckPositions = findCheckPositions();
+    }
+
+    @Override
+    public void onStructureInvalid() {
+        super.onStructureInvalid();
+        cachedCheckPositions = null;
+    }
+
+    @Nullable
+    protected List<@NotNull BlockPos> findCheckPositions() {
+        Level level = getLevel();
+        if (level == null) return null;
+
+        BlockPos pos = getPos();
+        BlockPos[] coordinates = new BlockPos[] {
+                pos.offset(4, 14, 0),
+                pos.offset(-4, 14, 0),
+                pos.offset(0, 14, 4),
+                pos.offset(0, 14, -4)
+        };
+
+        for (BlockPos blockPos : coordinates) {
+            if (Objects.equals(Registries.getBlockId(level.getBlockState(blockPos).getBlock()), "kubejs:dyson_receiver_casing")) {
+                var checkPositions = new ObjectArrayList<BlockPos>(169);
+                for (int i = -6; i < 7; i++) {
+                    for (int j = -6; j < 7; j++) {
+                        if (i != 0 || j != 0) {
+                            checkPositions.add(blockPos.offset(i, 1, j));
+                        }
+                    }
+                }
+                return checkPositions;
+            }
+        }
+        return null;
     }
 
     @Override
@@ -88,25 +130,21 @@ public class DysonSphereMachine extends WorkableElectricMultiblockMachine {
 
     @Override
     public boolean beforeWorking(@Nullable GTRecipe recipe) {
-        final BlockPos pos = getPos();
-        final Level level = getLevel();
-        BlockPos[] coordinates = new BlockPos[] {
-                pos.offset(4, 14, 0),
-                pos.offset(-4, 14, 0),
-                pos.offset(0, 14, 4),
-                pos.offset(0, 14, -4) };
-        for (BlockPos blockPos : coordinates) {
-            if (Objects.equals(level.kjs$getBlock(blockPos).getId(), "kubejs:dyson_receiver_casing")) {
-                for (int i = -6; i < 7; i++) {
-                    for (int j = -6; j < 7; j++) {
-                        if (i != 0 && j != 0 && level.kjs$getBlock(blockPos.offset(i, 1, j)).getSkyLight() == 0) {
-                            getRecipeLogic().resetRecipeLogic();
-                            return false;
-                        }
+        if (cachedCheckPositions != null) {
+            Level level = getLevel();
+            if (level != null) {
+                for (BlockPos checkPos : cachedCheckPositions) {
+                    if (!level.canSeeSky(checkPos)) {
+                        getRecipeLogic().resetRecipeLogic();
+                        return false;
                     }
                 }
             }
+        } else {
+            getRecipeLogic().resetRecipeLogic();
+            return false;
         }
+
         if (recipe != null && isLaunch(recipe)) {
             return getDysonSphereData() <= 10000;
         } else {

@@ -1,5 +1,7 @@
 package org.gtlcore.gtlcore.api.item.tool.ae2.patternTool;
 
+import org.gtlcore.gtlcore.utils.Registries;
+
 import com.gregtechceu.gtceu.api.capability.recipe.ItemRecipeCapability;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
@@ -13,14 +15,12 @@ import com.lowdragmc.lowdraglib.side.fluid.FluidStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeManager;
-import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
 import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Getter
 public class GTRecipeManager {
@@ -44,7 +44,7 @@ public class GTRecipeManager {
     public boolean isItemStackMatchByStringArray(String[] matchList, ItemStack itemStack) {
         boolean isMatch = false;
         for (String match : matchList) {
-            if ((itemStack.kjs$getId()).contains(match)) {
+            if (Registries.getItemId(itemStack).contains(match)) {
                 isMatch = true;
             }
         }
@@ -55,7 +55,7 @@ public class GTRecipeManager {
         boolean isMatch = false;
         for (String match : matchList) {
             if (match.isEmpty()) continue;
-            if ((Objects.requireNonNull(ForgeRegistries.FLUIDS.getKey(fluidStack.getFluid()))).toString().contains(match)) {
+            if (Registries.getFluidId(fluidStack).contains(match)) {
                 isMatch = true;
             }
         }

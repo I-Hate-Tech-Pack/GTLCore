@@ -1,5 +1,7 @@
 package org.gtlcore.gtlcore.api.item.tool.ae2.patternTool;
 
+import org.gtlcore.gtlcore.utils.Registries;
+
 import com.gregtechceu.gtceu.api.capability.recipe.FluidRecipeCapability;
 import com.gregtechceu.gtceu.api.capability.recipe.ItemRecipeCapability;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
@@ -9,13 +11,11 @@ import com.lowdragmc.lowdraglib.side.fluid.FluidStack;
 
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -81,11 +81,11 @@ public class RecipeStackHelper {
 
     public static String getItemTranslatedName(ItemStack itemStack) {
         Item item = itemStack.getItem();
-        return item.getName(itemStack).getString() + "(" + item.kjs$getId() + " " + itemStack.getCount() + ") ";
+        return item.getName(itemStack).getString() + "(" + Registries.getResourceKey(item) + " " + itemStack.getCount() + ") ";
     }
 
     public static String getFluidTranslatedName(FluidStack fluidStack) {
-        return fluidStack.getDisplayName().getString() + "(" + Objects.requireNonNull(ForgeRegistries.FLUIDS.getKey(fluidStack.getFluid())) + " " + fluidStack.getAmount() + ") ";
+        return fluidStack.getDisplayName().getString() + "(" + Registries.getResourceKey(fluidStack) + " " + fluidStack.getAmount() + ") ";
     }
 
     public static List<ItemStack> getOutputItems(GTRecipe recipe) {

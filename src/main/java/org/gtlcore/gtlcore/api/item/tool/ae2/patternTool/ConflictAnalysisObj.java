@@ -1,5 +1,7 @@
 package org.gtlcore.gtlcore.api.item.tool.ae2.patternTool;
 
+import org.gtlcore.gtlcore.utils.Registries;
+
 import com.gregtechceu.gtceu.api.capability.recipe.FluidRecipeCapability;
 import com.gregtechceu.gtceu.api.capability.recipe.ItemRecipeCapability;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
@@ -10,7 +12,6 @@ import com.gregtechceu.gtceu.common.item.IntCircuitBehaviour;
 import com.lowdragmc.lowdraglib.side.fluid.FluidStack;
 
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.*;
 
@@ -55,9 +56,10 @@ public class ConflictAnalysisObj {
                 hasINTEGRATED_CIRCUIT = true;
                 return; // 不将电路编入ids
             }
+            String itemId = Registries.getItemId(itemStack);
             stackList.add(itemStack);
-            itemIdList.add(itemStack.kjs$getId());
-            itemIdsMap.put(itemStack.kjs$getId(), (long) itemStack.getCount());
+            itemIdList.add(itemId);
+            itemIdsMap.put(itemId, (long) itemStack.getCount());
         });
         if (!hasINTEGRATED_CIRCUIT) {
             this.CIRCUIT = 0;
@@ -74,7 +76,7 @@ public class ConflictAnalysisObj {
             FluidStack fluidStack = fluidStackList.length > 0 ? fluidStackList[0] : FluidStack.empty();
             stackList.add(fluidStack);
             if (!fluidStack.isEmpty()) {
-                String key = Objects.requireNonNull(ForgeRegistries.FLUIDS.getKey(fluidStack.getFluid())).toString();
+                String key = Registries.getFluidId(fluidStack);
                 fluidIdList.add(key);
                 FluidIdsMap.put(key, fluidStack.getAmount());
             }

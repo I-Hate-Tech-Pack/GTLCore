@@ -5,32 +5,18 @@ import com.gregtechceu.gtceu.api.recipe.*;
 
 import net.minecraft.nbt.*;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Objects;
 
 /**
  * @author EasterFG on 2025/3/21
  */
 public class GTLUtil {
 
-    public static String getItemId(Item item) {
-        return Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(item)).toString();
-    }
-
-    public static String getFluidId(Fluid fluid) {
-        return Objects.requireNonNull(ForgeRegistries.FLUIDS.getKey(fluid)).toString();
-    }
-
     public static ItemStack loadItemStack(CompoundTag compoundTag) {
         try {
-            Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(compoundTag.getString("id")));
-            ItemStack stack = new ItemStack(Objects.requireNonNull(item), 1);
+            ItemStack stack = Registries.getItemStack(compoundTag.getString("id"));
             if (compoundTag.contains("tag", Tag.TAG_COMPOUND)) {
                 stack.setTag(compoundTag.getCompound("tag"));
                 if (stack.getTag() != null) {

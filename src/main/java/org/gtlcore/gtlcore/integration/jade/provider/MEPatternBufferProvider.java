@@ -3,6 +3,7 @@ package org.gtlcore.gtlcore.integration.jade.provider;
 import org.gtlcore.gtlcore.common.machine.multiblock.part.ae.MEPatternBufferPartMachine;
 import org.gtlcore.gtlcore.integration.ae2.AEUtils;
 import org.gtlcore.gtlcore.utils.NumberUtils;
+import org.gtlcore.gtlcore.utils.Registries;
 
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
@@ -17,7 +18,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import appeng.api.stacks.AEFluidKey;
 import appeng.api.stacks.AEItemKey;
@@ -62,7 +62,7 @@ public class MEPatternBufferProvider implements IBlockComponentProvider, IServer
 
         for (Tag t : itemTags) {
             if (!(t instanceof CompoundTag itemTag)) continue;
-            Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(itemTag.getString("item")));
+            Item item = Registries.getItem(itemTag.getString("item"));
             var count = itemTag.getLong("real");
             if (item != null && count > 0) {
                 var stack = new ItemStack(item);
@@ -76,7 +76,7 @@ public class MEPatternBufferProvider implements IBlockComponentProvider, IServer
         }
         for (Tag t : fluidTags) {
             if (!(t instanceof CompoundTag fluidTag)) continue;
-            Fluid fluid = ForgeRegistries.FLUIDS.getValue(new ResourceLocation(fluidTag.getString("fluid")));
+            Fluid fluid = Registries.getFluid(fluidTag.getString("fluid"));
             var amount = fluidTag.getLong("real");
             if (fluid != null && amount > 0) {
                 iTooltip.add(GTElementHelper.smallFluid(JadeFluidObject.of(fluid)));
@@ -133,7 +133,7 @@ public class MEPatternBufferProvider implements IBlockComponentProvider, IServer
         for (var it = items.object2LongEntrySet().fastIterator(); it.hasNext();) {
             var entry = it.next();
             Item item = entry.getKey();
-            ResourceLocation key = ForgeRegistries.ITEMS.getKey(item);
+            ResourceLocation key = Registries.getResourceKey(item);
             if (key != null) {
                 CompoundTag itemTag = new CompoundTag();
                 itemTag.putString("item", key.toString());
@@ -147,7 +147,7 @@ public class MEPatternBufferProvider implements IBlockComponentProvider, IServer
         for (var it = fluids.object2LongEntrySet().fastIterator(); it.hasNext();) {
             var entry = it.next();
             Fluid fluid = entry.getKey();
-            ResourceLocation key = ForgeRegistries.FLUIDS.getKey(fluid);
+            ResourceLocation key = Registries.getResourceKey(fluid);
             if (key != null) {
                 CompoundTag fluidTag = new CompoundTag();
                 fluidTag.putString("fluid", key.toString());
