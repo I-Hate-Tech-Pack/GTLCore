@@ -6,6 +6,7 @@
   "client": [
     "ae2.client.BuiltInModelHooksAccessor",
     "ae2.client.ModelBakeryMixin",
+    "ae2.gui.NumberEntryWidgetAccessor",
     "ae2.gui.SetProcessingPatternAmountScreenMixin",
     "gtm.MultiblockInfoWrapperMixin",
     "gtm.MultiblockInWorldPreviewRendererMixin",
@@ -59,6 +60,7 @@
     "ae2.ticking.TickHandlerMixin",
     "extendedae.ContainerPatternModifierMixin",
     "extendedae.InfinityCellMixin",
+    "extendedae.NumberInputFieldMixin",
     "extendedae.PartExPatternProviderMixin",
     "extendedae.TileExIOPortMixin",
     "extendedae.TileExPatternProviderMixin",
@@ -181,6 +183,7 @@
     "ldlib.ItemStackTransferMixin",
     "mc.LevelChunkMixin",
     "mc.LevelMixin",
+    "meRequester.RequestMixin",
     "travelanchors.EventListenerMixin"
   ],
   "injectors": {
