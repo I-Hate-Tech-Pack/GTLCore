@@ -19,6 +19,7 @@ import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 
+import appeng.api.networking.IGridNodeListener;
 import appeng.api.networking.IManagedGridNode;
 import appeng.api.networking.security.IActionSource;
 import lombok.Getter;
@@ -94,6 +95,12 @@ public abstract class MEIOPartMachine extends MultiblockPartMachine implements I
     public void onRotated(@NotNull Direction oldFacing, @NotNull Direction newFacing) {
         super.onRotated(oldFacing, newFacing);
         this.getMainNode().setExposedOnSides(EnumSet.of(newFacing));
+    }
+
+    @Override
+    public void onMainNodeStateChanged(IGridNodeListener.@NotNull State reason) {
+        IGridConnectedMachine.super.onMainNodeStateChanged(reason);
+        if (isOnline()) meTrait.notifySelfIO();
     }
 
     @Override

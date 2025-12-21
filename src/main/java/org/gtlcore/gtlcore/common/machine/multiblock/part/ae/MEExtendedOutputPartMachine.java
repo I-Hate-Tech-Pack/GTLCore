@@ -199,6 +199,7 @@ public class MEExtendedOutputPartMachine extends MEExtendedOutputPartMachineBase
         @Override
         public TickRateModulation tickingRequest(IGridNode node, int ticksSinceLastCall) {
             if (!getMainNode().isActive()) {
+                isSleeping = true;
                 return TickRateModulation.SLEEP;
             }
 
