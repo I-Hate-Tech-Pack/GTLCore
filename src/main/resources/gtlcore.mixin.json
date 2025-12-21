@@ -12,6 +12,7 @@
     "gtm.MultiblockInWorldPreviewRendererMixin",
     "gtm.TagPrefixItemRendererMixin",
     "gtm.api.recipe.ContentMixin",
+    "gtm.client.TooltipsHandlerMixin",
     "gtm.gui.AEFluidConfigSlotWidgetMixin",
     "gtm.gui.PatternPreviewWidgetMixin",
     "gtm.gui.ProspectingMapWidgetMixin",

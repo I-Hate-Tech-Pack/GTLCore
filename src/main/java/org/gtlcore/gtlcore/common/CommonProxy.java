@@ -1,6 +1,7 @@
 package org.gtlcore.gtlcore.common;
 
 import org.gtlcore.gtlcore.GTLCore;
+import org.gtlcore.gtlcore.api.event.SourceTooltipRegistrationEvent;
 import org.gtlcore.gtlcore.common.data.*;
 import org.gtlcore.gtlcore.common.data.machines.GeneratorMachine;
 import org.gtlcore.gtlcore.config.ConfigHolder;
@@ -65,7 +66,12 @@ public class CommonProxy {
         GTLNetworkHandler.INSTANCE.init();
     }
 
-    private void clientSetup(final FMLClientSetupEvent event) {}
+    private void clientSetup(final FMLClientSetupEvent event) {
+        event.enqueueWork(() -> {
+            // Fire event to allow mods to register their own source tooltips
+            FMLJavaModLoadingContext.get().getModEventBus().post(new SourceTooltipRegistrationEvent());
+        });
+    }
 
     // You MUST have this for custom materials.
     // Remember to register them not to GT's namespace, but your own.
