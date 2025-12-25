@@ -75,6 +75,9 @@ public class ConfigHolder {
     @Configurable
     @Configurable.Comment("AE2合成计算模式: LEGACY(原版), FAST(快速), ULTRA_FAST(最快)")
     public AE2CalculationMode ae2CalculationMode = AE2CalculationMode.ULTRA_FAST;
+    @Configurable
+    @Configurable.Comment("编写多方块结构样板过滤的仓室")
+    public String[] filterHatch = new String[] { "input_bus", "output_bus", "item_import_bus", "item_export_bus", "input_hatch", "output_hatch", "energy_input_hatch", "energy_output_hatch", "laser_target_hatch", "laser_source_hatch", "computation_transmitter_hatch", "computation_receiver_hatch", "data_transmitter_hatch", "data_receiver_hatch", "maintenance", "muffler", "rotor_holder" };
 
     @Configurable
     public String[] mobList1 = new String[] { "chicken", "rabbit", "sheep", "cow", "horse", "pig", "donkey", "skeleton_horse", "iron_golem", "wolf", "goat", "parrot", "camel", "cat", "fox", "llama", "panda", "polar_bear" };

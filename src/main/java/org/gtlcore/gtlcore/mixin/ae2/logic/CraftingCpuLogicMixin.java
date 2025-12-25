@@ -4,11 +4,14 @@ import org.gtlcore.gtlcore.api.machine.trait.AECraft.IMECraftIOPart;
 import org.gtlcore.gtlcore.api.machine.trait.MEPart.IMEPatternPartMachine;
 import org.gtlcore.gtlcore.integration.ae2.AEUtils;
 
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 
 import appeng.api.config.Actionable;
 import appeng.api.config.PowerMultiplier;
 import appeng.api.networking.energy.IEnergyService;
+import appeng.api.stacks.AEItemKey;
+import appeng.api.stacks.GenericStack;
 import appeng.api.stacks.KeyCounter;
 import appeng.crafting.execution.CraftingCpuHelper;
 import appeng.crafting.execution.CraftingCpuLogic;
@@ -17,6 +20,7 @@ import appeng.crafting.inv.ListCraftingInventory;
 import appeng.crafting.pattern.AEProcessingPattern;
 import appeng.me.cluster.implementations.CraftingCPUCluster;
 import appeng.me.service.CraftingService;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.*;
 
 @Mixin(CraftingCpuLogic.class)
@@ -24,6 +28,8 @@ public abstract class CraftingCpuLogicMixin {
 
     @Shadow(remap = false)
     private ExecutingCraftingJob job;
+    @Shadow(remap = false)
+    private boolean cantStoreItems = false;
 
     @Shadow(remap = false)
     @Final
@@ -32,6 +38,77 @@ public abstract class CraftingCpuLogicMixin {
     @Shadow(remap = false)
     @Final
     private ListCraftingInventory inventory;
+
+    @Shadow(remap = false)
+    @Final
+    private int[] usedOps;
+
+    @Shadow(remap = false)
+    public abstract void storeItems();
+
+    @Shadow(remap = false)
+    public abstract void cancel();
+
+    @Shadow(remap = false)
+    public @Nullable abstract GenericStack getFinalJobOutput();
+
+    @Shadow(remap = false)
+    protected abstract void finishJob(boolean success);
+
+    @Unique
+    private boolean core$matchOutput(GenericStack g) {
+        return g != null && g.what() instanceof AEItemKey i && i.getItem() == Items.WRITTEN_BOOK &&
+                (i.hasTag() && i.getTag().contains("display"));
+    }
+
+    /**
+     * @author .
+     * @reason .
+     */
+    @Overwrite(remap = false)
+    public void tickCraftingLogic(IEnergyService eg, CraftingService cc) {
+        // Don't tick if we're not active.
+        if (!cluster.isActive())
+            return;
+        cantStoreItems = false;
+        // If we don't have a job, just try to dump our items.
+        if (this.job == null) {
+            this.storeItems();
+            if (!this.inventory.list.isEmpty()) {
+                cantStoreItems = true;
+            }
+            return;
+        }
+        // Check if the job was cancelled.
+        if (((ExecutingCraftingJobAccessor) job).getLink().isCanceled()) {
+            cancel();
+            return;
+        }
+
+        var remainingOperations = cluster.getCoProcessors() + 1 - (this.usedOps[0] + this.usedOps[1] + this.usedOps[2]);
+        final var started = remainingOperations;
+
+        if (remainingOperations > 0) {
+            do {
+                var pushedPatterns = executeCrafting(remainingOperations, cc, eg, cluster.getLevel());
+
+                if (pushedPatterns > 0) {
+                    remainingOperations -= pushedPatterns;
+                } else {
+
+                    // Automatic Cancellation
+                    if (((ExecutingCraftingJobAccessor) this.job).getTasks().isEmpty() &&
+                            core$matchOutput(this.getFinalJobOutput()))
+                        this.finishJob(true);
+
+                    break;
+                }
+            } while (remainingOperations > 0);
+        }
+        this.usedOps[2] = this.usedOps[1];
+        this.usedOps[1] = this.usedOps[0];
+        this.usedOps[0] = started - remainingOperations;
+    }
 
     /**
      * @author Dragons

@@ -99,6 +99,7 @@
   "config.gtlcore.option.enableSmoothAnimations": "启用平滑渲染",
   "config.gtlcore.option.enableUltimateMEStocking": "启用ME库存极限拉取模式",
   "config.gtlcore.option.exPatternProvider": "扩展样板供应器样板容量",
+  "config.gtlcore.option.filterHatch": "编写多方块结构样板过滤的仓室",
   "config.gtlcore.option.mobList1": "屠宰场非敌对生物列表",
   "config.gtlcore.option.mobList2": "屠宰场敌对生物列表",
   "config.gtlcore.option.oreMultiplier": "矿石产量乘数",

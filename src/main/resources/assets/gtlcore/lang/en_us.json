@@ -99,6 +99,7 @@
   "config.gtlcore.option.enableSmoothAnimations": "Enable Smooth Animations",
   "config.gtlcore.option.enableUltimateMEStocking": "Enable Ultimate ME Stocking Pull Mode",
   "config.gtlcore.option.exPatternProvider": "Extended Pattern Provider Pattern Capacity",
+  "config.gtlcore.option.filterHatch": "Write MultiBlock structure pattern filter compartments",
   "config.gtlcore.option.mobList1": "Slaughterhouse Non-Hostile Mob List",
   "config.gtlcore.option.mobList2": "Slaughterhouse Hostile Mob List",
   "config.gtlcore.option.oreMultiplier": "Ore Yield Multiplier",

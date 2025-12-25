@@ -1,6 +1,7 @@
 package org.gtlcore.gtlcore.mixin.ae2.logic;
 
 import appeng.api.crafting.IPatternDetails;
+import appeng.crafting.CraftingLink;
 import appeng.crafting.execution.ElapsedTimeTracker;
 import appeng.crafting.execution.ExecutingCraftingJob;
 import appeng.crafting.inv.ListCraftingInventory;
@@ -20,4 +21,7 @@ public interface ExecutingCraftingJobAccessor {
 
     @Accessor(value = "timeTracker", remap = false)
     ElapsedTimeTracker getTimeTracker();
+
+    @Accessor(value = "link", remap = false)
+    CraftingLink getLink();
 }
