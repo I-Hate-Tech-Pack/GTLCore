@@ -12,6 +12,7 @@ import com.gregtechceu.gtceu.api.recipe.ingredient.FluidIngredient;
 import com.gregtechceu.gtceu.client.TooltipsHandler;
 import com.gregtechceu.gtceu.integration.GTRecipeWidget;
 
+import com.lowdragmc.lowdraglib.LDLib;
 import com.lowdragmc.lowdraglib.gui.widget.TankWidget;
 import com.lowdragmc.lowdraglib.side.fluid.FluidStack;
 
@@ -108,7 +109,10 @@ public abstract class FluidRecipeCapabilityMixin extends RecipeCapability<FluidI
                     TooltipsHandler.appendFluidTooltips(stack.getFluid(),
                             stack.getAmount(), tooltips::add, TooltipFlag.NORMAL);
                 } else {
-                    tooltips.addAll(SourceTooltipHelper.getFluidTooltipComponents(stack.getFluid()));
+                    // EMI 中在其他地方被添加过了
+                    if (!LDLib.isEmiLoaded()) {
+                        tooltips.addAll(SourceTooltipHelper.getFluidTooltipComponents(stack.getFluid()));
+                    }
                     TextUtil.appendIngotConversionTooltip(stack, tooltips, stack.getAmount());
                 }
             }
