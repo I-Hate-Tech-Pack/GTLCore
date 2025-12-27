@@ -384,7 +384,7 @@ public class GTLMachines {
             .register();
 
     public static final MachineDefinition GRAVITY_HATCH = REGISTRATE
-            .machine("gravity_hatch", GravityCleaningMaintenancePartMachine::new)
+            .machine("gravity_hatch", holder -> new GravityCleaningConfigurationMaintenancePartMachine(holder, false))
             .rotationState(RotationState.ALL)
             .abilities(PartAbility.MAINTENANCE)
             .tooltips(Component.translatable("gtceu.universal.disabled"))

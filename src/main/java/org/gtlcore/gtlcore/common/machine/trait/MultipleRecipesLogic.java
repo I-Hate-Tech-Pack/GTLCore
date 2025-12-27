@@ -77,7 +77,7 @@ public class MultipleRecipesLogic extends RecipeLogic implements ILockRecipe, IR
     }
 
     protected double getTotalEuOfRecipe(GTRecipe recipe) {
-        return RecipeHelper.getInputEUt(recipe) * recipe.duration;
+        return ((double) RecipeHelper.getInputEUt(recipe)) * recipe.duration;
     }
 
     protected double getEuMultiplier() {

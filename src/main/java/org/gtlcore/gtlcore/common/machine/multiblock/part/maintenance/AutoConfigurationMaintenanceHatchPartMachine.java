@@ -20,6 +20,7 @@ import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.Style;
+import net.minecraft.util.Mth;
 
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
@@ -187,7 +188,6 @@ public class AutoConfigurationMaintenanceHatchPartMachine extends TieredPartMach
 
     @Override
     public void setDurationMultiplier(float count) {
-        if (count > MAX_DURATION_MULTIPLIER) durationMultiplier = MAX_DURATION_MULTIPLIER;
-        else durationMultiplier = Math.max(count, MIN_DURATION_MULTIPLIER);
+        this.durationMultiplier = Mth.clamp(count, MIN_DURATION_MULTIPLIER, MAX_DURATION_MULTIPLIER);
     }
 }
