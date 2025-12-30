@@ -1,5 +1,6 @@
 package org.gtlcore.gtlcore.common.machine.multiblock.part;
 
+import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import org.gtlcore.gtlcore.api.machine.trait.MEPart.IModifiableSyncOffset;
 import org.gtlcore.gtlcore.api.machine.trait.MEStock.ExportOnlyAEConfigureItemSlot;
 import org.gtlcore.gtlcore.api.machine.trait.MEStock.IMESlot;
@@ -8,7 +9,6 @@ import org.gtlcore.gtlcore.api.recipe.ingredient.LongIngredient;
 import org.gtlcore.gtlcore.config.ConfigHolder;
 
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
-import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.gui.fancy.*;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
@@ -62,6 +62,7 @@ public class TagFilterMEStockBusPartMachine extends MEInputBusPartMachine implem
             MEInputBusPartMachine.MANAGED_FIELD_HOLDER);
 
     private static final boolean ENABLE_ULTIMATE_ME_STOCKING = ConfigHolder.INSTANCE.enableUltimateMEStocking;
+    private static final ResourceTexture TEXTURE = new ResourceTexture("gtceu:textures/gui/list.png");
 
     @Persisted
     protected String tagWhite = "";
@@ -235,7 +236,7 @@ public class TagFilterMEStockBusPartMachine extends MEInputBusPartMachine implem
 
         @Override
         public IGuiTexture getIcon() {
-            return GuiTextures.BUTTON_BLACKLIST.getSubTexture(0, 0, 20, 20);
+            return TEXTURE.scale(1.25f);
         }
 
         @Override

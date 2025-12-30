@@ -25,6 +25,7 @@ public class GravityCleaningConfigurationMaintenancePartMachine extends AutoConf
 
     @Persisted
     private int gravity = 0;
+    private boolean isConfig = true;
 
     protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(
             GravityCleaningConfigurationMaintenancePartMachine.class, AutoConfigurationMaintenanceHatchPartMachine.MANAGED_FIELD_HOLDER);
@@ -38,6 +39,11 @@ public class GravityCleaningConfigurationMaintenancePartMachine extends AutoConf
 
     public GravityCleaningConfigurationMaintenancePartMachine(IMachineBlockEntity blockEntity) {
         super(blockEntity);
+    }
+
+    public GravityCleaningConfigurationMaintenancePartMachine(IMachineBlockEntity blockEntity, boolean isConfig) {
+        super(blockEntity);
+        this.isConfig = isConfig;
     }
 
     public GravityCleaningConfigurationMaintenancePartMachine(IMachineBlockEntity blockEntity, ICleanroomProvider cleanroom) {
@@ -59,9 +65,15 @@ public class GravityCleaningConfigurationMaintenancePartMachine extends AutoConf
 
     @Override
     public @NotNull Widget createUIWidget() {
-        WidgetGroup group = (WidgetGroup) super.createUIWidget();
-        group.addWidget(new IntInputWidget(10, 35, 80, 10, this::getCurrentGravity, this::setCurrentGravity).setMin(0).setMax(100));
-        return group;
+        if (isConfig) {
+            var group = (WidgetGroup) super.createUIWidget();
+            group.addWidget(new IntInputWidget(10, 35, 80, 10, this::getCurrentGravity, this::setCurrentGravity).setMin(0).setMax(100));
+            return group;
+        } else {
+            var gravityGroup = new WidgetGroup(0, 0, 100, 20);
+            gravityGroup.addWidget(new IntInputWidget(this::getCurrentGravity, this::setCurrentGravity).setMin(0).setMax(100));
+            return gravityGroup;
+        }
     }
 
     @Override
@@ -77,5 +89,15 @@ public class GravityCleaningConfigurationMaintenancePartMachine extends AutoConf
     @Override
     public void setCurrentGravity(int gravity) {
         this.gravity = Mth.clamp(gravity, 0, 100);
+    }
+
+    @Override
+    public void setDurationMultiplier(float count) {
+        if (isConfig) super.setDurationMultiplier(count);
+    }
+
+    @Override
+    public float getDurationMultiplier() {
+        return isConfig ? super.getDurationMultiplier() : 1f;
     }
 }

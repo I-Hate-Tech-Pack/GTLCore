@@ -23,7 +23,7 @@ import appeng.me.service.CraftingService;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.*;
 
-@Mixin(CraftingCpuLogic.class)
+@Mixin(value = CraftingCpuLogic.class, priority = 1100)
 public abstract class CraftingCpuLogicMixin {
 
     @Shadow(remap = false)
@@ -97,7 +97,7 @@ public abstract class CraftingCpuLogicMixin {
                 } else {
 
                     // Automatic Cancellation
-                    if (((ExecutingCraftingJobAccessor) this.job).getTasks().isEmpty() &&
+                    if (this.job != null && ((ExecutingCraftingJobAccessor) this.job).getTasks().isEmpty() &&
                             core$matchOutput(this.getFinalJobOutput()))
                         this.finishJob(true);
 
