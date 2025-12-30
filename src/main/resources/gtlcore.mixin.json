@@ -60,6 +60,7 @@
     "ae2.stacks.AEKeyMixin",
     "ae2.stacks.GenericStackMixin",
     "ae2.ticking.TickHandlerMixin",
+    "emi.EmiStackListMixin",
     "extendedae.ContainerPatternModifierMixin",
     "extendedae.InfinityCellMixin",
     "extendedae.NumberInputFieldMixin",
