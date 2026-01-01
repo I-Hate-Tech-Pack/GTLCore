@@ -15,6 +15,7 @@ import com.gregtechceu.gtceu.api.machine.multiblock.CleanroomType;
 import com.gregtechceu.gtceu.common.data.GTItems;
 import com.gregtechceu.gtceu.common.data.GTMachines;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
+import com.gregtechceu.gtceu.common.item.IntCircuitBehaviour;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
 import com.gregtechceu.gtceu.data.recipe.VanillaRecipeHelper;
 
@@ -42,6 +43,8 @@ import static org.gtlcore.gtlcore.common.data.machines.MultiBlockMachineB.PRIMIT
 public class Misc {
 
     public static void init(Consumer<FinishedRecipe> provider) {
+        VanillaRecipeHelper.addShapelessRecipe(provider, "programmed_circuit", IntCircuitBehaviour.stack(0),
+                "A", CustomTags.LV_CIRCUITS);
         VanillaRecipeHelper.addShapelessRecipe(provider, "structure_detect", GTLItems.STRUCTURE_DETECT.asStack(),
                 "A", Items.PAPER);
         VanillaRecipeHelper.addShapelessRecipe(provider, GTLCore.id("me_pattern_buffer_copy"),
