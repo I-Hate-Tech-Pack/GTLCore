@@ -306,7 +306,7 @@ public class TagFilterMEStockBusPartMachine extends MEInputBusPartMachine implem
         }
 
         @Override
-        public List<Ingredient> handleRecipeInner(IO io, GTRecipe recipe, List<Ingredient> left, @Nullable String slotName, boolean simulate) {
+        public @Nullable List<Ingredient> handleRecipeInner(IO io, GTRecipe recipe, List<Ingredient> left, @Nullable String slotName, boolean simulate) {
             if (io != IO.IN || left.isEmpty()) {
                 return left;
             }
