@@ -30,8 +30,8 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.wrapper.PlayerInvWrapper;
 
-import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.ints.IntObjectPair;
 import it.unimi.dsi.fastutil.objects.*;
 import org.apache.commons.lang3.ArrayUtils;
@@ -227,9 +227,9 @@ public class AdvancedBlockPattern extends BlockPattern {
                         IItemHandler holderHandler = null;
                         int holderSlot = -1;
                         if (autoBuildSetting.isReplaceMode() && itemStack != null) {
-                            Pair<IItemHandler, Integer> holderResult = foundHolderSlot(player, itemStack);
-                            holderHandler = holderResult.getFirst();
-                            holderSlot = holderResult.getSecond();
+                            var holderResult = foundHolderSlot(player, itemStack);
+                            holderHandler = holderResult.first();
+                            holderSlot = holderResult.rightInt();
 
                             if (holderHandler != null && holderSlot < 0) {
                                 continue;
@@ -306,23 +306,32 @@ public class AdvancedBlockPattern extends BlockPattern {
         return new Triplet<>(found, handler, foundSlot);
     }
 
-    private Pair<IItemHandler, Integer> foundHolderSlot(Player player, ItemStack coilItemStack) {
-        IItemHandler handler = null;
-        int foundSlot = -1;
+    private ObjectIntPair<IItemHandler> foundHolderSlot(Player player, ItemStack coilItemStack) {
         if (!player.isCreative()) {
-            handler = player.getCapability(ForgeCapabilities.ITEM_HANDLER).orElse(null);
-            for (int i = 0; i < handler.getSlots(); i++) {
-                @NotNull
-                ItemStack stack = handler.getStackInSlot(i);
-                if (stack.isEmpty()) {
+            var r = findFirstSlot(player.getCapability(ForgeCapabilities.ITEM_HANDLER), coilItemStack);
+            if (r != null) return r;
+        }
+        return ObjectIntPair.of(null, -1);
+    }
+
+    private ObjectIntPair<IItemHandler> findFirstSlot(LazyOptional<IItemHandler> cap, ItemStack stack) {
+        var handler = cap.resolve().orElse(null);
+        if (handler == null) return null;
+        int foundSlot = -1;
+        for (int i = 0; i < handler.getSlots(); i++) {
+            var inSlot = handler.getStackInSlot(i);
+            var stackCap = inSlot.getCapability(ForgeCapabilities.ITEM_HANDLER);
+            if (stackCap.isPresent()) {
+                var rt = findFirstSlot(stackCap, stack);
+                if (rt != null) return rt;
+            } else {
+                if (inSlot.isEmpty() && !((handler instanceof PlayerInvWrapper) && i >= 36)) {
                     if (foundSlot < 0) foundSlot = i;
-                } else if (ItemStack.isSameItemSameTags(coilItemStack, stack) && (stack.getCount() + 1) <= stack.getMaxStackSize()) {
-                    foundSlot = i;
-                }
+                } else if (ItemStack.isSameItemSameTags(stack, inSlot) && (inSlot.getCount() + 1) <= inSlot.getMaxStackSize()) foundSlot = i;
+                if (foundSlot > 0) break;
             }
         }
-
-        return new Pair<>(handler, foundSlot);
+        return ObjectIntPair.of(handler, foundSlot);
     }
 
     private void clearWorldState(MultiblockState worldState) {
