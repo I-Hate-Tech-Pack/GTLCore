@@ -45,9 +45,9 @@ public abstract class RecipeLogicProviderMixin extends CapabilityBlockProvider<R
     protected void write(CompoundTag data, RecipeLogic capability, CallbackInfo ci) {
         if (capability instanceof IRecipeStatus status) {
             if (status.getRecipeStatus() != null && status.getRecipeStatus().reason() != null)
-                data.putString("reason", status.getRecipeStatus().reason().getString());
+                data.putString("reason", Component.Serializer.toJson(status.getRecipeStatus().reason()));
             if (status.getWorkingStatus() != null && status.getWorkingStatus().reason() != null)
-                data.putString("work_reason", status.getWorkingStatus().reason().getString());
+                data.putString("work_reason", Component.Serializer.toJson(status.getWorkingStatus().reason()));
         }
     }
 
@@ -103,11 +103,15 @@ public abstract class RecipeLogicProviderMixin extends CapabilityBlockProvider<R
             }
             String reason = capData.getString("work_reason");
             if (reason.isEmpty()) return;
-            tooltip.add(Component.translatable("gtceu.recipe.fail.reason", reason).withStyle(RED));
+            Component reasonComponent = Component.Serializer.fromJson(reason);
+            if (reasonComponent == null) return;
+            tooltip.add(Component.translatable("gtceu.recipe.fail.reason", reasonComponent).withStyle(RED));
         } else {
             String reason = capData.getString("reason");
             if (reason.isEmpty()) return;
-            tooltip.add(Component.translatable("gtceu.recipe.fail.reason", reason).withStyle(RED));
+            Component reasonComponent = Component.Serializer.fromJson(reason);
+            if (reasonComponent == null) return;
+            tooltip.add(Component.translatable("gtceu.recipe.fail.reason", reasonComponent).withStyle(RED));
         }
     }
 }
