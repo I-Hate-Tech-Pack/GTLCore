@@ -1,6 +1,6 @@
 package org.gtlcore.gtlcore.mixin.gtm.client;
 
-import org.gtlcore.gtlcore.utils.SourceTooltipHelper;
+import org.gtlcore.gtlcore.utils.GTLSourceTooltipHelper;
 
 import com.gregtechceu.gtceu.client.TooltipsHandler;
 
@@ -24,13 +24,13 @@ public abstract class TooltipsHandlerMixin {
             at = @At("HEAD"),
             remap = false)
     private static void appendCustomItemTooltips(ItemStack stack, TooltipFlag flag, List<Component> tooltips, CallbackInfo ci) {
-        tooltips.addAll(1, SourceTooltipHelper.getItemTooltipComponents(stack.getItem()));
+        GTLSourceTooltipHelper.appendItemTooltip(stack.getItem(), tooltips::add);
     }
 
     @Inject(method = "appendFluidTooltips",
             at = @At("RETURN"),
             remap = false)
     private static void appendCustomFluidTooltips(Fluid fluid, long amount, Consumer<Component> tooltips, TooltipFlag flag, CallbackInfo ci) {
-        SourceTooltipHelper.getFluidTooltipComponents(fluid).forEach(tooltips);
+        GTLSourceTooltipHelper.appendFluidTooltip(fluid, tooltips);
     }
 }

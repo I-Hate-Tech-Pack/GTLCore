@@ -1,7 +1,7 @@
 package org.gtlcore.gtlcore.mixin.gtm.api.capability;
 
 import org.gtlcore.gtlcore.api.recipe.IParallelLogic;
-import org.gtlcore.gtlcore.utils.SourceTooltipHelper;
+import org.gtlcore.gtlcore.utils.GTLSourceTooltipHelper;
 import org.gtlcore.gtlcore.utils.TextUtil;
 
 import com.gregtechceu.gtceu.api.capability.recipe.*;
@@ -111,7 +111,7 @@ public abstract class FluidRecipeCapabilityMixin extends RecipeCapability<FluidI
                 } else {
                     // EMI 中在其他地方被添加过了
                     if (!LDLib.isEmiLoaded()) {
-                        tooltips.addAll(SourceTooltipHelper.getFluidTooltipComponents(stack.getFluid()));
+                        GTLSourceTooltipHelper.appendFluidTooltip(stack.getFluid(), tooltips::add);
                     }
                     TextUtil.appendIngotConversionTooltip(stack, tooltips, stack.getAmount());
                 }
