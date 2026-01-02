@@ -355,5 +355,9 @@
   "tooltip.gtlcore.supported_dimensions": "支持主世界,下界,末地",
   "tooltip.gtlcore.supports_dimensions": "支持主世界,下界,末地",
   "tooltip.gtlcore.this_module": "该模块",
-  "tooltip.gtlcore.turbine_rotor_only": "只能放入涡轮转子"
+  "tooltip.gtlcore.turbine_rotor_only": "只能放入涡轮转子",
+  "gtlcore.source_tooltip.world_fragment_collection": "§2❈ %s %s",
+  "gtlcore.source_tooltip.space_elevator": "§3❈ 太空无人机 %s %s",
+  "gtlcore.source_tooltip.series": "❈ %s",
+  "gtlcore.source_tooltip.platinum_group_precess": "铂系处理"
 }

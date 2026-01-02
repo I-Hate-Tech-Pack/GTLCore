@@ -17,7 +17,7 @@ public class GTLEMIPlugin implements EmiPlugin {
         registry.setDefaultComparison(EmiStack.of(GTItems.TURBINE_ROTOR.asItem()), Comparison.compareNbt());
         registry.setDefaultComparison(EmiStack.of(GTItems.INTEGRATED_CIRCUIT.asItem()), Comparison.compareNbt());
 
-        for (int i = 1; i <= 32; i++) {
+        for (int i = 0; i <= 32; i++) {
             registry.addEmiStack(EmiStack.of(IntCircuitBehaviour.stack(i)));
         }
     }
