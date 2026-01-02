@@ -2,10 +2,7 @@ package org.gtlcore.gtlcore.mixin.ae2.integration;
 
 import com.gregtechceu.gtceu.integration.jei.multipage.MultiblockInfoWrapper;
 
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.StringTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
 import appeng.api.stacks.GenericStack;
@@ -47,11 +44,7 @@ public class EncodePatternTransferHandlerMixin {
                remap = false)
     public List<GenericStack> multiBlockOutputImport(List<GenericStack> genericIngredients, @Local(name = "recipeBase") Object recipeBase) {
         if (!(recipeBase instanceof MultiblockInfoWrapper miw)) return genericIngredients;
-        var i = new ItemStack(Items.WRITTEN_BOOK);
-        var tag = new CompoundTag();
-        tag.put("Name", StringTag.valueOf("{\"text\":\"" + Component.translatable(miw.definition.getId().toLanguageKey("block")).getString() + "\",\"color\":\"#FC54FC\"}"));
-        i.getOrCreateTag().put("display", tag);
-        var g = GenericStack.fromItemStack(i);
+        var g = GenericStack.fromItemStack(Items.WRITTEN_BOOK.getDefaultInstance().kjs$withName(Component.translatable(miw.definition.getId().toLanguageKey("block")).withStyle(style -> style.withColor(16536828))));
         return g == null ? List.of() : List.of(g);
     }
 }
