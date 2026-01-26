@@ -1,8 +1,10 @@
 package org.gtlcore.gtlcore.mixin.ae2.crafting;
 
-import appeng.menu.me.crafting.CraftingPlanSummaryEntry;
-import net.minecraft.network.FriendlyByteBuf;
 import org.gtlcore.gtlcore.integration.ae2.crafting.ICraftingPlanSummaryEntry;
+
+import net.minecraft.network.FriendlyByteBuf;
+
+import appeng.menu.me.crafting.CraftingPlanSummaryEntry;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -12,6 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(CraftingPlanSummaryEntry.class)
 public class CraftingPlanSummaryEntryMixin implements ICraftingPlanSummaryEntry {
+
     @Unique
     private long gtlcore$craftTimes = 0;
 
@@ -31,7 +34,7 @@ public class CraftingPlanSummaryEntryMixin implements ICraftingPlanSummaryEntry 
     @Inject(at = @At("TAIL"), method = "read", cancellable = true, remap = false)
     private static void read(FriendlyByteBuf buffer, CallbackInfoReturnable<CraftingPlanSummaryEntry> cir) {
         var entry = cir.getReturnValue();
-        ((ICraftingPlanSummaryEntry)entry).gtlcore$setCraftTimes(buffer.readVarLong());
+        ((ICraftingPlanSummaryEntry) entry).gtlcore$setCraftTimes(buffer.readVarLong());
         cir.setReturnValue(entry);
     }
 }

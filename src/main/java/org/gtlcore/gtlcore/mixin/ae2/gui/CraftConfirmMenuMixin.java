@@ -1,5 +1,10 @@
 package org.gtlcore.gtlcore.mixin.ae2.gui;
 
+import org.gtlcore.gtlcore.integration.ae2.common.IConfirmStartMenu;
+
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.MenuType;
+
 import appeng.api.config.SortDir;
 import appeng.api.config.SortOrder;
 import appeng.api.config.TypeFilter;
@@ -14,9 +19,6 @@ import appeng.menu.AEBaseMenu;
 import appeng.menu.me.common.IClientRepo;
 import appeng.menu.me.common.IncrementalUpdateHelper;
 import appeng.menu.me.crafting.CraftConfirmMenu;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.MenuType;
-import org.gtlcore.gtlcore.integration.ae2.common.IConfirmStartMenu;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -28,6 +30,7 @@ import java.util.Set;
 
 @Mixin(CraftConfirmMenu.class)
 public abstract class CraftConfirmMenuMixin extends AEBaseMenu implements IConfirmStartMenu {
+
     protected CraftConfirmMenuMixin(MenuType<?> menuType, int id, Inventory playerInventory, Object host) {
         super(menuType, id, playerInventory, host);
     }
@@ -44,6 +47,7 @@ public abstract class CraftConfirmMenuMixin extends AEBaseMenu implements IConfi
     @Inject(method = "<init>", at = @At("RETURN"), remap = false)
     private void onConstructed(int id, Inventory ip, ISubMenuHost host, CallbackInfo ci) {
         this.gtlcore$repo = new Repo(() -> 0, new ISortSource() {
+
             @Override
             public SortOrder getSortBy() {
                 return SortOrder.AMOUNT;

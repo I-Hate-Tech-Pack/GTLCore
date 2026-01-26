@@ -1,12 +1,14 @@
 package org.gtlcore.gtlcore.mixin.ae2.packets;
 
-import appeng.core.AELog;
-import appeng.core.sync.packets.MEInventoryUpdatePacket;
-import appeng.menu.me.common.GridInventoryEntry;
+import org.gtlcore.gtlcore.integration.ae2.common.IConfirmStartMenu;
+
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import org.gtlcore.gtlcore.integration.ae2.common.IConfirmStartMenu;
+
+import appeng.core.AELog;
+import appeng.core.sync.packets.MEInventoryUpdatePacket;
+import appeng.menu.me.common.GridInventoryEntry;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -19,6 +21,7 @@ import java.util.List;
 @OnlyIn(Dist.CLIENT)
 @Mixin(MEInventoryUpdatePacket.class)
 public class MEInventoryUpdatePacketMixin {
+
     @Shadow(remap = false)
     private int containerId;
 

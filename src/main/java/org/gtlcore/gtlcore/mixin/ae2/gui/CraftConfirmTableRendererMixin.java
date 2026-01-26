@@ -1,5 +1,11 @@
 package org.gtlcore.gtlcore.mixin.ae2.gui;
 
+import org.gtlcore.gtlcore.integration.ae2.common.IConfirmStartMenu;
+import org.gtlcore.gtlcore.integration.ae2.crafting.ICraftingPlanSummaryEntry;
+
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+
 import appeng.api.stacks.KeyCounter;
 import appeng.client.gui.AEBaseScreen;
 import appeng.client.gui.me.crafting.AbstractTableRenderer;
@@ -7,10 +13,6 @@ import appeng.client.gui.me.crafting.CraftConfirmTableRenderer;
 import appeng.menu.me.crafting.CraftingPlanSummaryEntry;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
-import org.gtlcore.gtlcore.integration.ae2.common.IConfirmStartMenu;
-import org.gtlcore.gtlcore.integration.ae2.crafting.ICraftingPlanSummaryEntry;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -22,6 +24,7 @@ import java.util.List;
 
 @Mixin(CraftConfirmTableRenderer.class)
 public abstract class CraftConfirmTableRendererMixin extends AbstractTableRenderer<CraftingPlanSummaryEntry> {
+
     protected CraftConfirmTableRendererMixin(AEBaseScreen<?> screen, int x, int y, int rows) {
         super(screen, x, y, rows);
     }
