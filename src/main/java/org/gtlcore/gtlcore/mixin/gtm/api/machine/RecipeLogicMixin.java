@@ -1,5 +1,6 @@
 package org.gtlcore.gtlcore.mixin.gtm.api.machine;
 
+import org.gtlcore.gtlcore.api.machine.ISuspendableMachine;
 import org.gtlcore.gtlcore.api.machine.trait.ILockRecipe;
 import org.gtlcore.gtlcore.api.machine.trait.IRecipeStatus;
 import org.gtlcore.gtlcore.api.recipe.IGTRecipe;
@@ -275,6 +276,10 @@ public abstract class RecipeLogicMixin implements ILockRecipe, IRecipeStatus {
                 this.duration = 0;
                 this.isActive = false;
             }
+        }
+        if(this.machine instanceof ISuspendableMachine suspendableMachine && suspendableMachine.gtlcore$isSuspendAfterFinish()) {
+            this.setStatus(RecipeLogic.Status.SUSPEND);
+            suspendableMachine.gtlcore$setSuspendAfterFinish(false);
         }
     }
 
