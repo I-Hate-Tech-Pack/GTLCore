@@ -359,5 +359,6 @@
   "gtlcore.source_tooltip.world_fragment_collection": "§2❈ %s %s",
   "gtlcore.source_tooltip.space_elevator": "§3❈ Space Drone %s %s",
   "gtlcore.source_tooltip.series": "❈ %s",
-  "gtlcore.source_tooltip.platinum_group_precess": "Platinum Group Precess"
+  "gtlcore.source_tooltip.platinum_group_precess": "Platinum Group Precess",
+  "gtlcore.behaviour.soft_hammer.idle_after_cycle": "Pause machine after current cycle"
 }

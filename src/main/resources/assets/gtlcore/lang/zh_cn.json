@@ -359,5 +359,6 @@
   "gtlcore.source_tooltip.world_fragment_collection": "§2❈ %s %s",
   "gtlcore.source_tooltip.space_elevator": "§3❈ 太空无人机 %s %s",
   "gtlcore.source_tooltip.series": "❈ %s",
-  "gtlcore.source_tooltip.platinum_group_precess": "铂系处理"
+  "gtlcore.source_tooltip.platinum_group_precess": "铂系处理",
+  "gtlcore.behaviour.soft_hammer.idle_after_cycle": "当前周期结束后暂停机器"
 }
