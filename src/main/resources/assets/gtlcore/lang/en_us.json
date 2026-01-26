@@ -361,8 +361,8 @@
   "gtlcore.source_tooltip.space_elevator": "§3❈ Space Drone %s %s",
   "gtlcore.source_tooltip.series": "❈ %s",
   "gtlcore.source_tooltip.platinum_group_precess": "Platinum Group Precess",
-  "ftbultimine.shape.area": "Shapeless (Area)"
+  "ftbultimine.shape.area": "Shapeless (Area)",
   "gtlcore.ae.craft.create_times": "Create Times: %d",
-  "gtlcore.ae.craft.used_percent": "Used: %s"
+  "gtlcore.ae.craft.used_percent": "Used: %s",
   "gtlcore.behaviour.soft_hammer.idle_after_cycle": "Pause machine after current cycle"
 }
