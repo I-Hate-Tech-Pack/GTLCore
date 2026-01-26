@@ -359,5 +359,7 @@
   "gtlcore.source_tooltip.world_fragment_collection": "§2❈ %s %s",
   "gtlcore.source_tooltip.space_elevator": "§3❈ Space Drone %s %s",
   "gtlcore.source_tooltip.series": "❈ %s",
-  "gtlcore.source_tooltip.platinum_group_precess": "Platinum Group Precess"
+  "gtlcore.source_tooltip.platinum_group_precess": "Platinum Group Precess",
+  "gtlcore.ae.craft.create_times": "Create Times: %d",
+  "gtlcore.ae.craft.used_percent": "Used: %s"
 }
