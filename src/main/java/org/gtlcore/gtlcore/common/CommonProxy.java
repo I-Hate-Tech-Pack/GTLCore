@@ -7,6 +7,7 @@ import org.gtlcore.gtlcore.config.ConfigHolder;
 import org.gtlcore.gtlcore.integration.ae2.InfinityCellGuiHandler;
 import org.gtlcore.gtlcore.integration.ae2.storage.FastInfinityCellHandler;
 import org.gtlcore.gtlcore.integration.ae2.storage.InfinityCellHandler;
+import org.gtlcore.gtlcore.integration.ftbu.AreaShape;
 import org.gtlcore.gtlcore.network.GTLNetworkHandler;
 
 import com.gregtechceu.gtceu.api.GTCEuAPI;
@@ -47,6 +48,7 @@ public class CommonProxy {
     public static void init() {
         GTLCreativeModeTabs.init();
         ConfigHolder.init();
+        AreaShape.register();
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
