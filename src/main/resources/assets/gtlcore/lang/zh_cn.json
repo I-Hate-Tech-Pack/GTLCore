@@ -362,4 +362,7 @@
   "gtlcore.source_tooltip.series": "❈ %s",
   "gtlcore.source_tooltip.platinum_group_precess": "铂系处理",
   "ftbultimine.shape.area": "不定形 (不连续)"
+  "gtlcore.ae.craft.create_times": "合成轮数：%d",
+  "gtlcore.ae.craft.used_percent": "库存使用：%s"
+  "gtlcore.behaviour.soft_hammer.idle_after_cycle": "当前周期结束后暂停机器"
 }
