@@ -107,6 +107,7 @@
   "config.gtlcore.option.recipeMultiOutput": "启用配方超出int额外输出",
   "config.gtlcore.option.spacetimePip": "时空管道流量",
   "config.gtlcore.option.travelStaffCD": "旅行权杖CD",
+  "config.gtlcore.option.ftbUltimineRange": "连锁挖掘检查范围",
   "config.jade.plugin_gtlcore.tick_time_provider": "[GTLCore] Tick时间",
   "config.jade.plugin_gtlcore.wireless_data_hatch_provider": "无线数据仓",
   "gtlcore.condition.gravity": "需要强重力环境",
@@ -359,5 +360,6 @@
   "gtlcore.source_tooltip.world_fragment_collection": "§2❈ %s %s",
   "gtlcore.source_tooltip.space_elevator": "§3❈ 太空无人机 %s %s",
   "gtlcore.source_tooltip.series": "❈ %s",
-  "gtlcore.source_tooltip.platinum_group_precess": "铂系处理"
+  "gtlcore.source_tooltip.platinum_group_precess": "铂系处理",
+  "ftbultimine.shape.area": "不定形 (不连续)"
 }
