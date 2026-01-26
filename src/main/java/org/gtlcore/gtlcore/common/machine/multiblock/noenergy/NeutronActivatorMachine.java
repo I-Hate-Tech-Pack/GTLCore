@@ -2,6 +2,7 @@ package org.gtlcore.gtlcore.common.machine.multiblock.noenergy;
 
 import org.gtlcore.gtlcore.api.machine.multiblock.NoEnergyMultiblockMachine;
 import org.gtlcore.gtlcore.api.pattern.util.IValueContainer;
+import org.gtlcore.gtlcore.api.recipe.IGTRecipe;
 import org.gtlcore.gtlcore.api.recipe.RecipeResult;
 import org.gtlcore.gtlcore.common.data.GTLRecipeModifiers;
 import org.gtlcore.gtlcore.common.machine.multiblock.part.NeutronAcceleratorPartMachine;
@@ -134,7 +135,7 @@ public class NeutronActivatorMachine extends NoEnergyMultiblockMachine {
     @Override
     public boolean beforeWorking(@Nullable GTRecipe recipe) {
         if (recipe != null) {
-            if (eV >= recipe.data.getInt("evt") * 1000 * getEVtMultiplier()) return true;
+            if (eV >= recipe.data.getInt("evt") * 1000 * getEVtMultiplier(recipe)) return true;
             else {
                 RecipeResult.of(this, RecipeResult.fail(Component.translatable("gtceu.recipe.fail.no.enough.eV.consumed")));
                 return false;
@@ -146,9 +147,9 @@ public class NeutronActivatorMachine extends NoEnergyMultiblockMachine {
     @Override
     public boolean onWorking() {
         boolean value = super.onWorking();
-        if (getRecipeLogic().getLastRecipe() != null) {
-            int evt = (int) (getRecipeLogic().getLastRecipe().data.getInt("evt") *
-                    1000 * getEVtMultiplier());
+        var lastRecipe = getRecipeLogic().getLastRecipe();
+        if (lastRecipe != null) {
+            int evt = (int) (lastRecipe.data.getInt("evt") * 1000 * getEVtMultiplier(lastRecipe));
             if (eV < evt) {
                 getRecipeLogic().setProgress(0);
             } else {
@@ -158,8 +159,8 @@ public class NeutronActivatorMachine extends NoEnergyMultiblockMachine {
         return value;
     }
 
-    private double getEVtMultiplier() {
-        return Math.max(1, Math.pow(GTLRecipeModifiers.getHatchParallel(this), 1.5) * getEfficiencyFactor());
+    private double getEVtMultiplier(GTRecipe recipe) {
+        return Math.max(1, Math.pow(IGTRecipe.of(recipe).getRealParallels(), 1.5) * getEfficiencyFactor());
     }
 
     protected void neutronEnergyUpdate() {

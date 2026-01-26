@@ -198,13 +198,21 @@ public class MEOutputFilterHandler implements ITagSerializable<CompoundTag> {
 
     public List<Ingredient> testIngredient(List<Ingredient> left) {
         if (!hasItemFilter) return List.of();
-        left.removeIf(ingredient -> test(ingredient.getItems()[0]));
+        left.removeIf(ingredient -> {
+            var items = ingredient.getItems();
+            if (items.length == 0) return false;
+            return test(items[0]);
+        });
         return left;
     }
 
     public List<FluidIngredient> testFluidIngredient(List<FluidIngredient> left) {
         if (!hasFluidFilter) return List.of();
-        left.removeIf(ingredient -> test(ingredient.getStacks()[0]));
+        left.removeIf(ingredient -> {
+            var fluids = ingredient.getStacks();
+            if (fluids.length == 0) return false;
+            return test(fluids[0]);
+        });
         return left;
     }
 
