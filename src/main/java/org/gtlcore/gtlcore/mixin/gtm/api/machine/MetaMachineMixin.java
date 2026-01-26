@@ -1,12 +1,11 @@
 package org.gtlcore.gtlcore.mixin.gtm.api.machine;
 
-import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
-import net.minecraft.world.phys.BlockHitResult;
 import org.gtlcore.gtlcore.api.machine.IPerformanceDisplayMachine;
 import org.gtlcore.gtlcore.api.machine.ISuspendableMachine;
 import org.gtlcore.gtlcore.api.machine.PerformanceMonitorMachine;
 
 import com.gregtechceu.gtceu.api.block.BlockProperties;
+import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
@@ -24,6 +23,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
 
 import com.mojang.datafixers.util.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -184,7 +184,7 @@ public abstract class MetaMachineMixin implements IPerformanceDisplayMachine, IS
             return;
         }
         var controllable = GTCapabilityHelper.getControllable(getLevel(), getPos(), gridSide);
-        if(controllable == null) return;
+        if (controllable == null) return;
         if (!controllable.isWorkingEnabled() || gtlcore$isSuspendAfterFinish()) {
             cir.cancel();
             cir.setReturnValue(InteractionResult.FAIL);

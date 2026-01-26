@@ -256,30 +256,32 @@ public abstract class RecipeLogicMixin implements ILockRecipe, IRecipeStatus {
         this.machine.afterWorking();
         if (this.lastRecipe != null) {
             handleRecipeOutput(this.machine, this.lastRecipe);
-            if (this.machine.alwaysTryModifyRecipe()) {
-                if (this.lastOriginRecipe != null) {
-                    var modified = this.machine.fullModifyRecipe(this.lastOriginRecipe.copy(), this.ocParams, this.ocResult);
-                    if (modified == null) {
-                        this.markLastRecipeDirty();
+            if (this.machine instanceof ISuspendableMachine suspendableMachine && suspendableMachine.gtlcore$isSuspendAfterFinish()) {
+                this.setStatus(RecipeLogic.Status.SUSPEND);
+                suspendableMachine.gtlcore$setSuspendAfterFinish(false);
+            } else {
+                if (this.machine.alwaysTryModifyRecipe()) {
+                    if (this.lastOriginRecipe != null) {
+                        var modified = this.machine.fullModifyRecipe(this.lastOriginRecipe.copy(), this.ocParams, this.ocResult);
+                        if (modified == null) {
+                            this.markLastRecipeDirty();
+                        } else {
+                            this.lastRecipe = modified;
+                        }
                     } else {
-                        this.lastRecipe = modified;
+                        this.markLastRecipeDirty();
                     }
+                }
+                if (!this.recipeDirty && gtlcore$checkLastRecipe(this.lastRecipe)) {
+                    this.setupRecipe(this.lastRecipe);
+                    return;
                 } else {
-                    this.markLastRecipeDirty();
+                    this.setStatus(RecipeLogic.Status.IDLE);
                 }
             }
-            if (!this.recipeDirty && gtlcore$checkLastRecipe(this.lastRecipe)) {
-                this.setupRecipe(this.lastRecipe);
-            } else {
-                this.setStatus(RecipeLogic.Status.IDLE);
-                this.progress = 0;
-                this.duration = 0;
-                this.isActive = false;
-            }
-        }
-        if(this.machine instanceof ISuspendableMachine suspendableMachine && suspendableMachine.gtlcore$isSuspendAfterFinish()) {
-            this.setStatus(RecipeLogic.Status.SUSPEND);
-            suspendableMachine.gtlcore$setSuspendAfterFinish(false);
+            this.progress = 0;
+            this.duration = 0;
+            this.isActive = false;
         }
     }
 
