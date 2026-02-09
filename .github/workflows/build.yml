@@ -1,10 +1,10 @@
-name: Build Mod
+name: gtlcore-1.2.2.8-fix2-preview
 
 on:
   push:
-    branches: [ gtl-1431-skyblock ]
+    branches: [ gtl-1431-skyblock-test ]
   pull_request:
-    branches: [ gtl-1431-skyblock ]
+    branches: [ gtl-1431-skyblock-test ]
   release:
     types: [created]
 
