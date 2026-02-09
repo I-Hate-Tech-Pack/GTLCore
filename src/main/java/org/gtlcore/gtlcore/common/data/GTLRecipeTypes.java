@@ -409,7 +409,7 @@ public class GTLRecipeTypes {
 
     public static final GTRecipeType DIMENSIONAL_FOCUS_ENGRAVING_ARRAY_RECIPES = register("dimensional_focus_engraving_array", MULTIBLOCK)
             .setEUIO(IO.IN)
-            .setMaxTooltips(4)
+            .setMaxTooltips(5)
             .setMaxIOSize(2, 1, 1, 0)
             .setProgressBar(GuiTextures.PROGRESS_BAR_ARROW, LEFT_TO_RIGHT)
             .setSound(GTSoundEntries.ARC)
