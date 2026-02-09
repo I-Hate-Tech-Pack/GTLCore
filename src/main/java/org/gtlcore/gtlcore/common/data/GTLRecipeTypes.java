@@ -409,10 +409,11 @@ public class GTLRecipeTypes {
 
     public static final GTRecipeType DIMENSIONAL_FOCUS_ENGRAVING_ARRAY_RECIPES = register("dimensional_focus_engraving_array", MULTIBLOCK)
             .setEUIO(IO.IN)
-            .setMaxTooltips(5)
+            .setMaxTooltips(6)
             .setMaxIOSize(2, 1, 1, 0)
             .setProgressBar(GuiTextures.PROGRESS_BAR_ARROW, LEFT_TO_RIGHT)
             .setSound(GTSoundEntries.ARC);
+            .onRecipeBuild(ResearchManager::createDefaultResearchRecipe);
 
     public static final GTRecipeType PRECISION_LASER_ENGRAVER_RECIPES = register("precision_laser_engraver", MULTIBLOCK)
             .setEUIO(IO.IN)
