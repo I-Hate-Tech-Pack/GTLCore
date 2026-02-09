@@ -2,9 +2,9 @@ name: Build Mod
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ gtl-1431-skyblock ]
   pull_request:
-    branches: [ main, master ]
+    branches: [ gtl-1431-skyblock ]
   release:
     types: [created]
 
