@@ -284,8 +284,8 @@ public class GTLMachines {
                     tooltips.add(Component.literal("  ")
                             .append(Component.translatable(type.getTranslationKey())
                                     .withStyle(ChatFormatting.GREEN)));
-                    GTL_ADD.accept(stack, tooltips);
                 }
+                GTL_ADD.accept(stack, tooltips);
             })
             .renderer(() -> new MaintenanceHatchPartRenderer(7,
                     GTCEu.id("block/machine/part/maintenance.sterile_cleaning")))
