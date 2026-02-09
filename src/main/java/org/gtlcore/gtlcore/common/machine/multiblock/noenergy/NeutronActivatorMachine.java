@@ -213,7 +213,7 @@ public class NeutronActivatorMachine extends NoEnergyMultiblockMachine {
                     .withStyle(ChatFormatting.GRAY));
             textList.add(Component.translatable("gtceu.machine.neutron_activator.ev", processNumber(eV)));
             textList.add(Component.translatable("gtceu.machine.neutron_activator.efficiency",
-                    FormattingUtil.formatNumbers(Math.max(1, Math.pow(numParallels, 2) * getEfficiencyFactor()))));
+                    FormattingUtil.formatNumbers(Math.max(1, Math.pow(numParallels, 1.5) * getEfficiencyFactor()))));
             textList.add(Component.translatable("gtceu.machine.neutron_activator.height", height));
             textList.add(Component.translatable("gtceu.machine.neutron_activator.time",
                     FormattingUtil.formatNumbers(getEfficiencyFactor() * 100)).append("%"));
