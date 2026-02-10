@@ -32,6 +32,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.wrapper.PlayerInvWrapper;
 
 import it.unimi.dsi.fastutil.ints.IntObjectPair;
@@ -326,7 +327,6 @@ public class AdvancedBlockPattern extends BlockPattern {
                         if (pos.equals(centerPos)) continue;
 
                         // 更新多方块状态并检查当前方块是否匹配模式要求
-                        // 如果方块不匹配（例如玩家放错了方块，或者本来就是不相关的地基），则不进行拆除
                         updateWorldState(worldState, pos, predicate);
                         if (!predicate.test(worldState)) continue;
 
@@ -336,14 +336,22 @@ public class AdvancedBlockPattern extends BlockPattern {
                                 // 1. 获取方块原本应掉落的物品列表
                                 List<ItemStack> drops = Block.getDrops(blockState, serverLevel, pos, serverLevel.getBlockEntity(pos), player, player.getMainHandItem());
 
-                                // 2. 直接移除方块（isMoving=false 不触发常规破坏逻辑，减少卡顿和声音）
+                                // 2. 直接移除方块
                                 level.removeBlock(pos, false);
 
-                                // 3. 将物品直接放入玩家背包
+                                // 3. 将物品存入玩家物品栏（优先嵌套容器，其次原生背包，最后掉落）
                                 for (ItemStack drop : drops) {
-                                    if (!player.getInventory().add(drop)) {
-                                        // 如果背包满了，再掉落在玩家脚下
-                                        player.drop(drop, false);
+                                    // 3.1 尝试放入嵌套容器（如背包袋）
+                                    ItemStack remainder = insertIntoNestedItemHandler(player, drop);
+                                    // 3.2 尝试放入玩家原生背包
+                                    if (!remainder.isEmpty()) {
+                                        if (player.getInventory().add(remainder)) {
+                                            remainder = ItemStack.EMPTY;
+                                        }
+                                    }
+                                    // 3.3 掉落剩余物品
+                                    if (!remainder.isEmpty()) {
+                                        player.drop(remainder, false);
                                     }
                                 }
                             }
@@ -358,6 +366,38 @@ public class AdvancedBlockPattern extends BlockPattern {
         if (controller instanceof WorkableMultiblockMachine machine) {
             machine.onPartUnload();
         }
+    }
+
+    private ItemStack insertIntoNestedItemHandler(Player player, ItemStack stack) {
+        LazyOptional<IItemHandler> cap = player.getCapability(ForgeCapabilities.ITEM_HANDLER);
+        if (cap.isPresent()) {
+            return insertIntoNestedItemHandlerRecursion(cap.resolve().orElse(null), stack);
+        }
+        return stack;
+    }
+
+    private ItemStack insertIntoNestedItemHandlerRecursion(IItemHandler handler, ItemStack stack) {
+        if (handler == null) return stack;
+        for (int i = 0; i < handler.getSlots(); i++) {
+            if (stack.isEmpty()) return stack;
+            ItemStack inSlot = handler.getStackInSlot(i);
+            if (inSlot.isEmpty()) continue;
+
+            // 检查槽位物品是否具有ItemHandler能力（即是否为容器）
+            LazyOptional<IItemHandler> subCap = inSlot.getCapability(ForgeCapabilities.ITEM_HANDLER);
+            if (subCap.isPresent()) {
+                IItemHandler subHandler = subCap.resolve().orElse(null);
+                if (subHandler != null) {
+                    // 递归尝试放入更深层的容器
+                    stack = insertIntoNestedItemHandlerRecursion(subHandler, stack);
+                    if (stack.isEmpty()) return stack;
+
+                    // 尝试放入当前容器
+                    stack = ItemHandlerHelper.insertItemStacked(subHandler, stack, false);
+                }
+            }
+        }
+        return stack;
     }
 
     public static Triplet<ItemStack, IItemHandler, Integer> foundItem(Player player,
@@ -527,8 +567,8 @@ public class AdvancedBlockPattern extends BlockPattern {
                 if (rt != null) return rt;
             } else if (candidates.stream().anyMatch(candidate -> ItemStack.isSameItemSameTags(candidate, stack)) &&
                     !stack.isEmpty() && test.test(stack.getItem())) {
-                        return IntObjectPair.of(i, handler);
-                    }
+                return IntObjectPair.of(i, handler);
+            }
         }
         return null;
     }
