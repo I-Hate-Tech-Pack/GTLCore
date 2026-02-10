@@ -43,6 +43,23 @@ import static org.gtlcore.gtlcore.api.gui.BlockMapSelectorWidget.*;
 import static org.gtlcore.gtlcore.api.pattern.AdvancedBlockPattern.getAdvancedBlockPattern;
 import static org.gtlcore.gtlcore.common.block.BlockMap.*;
 
+import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.state.BlockState;
+import org.gtlcore.gtlcore.api.pattern.AdvancedBlockPattern;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.block.Block;
+import java.util.List;
+import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.state.BlockState;
+import org.gtlcore.gtlcore.api.pattern.AdvancedBlockPattern;
+import com.gregtechceu.gtceu.api.pattern.MultiblockState;
+import com.gregtechceu.gtceu.api.pattern.TraceabilityPredicate;
+import java.lang.reflect.Method;
+
+
+
 /**
  * 代码参考自gtmthings
  * &#064;line <a href="https://github.com/liansishen/GTMThings">...</a>
@@ -61,12 +78,15 @@ public class UltimateTerminalBehavior implements IItemUIFactory {
             if (context.getPlayer() != null && !level.isClientSide() &&
                     metaMachine instanceof IMultiController controller) {
                 var autoBuildSetting = getAutoBuildSetting(context.getPlayer().getMainHandItem());
-
-                if (!controller.isFormed()) {
-                    getAdvancedBlockPattern(controller.getPattern()).autoBuild(context.getPlayer(), controller.getMultiblockState(), autoBuildSetting);
-                } else if (metaMachine instanceof WorkableMultiblockMachine machine && autoBuildSetting.isReplaceMode()) {
-                    getAdvancedBlockPattern(controller.getPattern()).autoBuild(context.getPlayer(), controller.getMultiblockState(), autoBuildSetting);
-                    machine.onPartUnload();
+                if(autoBuildSetting.isDismantleMode()){
+                    dismantleMultiblock(controller, context.getPlayer());
+                }else{
+                    if (!controller.isFormed()) {
+                        getAdvancedBlockPattern(controller.getPattern()).autoBuild(context.getPlayer(), controller.getMultiblockState(), autoBuildSetting);
+                    } else if (metaMachine instanceof WorkableMultiblockMachine machine && autoBuildSetting.isReplaceMode()) {
+                        getAdvancedBlockPattern(controller.getPattern()).autoBuild(context.getPlayer(), controller.getMultiblockState(), autoBuildSetting);
+                        machine.onPartUnload();
+                    }
                 }
             }
             return InteractionResult.sidedSuccess(level.isClientSide);
@@ -83,6 +103,7 @@ public class UltimateTerminalBehavior implements IItemUIFactory {
             autoBuildSetting.setNoHatchMode(tag.getBoolean("NoHatchMode"));
             autoBuildSetting.setReplaceMode(tag.getBoolean("ReplaceMode"));
             autoBuildSetting.setFlipped(tag.getBoolean("IsFlipped"));
+            autoBuildSetting.setDismantleMode(tag.getBoolean("DismantleMode"));
             String block = tag.getString("blocks");
             if (!block.isEmpty()) {
                 autoBuildSetting.tierBlock = tierBlockMap.get(block).get();
@@ -112,6 +133,12 @@ public class UltimateTerminalBehavior implements IItemUIFactory {
                         .setHoverTooltips(translatable("tooltip.gtlcore.replace_mode")))
                 .addWidget(new ExtendLabelWidget(14, 106, translatable("gui.gtlcore.mirror_mode"))
                         .setHoverTooltips(translatable("tooltip.gtlcore.mirror_mode")))
+                .addWidget(new ExtendLabelWidget(14,126,translatable("gui.gtlcore.Dismantle_mode")))
+                .addWidget(new SwitchWidget(140, 123, 36, 14,
+                        (c, b) -> setDismantleMode(!getDismantleMode(handItem), handItem))
+                        .setPressed(getDismantleMode(handItem))
+                        .setTexture(new GuiTextureGroup(GuiTextures.BUTTON, new TextTexture("OFF")),
+                                new GuiTextureGroup(GuiTextures.BUTTON, new TextTexture("ON"))))
                 .addWidget(new TerminalInputWidget(140, 45, 36, 12,
                         () -> getRepeatCount(handItem), (v) -> setRepeatCount(v, handItem)).setMax(648).setMin(0))
                 .addWidget(new SwitchWidget(140, 63, 36, 14,
@@ -205,6 +232,37 @@ public class UltimateTerminalBehavior implements IItemUIFactory {
         tag.putBoolean("IsFlipped", isFlip);
         itemStack.setTag(tag);
     }
+    private static boolean getDismantleMode(ItemStack itemStack) {
+        CompoundTag tag = itemStack.getOrCreateTag();
+        return !tag.isEmpty() && tag.getBoolean("DismantleMode");
+    }
+
+    private static void setDismantleMode(boolean isDismantle, ItemStack itemStack) {
+        CompoundTag tag = itemStack.getOrCreateTag();
+        tag.putBoolean("DismantleMode", isDismantle);
+        itemStack.setTag(tag);
+    }
+
+    private void dismantleMultiblock(IMultiController controller, Player player) {
+        var level = player.level();
+        // 仅在服务端执行
+        if (level.isClientSide()) return;
+
+        var pattern = controller.getPattern();
+        if (pattern == null) return;
+
+        AdvancedBlockPattern advancedPattern = getAdvancedBlockPattern(pattern);
+        if (advancedPattern == null) return;
+
+        // 获取当前手持终端的设置
+        ItemStack handItem = player.getMainHandItem();
+        boolean isFlipped = getIsFlip(handItem);
+        int repeatCountSetting = getRepeatCount(handItem);
+
+        advancedPattern.dismantleMultiblock(controller, player, repeatCountSetting, isFlipped);
+    }
+
+
 
     @Setter
     @Getter
@@ -213,7 +271,7 @@ public class UltimateTerminalBehavior implements IItemUIFactory {
         Block[] tierBlock;
         Set<Block> blocks = Collections.emptySet();
         private int tier, repeatCount;
-        private boolean noHatchMode, replaceMode, isFlipped;
+        private boolean noHatchMode, replaceMode, isFlipped,dismantleMode;
 
         public AutoBuildSetting() {
             this.tier = 0;
@@ -221,6 +279,7 @@ public class UltimateTerminalBehavior implements IItemUIFactory {
             this.noHatchMode = true;
             this.replaceMode = false;
             this.isFlipped = false;
+            this.dismantleMode = false;
         }
 
         public List<ItemStack> apply(BlockInfo[] blockInfos) {

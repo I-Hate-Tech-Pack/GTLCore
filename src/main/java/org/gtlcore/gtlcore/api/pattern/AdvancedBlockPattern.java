@@ -5,6 +5,7 @@ import org.gtlcore.gtlcore.common.item.UltimateTerminalBehavior;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
+import com.gregtechceu.gtceu.api.machine.multiblock.WorkableMultiblockMachine;
 import com.gregtechceu.gtceu.api.pattern.BlockPattern;
 import com.gregtechceu.gtceu.api.pattern.MultiblockState;
 import com.gregtechceu.gtceu.api.pattern.TraceabilityPredicate;
@@ -15,6 +16,7 @@ import com.lowdragmc.lowdraglib.utils.BlockInfo;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -55,8 +57,8 @@ public class AdvancedBlockPattern extends BlockPattern {
             Direction.DOWN };
     static Direction[] FACINGS_H = { Direction.SOUTH, Direction.NORTH, Direction.WEST, Direction.EAST };
 
-    public final int[][] aisleRepetitions;
-    public final RelativeDirection[] structureDir;
+    protected final int[][] aisleRepetitions;
+    protected final RelativeDirection[] structureDir;
     protected final TraceabilityPredicate[][][] blockMatches; // [z][y][x]
     protected final int fingerLength; // z size
     protected final int thumbLength; // y size
@@ -107,8 +109,9 @@ public class AdvancedBlockPattern extends BlockPattern {
             int[] centerOffset = (int[]) centerOffsetField.get(blockPattern);
 
             return new AdvancedBlockPattern(blockMatches, structureDir, aisleRepetitions, centerOffset);
-        } catch (Exception ignored) {}
-        return null;
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public void autoBuild(Player player, MultiblockState worldState,
@@ -280,6 +283,81 @@ public class AdvancedBlockPattern extends BlockPattern {
                 }
             }
         }));
+    }
+
+    public void dismantleMultiblock(IMultiController controller, Player player, int repeatCountSetting, boolean isFlipped) {
+        var level = player.level();
+        // 仅在服务端执行
+        if (level.isClientSide()) return;
+
+        BlockPos centerPos = controller.self().getPos();
+        Direction facing = controller.self().getFrontFacing();
+        Direction upwardsFacing = controller.self().getUpwardsFacing();
+
+        // 获取多方块状态用于判定方块是否有效
+        MultiblockState worldState = controller.getMultiblockState();
+
+        // 计算重复次数
+        int[] repeat = new int[this.fingerLength];
+        for (int h = 0; h < this.fingerLength; h++) {
+            var minH = this.aisleRepetitions[h][0];
+            var maxH = this.aisleRepetitions[h][1];
+            if (minH != maxH) {
+                repeat[h] = Math.max(minH, Math.min(maxH, repeatCountSetting));
+            } else repeat[h] = minH;
+        }
+
+        int minZ = -this.centerOffset[4];
+
+        // 遍历模式中的每一个位置
+        for (int c = 0, z = minZ; c < this.fingerLength; c++) {
+            for (int r = 0; r < repeat[c]; r++) {
+                for (int b = 0, y = -this.centerOffset[1]; b < this.thumbLength; b++, y++) {
+                    for (int a = 0, x = -this.centerOffset[0]; a < this.palmLength; a++, x++) {
+                        // 获取当前位置的判定谓词
+                        TraceabilityPredicate predicate = this.blockMatches[c][b][a];
+                        // 跳过 "Any" 类型的匹配
+                        if (predicate.isAny()) continue;
+
+                        BlockPos pos = setActualRelativeOffset(x, y, z, facing, upwardsFacing, isFlipped)
+                                .offset(centerPos.getX(), centerPos.getY(), centerPos.getZ());
+
+                        // 避开控制器本身
+                        if (pos.equals(centerPos)) continue;
+
+                        // 更新多方块状态并检查当前方块是否匹配模式要求
+                        // 如果方块不匹配（例如玩家放错了方块，或者本来就是不相关的地基），则不进行拆除
+                        updateWorldState(worldState, pos, predicate);
+                        if (!predicate.test(worldState)) continue;
+
+                        BlockState blockState = level.getBlockState(pos);
+                        if (!blockState.isAir()) {
+                            if (level instanceof ServerLevel serverLevel) {
+                                // 1. 获取方块原本应掉落的物品列表
+                                List<ItemStack> drops = Block.getDrops(blockState, serverLevel, pos, serverLevel.getBlockEntity(pos), player, player.getMainHandItem());
+
+                                // 2. 直接移除方块（isMoving=false 不触发常规破坏逻辑，减少卡顿和声音）
+                                level.removeBlock(pos, false);
+
+                                // 3. 将物品直接放入玩家背包
+                                for (ItemStack drop : drops) {
+                                    if (!player.getInventory().add(drop)) {
+                                        // 如果背包满了，再掉落在玩家脚下
+                                        player.drop(drop, false);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                z++;
+            }
+        }
+
+        // 如果是工作中的多方块，调用卸载
+        if (controller instanceof WorkableMultiblockMachine machine) {
+            machine.onPartUnload();
+        }
     }
 
     public static Triplet<ItemStack, IItemHandler, Integer> foundItem(Player player,
