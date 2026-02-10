@@ -365,5 +365,7 @@
   "gtlcore.ae.craft.create_times": "Create Times: %d",
   "gtlcore.ae.craft.used_percent": "Used: %s",
   "gtlcore.behaviour.soft_hammer.idle_after_cycle": "Pause machine after current cycle",
-  "gui.gtlcore.Dismantle_mode": "Dismantle Mode"
+  "gui.gtlcore.Dismantle_mode": "Dismantle Mode",
+  "gui.gtlcore.AE_mode": "AE Mode",
+  "gtlcore.terminal.ae_bound": "Bound to AE Terminal at %s"
 }

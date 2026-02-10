@@ -1,5 +1,9 @@
 package org.gtlcore.gtlcore.common.item;
 
+import net.minecraft.core.GlobalPos;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import org.gtlcore.gtlcore.api.gui.BlockMapSelectorWidget;
 import org.gtlcore.gtlcore.api.gui.ExtendLabelWidget;
 
@@ -21,6 +25,7 @@ import com.lowdragmc.lowdraglib.gui.texture.GuiTextureGroup;
 import com.lowdragmc.lowdraglib.gui.texture.TextTexture;
 import com.lowdragmc.lowdraglib.gui.widget.*;
 import com.lowdragmc.lowdraglib.utils.BlockInfo;
+import com.hepdd.gtmthings.api.gui.widget.TerminalInputWidget;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -31,7 +36,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.*;
 
-import com.hepdd.gtmthings.api.gui.widget.TerminalInputWidget;
 import it.unimi.dsi.fastutil.objects.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -43,21 +47,9 @@ import static org.gtlcore.gtlcore.api.gui.BlockMapSelectorWidget.*;
 import static org.gtlcore.gtlcore.api.pattern.AdvancedBlockPattern.getAdvancedBlockPattern;
 import static org.gtlcore.gtlcore.common.block.BlockMap.*;
 
-import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
-import net.minecraft.core.Direction;
-import net.minecraft.world.level.block.state.BlockState;
 import org.gtlcore.gtlcore.api.pattern.AdvancedBlockPattern;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Block;
 import java.util.List;
-import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
-import net.minecraft.core.Direction;
-import net.minecraft.world.level.block.state.BlockState;
-import org.gtlcore.gtlcore.api.pattern.AdvancedBlockPattern;
-import com.gregtechceu.gtceu.api.pattern.MultiblockState;
-import com.gregtechceu.gtceu.api.pattern.TraceabilityPredicate;
-import java.lang.reflect.Method;
-
 
 
 /**
@@ -74,6 +66,22 @@ public class UltimateTerminalBehavior implements IItemUIFactory {
         if (context.getPlayer() != null && context.getPlayer().isShiftKeyDown()) {
             var level = context.getLevel();
             var blockPos = context.getClickedPos();
+
+            // Try bind AE network
+            if (!level.isClientSide) {
+                if (AdvancedBlockPattern.getGridNode(level.getBlockEntity(blockPos)) != null) {
+                    ItemStack handItem = context.getPlayer().getMainHandItem();
+                    CompoundTag tag = handItem.getOrCreateTag();
+                    tag.putInt("BoundAEX", blockPos.getX());
+                    tag.putInt("BoundAEY", blockPos.getY());
+                    tag.putInt("BoundAEZ", blockPos.getZ());
+                    tag.putString("BoundAEDim", level.dimension().location().toString());
+                    handItem.setTag(tag);
+                    context.getPlayer().sendSystemMessage(Component.translatable("gtlcore.terminal.ae_bound", blockPos.toShortString()));
+                    return InteractionResult.SUCCESS;
+                }
+            }
+
             var metaMachine = MetaMachine.getMachine(level, blockPos);
             if (context.getPlayer() != null && !level.isClientSide() &&
                     metaMachine instanceof IMultiController controller) {
@@ -104,6 +112,13 @@ public class UltimateTerminalBehavior implements IItemUIFactory {
             autoBuildSetting.setReplaceMode(tag.getBoolean("ReplaceMode"));
             autoBuildSetting.setFlipped(tag.getBoolean("IsFlipped"));
             autoBuildSetting.setDismantleMode(tag.getBoolean("DismantleMode"));
+            autoBuildSetting.setAeMode(tag.getBoolean("AEMode"));
+            if (tag.contains("BoundAEX")) {
+                autoBuildSetting.setBoundAE(GlobalPos.of(
+                        ResourceKey.create(Registries.DIMENSION, new ResourceLocation(tag.getString("BoundAEDim"))),
+                        new BlockPos(tag.getInt("BoundAEX"), tag.getInt("BoundAEY"), tag.getInt("BoundAEZ"))
+                ));
+            }
             String block = tag.getString("blocks");
             if (!block.isEmpty()) {
                 autoBuildSetting.tierBlock = tierBlockMap.get(block).get();
@@ -115,7 +130,7 @@ public class UltimateTerminalBehavior implements IItemUIFactory {
 
     @Override
     public ModularUI createUI(HeldItemUIFactory.HeldItemHolder heldItemHolder, Player player) {
-        return (new ModularUI(166, 166, heldItemHolder, player)).widget(this.createWidget(player));
+        return (new ModularUI(166, 176, heldItemHolder, player)).widget(this.createWidget(player));
     }
 
     private Widget createWidget(Player player) {
@@ -133,12 +148,6 @@ public class UltimateTerminalBehavior implements IItemUIFactory {
                         .setHoverTooltips(translatable("tooltip.gtlcore.replace_mode")))
                 .addWidget(new ExtendLabelWidget(14, 106, translatable("gui.gtlcore.mirror_mode"))
                         .setHoverTooltips(translatable("tooltip.gtlcore.mirror_mode")))
-                .addWidget(new ExtendLabelWidget(14,126,translatable("gui.gtlcore.Dismantle_mode")))
-                .addWidget(new SwitchWidget(140, 123, 36, 14,
-                        (c, b) -> setDismantleMode(!getDismantleMode(handItem), handItem))
-                        .setPressed(getDismantleMode(handItem))
-                        .setTexture(new GuiTextureGroup(GuiTextures.BUTTON, new TextTexture("OFF")),
-                                new GuiTextureGroup(GuiTextures.BUTTON, new TextTexture("ON"))))
                 .addWidget(new TerminalInputWidget(140, 45, 36, 12,
                         () -> getRepeatCount(handItem), (v) -> setRepeatCount(v, handItem)).setMax(648).setMin(0))
                 .addWidget(new SwitchWidget(140, 63, 36, 14,
@@ -152,7 +161,20 @@ public class UltimateTerminalBehavior implements IItemUIFactory {
                 .addWidget(new SwitchWidget(140, 103, 36, 14,
                         (c, b) -> setIsFlip(!getIsFlip(handItem), handItem)).setPressed(getIsFlip(handItem))
                         .setTexture(new GuiTextureGroup(GuiTextures.BUTTON, new TextTexture("OFF")),
+                                new GuiTextureGroup(GuiTextures.BUTTON, new TextTexture("ON"))))
+                // AE模式相关设置
+                .addWidget(new ExtendLabelWidget(14,126, translatable("gui.gtlcore.AE_mode")))
+                .addWidget(new SwitchWidget(140,123,36,14,
+                        (c,b) -> setAEMode(!getAEMode(handItem), handItem)).setPressed(getAEMode(handItem))
+                        .setTexture(new GuiTextureGroup(GuiTextures.BUTTON, new TextTexture("OFF")),
+                                new GuiTextureGroup(GuiTextures.BUTTON, new TextTexture("ON"))))
+                // 拆除模式相关设置
+                .addWidget(new ExtendLabelWidget(14, 146, translatable("gui.gtlcore.Dismantle_mode")))
+                .addWidget(new SwitchWidget(140, 143, 36, 14,
+                        (c, b) -> setDismantleMode(!getDismantleMode(handItem), handItem)).setPressed(getDismantleMode(handItem))
+                        .setTexture(new GuiTextureGroup(GuiTextures.BUTTON, new TextTexture("OFF")),
                                 new GuiTextureGroup(GuiTextures.BUTTON, new TextTexture("ON"))));
+
         var blockLabel = new ExtendLabelWidget(47, 26, getBlockComponent(handItem));
         var blockMap = new BlockMapSelectorWidget(group.getSizeHeight() + 4, contain.getSizeWidth(), (s, i) -> {
             if (s != null && i != null) {
@@ -194,6 +216,33 @@ public class UltimateTerminalBehavior implements IItemUIFactory {
         return !tag.isEmpty() ? tag.getInt("RepeatCount") : 0;
     }
 
+    private static boolean getIsFlip(ItemStack itemStack) {
+        CompoundTag tag = itemStack.getOrCreateTag();
+        return !tag.isEmpty() && tag.getBoolean("IsFlipped");
+    }
+
+    private static boolean getDismantleMode(ItemStack itemStack) {
+        CompoundTag tag = itemStack.getOrCreateTag();
+        return !tag.isEmpty() && tag.getBoolean("DismantleMode");
+    }
+
+    private static void setDismantleMode(boolean isDismantle, ItemStack itemStack) {
+        CompoundTag tag = itemStack.getOrCreateTag();
+        tag.putBoolean("DismantleMode", isDismantle);
+        itemStack.setTag(tag);
+    }
+
+    private static boolean getAEMode(ItemStack itemStack) {
+        CompoundTag tag = itemStack.getOrCreateTag();
+        return !tag.isEmpty() && tag.getBoolean("AEMode");
+    }
+
+    private static void setAEMode(boolean isAEMode, ItemStack itemStack) {
+        CompoundTag tag = itemStack.getOrCreateTag();
+        tag.putBoolean("AEMode", isAEMode);
+        itemStack.setTag(tag);
+    }
+
     private static void setRepeatCount(int repeatCount, ItemStack itemStack) {
         CompoundTag tag = itemStack.getOrCreateTag();
         tag.putInt("RepeatCount", repeatCount);
@@ -222,24 +271,20 @@ public class UltimateTerminalBehavior implements IItemUIFactory {
         itemStack.setTag(tag);
     }
 
-    private static boolean getIsFlip(ItemStack itemStack) {
-        CompoundTag tag = itemStack.getOrCreateTag();
-        return !tag.isEmpty() && tag.getBoolean("IsFlipped");
-    }
-
     private static void setIsFlip(boolean isFlip, ItemStack itemStack) {
         CompoundTag tag = itemStack.getOrCreateTag();
         tag.putBoolean("IsFlipped", isFlip);
         itemStack.setTag(tag);
     }
-    private static boolean getDismantleMode(ItemStack itemStack) {
+
+    private static int getTier(ItemStack itemStack) {
         CompoundTag tag = itemStack.getOrCreateTag();
-        return !tag.isEmpty() && tag.getBoolean("DismantleMode");
+        return !tag.isEmpty() ? tag.getInt("Tier") : 0;
     }
 
-    private static void setDismantleMode(boolean isDismantle, ItemStack itemStack) {
+    private static void setTier(int tier, ItemStack itemStack) {
         CompoundTag tag = itemStack.getOrCreateTag();
-        tag.putBoolean("DismantleMode", isDismantle);
+        tag.putInt("Tier", tier);
         itemStack.setTag(tag);
     }
 
@@ -256,13 +301,13 @@ public class UltimateTerminalBehavior implements IItemUIFactory {
 
         // 获取当前手持终端的设置
         ItemStack handItem = player.getMainHandItem();
-        boolean isFlipped = getIsFlip(handItem);
-        int repeatCountSetting = getRepeatCount(handItem);
-
-        advancedPattern.dismantleMultiblock(controller, player, repeatCountSetting, isFlipped);
+        AutoBuildSetting setting = getAutoBuildSetting(handItem);
+        boolean isFlipped = setting.isFlipped();
+        int repeatCountSetting = setting.getRepeatCount();
+        boolean aeMode = setting.isAeMode();
+        GlobalPos boundAEPos = setting.getBoundAE();
+        advancedPattern.dismantleMultiblock(controller, player, repeatCountSetting, isFlipped, aeMode, boundAEPos);
     }
-
-
 
     @Setter
     @Getter
@@ -271,7 +316,8 @@ public class UltimateTerminalBehavior implements IItemUIFactory {
         Block[] tierBlock;
         Set<Block> blocks = Collections.emptySet();
         private int tier, repeatCount;
-        private boolean noHatchMode, replaceMode, isFlipped,dismantleMode;
+        private boolean noHatchMode, replaceMode, isFlipped, dismantleMode, aeMode;
+        private GlobalPos boundAE;
 
         public AutoBuildSetting() {
             this.tier = 0;
@@ -280,6 +326,7 @@ public class UltimateTerminalBehavior implements IItemUIFactory {
             this.replaceMode = false;
             this.isFlipped = false;
             this.dismantleMode = false;
+            this.aeMode = false;
         }
 
         public List<ItemStack> apply(BlockInfo[] blockInfos) {
@@ -291,7 +338,11 @@ public class UltimateTerminalBehavior implements IItemUIFactory {
                         candidates.add(tierBlock[Math.min(this.tier, blockInfos.length - 1)].asItem().getDefaultInstance());
                         return candidates;
                     }
-                    if (info.getBlockState().getBlock() != Blocks.AIR) candidates.add(info.getItemStackForm());
+                    if (info.getBlockState().getBlock() instanceof LiquidBlock liquidBlock) {
+                        candidates.add(liquidBlock.getFluid().getBucket().getDefaultInstance());
+                    } else if (info.getBlockState().getBlock() != Blocks.AIR) {
+                        candidates.add(info.getItemStackForm());
+                    }
                 }
             }
             return candidates;

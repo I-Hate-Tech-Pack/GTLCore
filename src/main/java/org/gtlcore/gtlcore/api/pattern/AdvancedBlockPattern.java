@@ -1,5 +1,21 @@
 package org.gtlcore.gtlcore.api.pattern;
 
+import appeng.api.config.Actionable;
+import appeng.api.networking.IGrid;
+import appeng.api.networking.IGridNode;
+import appeng.api.stacks.AEFluidKey;
+import appeng.api.stacks.AEItemKey;
+import appeng.api.networking.security.IActionSource;
+import net.minecraft.core.GlobalPos;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.*;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.LiquidBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import org.gtlcore.gtlcore.common.item.UltimateTerminalBehavior;
 
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
@@ -17,13 +33,6 @@ import com.lowdragmc.lowdraglib.utils.BlockInfo;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.*;
-import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -125,6 +134,13 @@ public class AdvancedBlockPattern extends BlockPattern {
         Direction facing = controller.self().getFrontFacing();
         Direction upwardsFacing = controller.self().getUpwardsFacing();
         boolean isFlipped = autoBuildSetting.isFlipped();
+        boolean aeMode = autoBuildSetting.isAeMode();
+
+        GlobalPos boundCoord = autoBuildSetting.getBoundAE();
+        IGrid grid = aeMode ? findBestGrid(world, centerPos, boundCoord) : null;
+
+        IActionSource source = IActionSource.ofPlayer(player);
+
         Object2IntOpenHashMap<SimplePredicate> cacheGlobal = new Object2IntOpenHashMap<>(worldState.getGlobalCount());
         Object2IntOpenHashMap<SimplePredicate> cacheLayer = new Object2IntOpenHashMap<>(worldState.getLayerCount());
         Object2ObjectOpenHashMap<BlockPos, Object> blocks = new Object2ObjectOpenHashMap<>();
@@ -219,11 +235,52 @@ public class AdvancedBlockPattern extends BlockPattern {
                                 ItemStack.isSameItem(candidates.get(0), itemStack))
                             continue;
 
-                        // check inventory
-                        var result = foundItem(player, candidates, item -> item instanceof BlockItem);
-                        ItemStack found = result.getA();
-                        IItemHandler handler = result.getB();
-                        int foundSlot = result.getC();
+                        ItemStack found = null;
+                        IItemHandler handler = null;
+                        int foundSlot = -1;
+                        boolean fromAE = false;
+
+                        if (aeMode && grid != null) {
+                            for (ItemStack candidate : candidates) {
+                                if (grid.getStorageService().getInventory().extract(AEItemKey.of(candidate), 1, Actionable.MODULATE, source) > 0) {
+                                    found = candidate.copy();
+                                    fromAE = true;
+                                    break;
+                                }
+                            }
+                            if (found == null) {
+                                for (ItemStack candidate : candidates) {
+                                    net.minecraft.world.level.material.Fluid fluid = null;
+                                    if (candidate.getItem() instanceof BlockItem blockItem && blockItem.getBlock() instanceof LiquidBlock liquidBlock) {
+                                        fluid = liquidBlock.getFluid();
+                                    } else if (candidate.getItem() instanceof BucketItem bucketItem) {
+                                        fluid = bucketItem.getFluid();
+                                    }
+
+                                    if (fluid != null) {
+                                        BlockState state = fluid.defaultFluidState().createLegacyBlock();
+                                        if (!state.isAir()) {
+                                            if (grid.getStorageService().getInventory().extract(AEFluidKey.of(fluid), 1000, Actionable.MODULATE, source) >= 1000) {
+                                                world.setBlock(pos, state, 3);
+                                                placeBlockPos.add(pos);
+                                                fromAE = true;
+                                                blocks.put(pos, state); // 必须在直接放置后手动添加到map，否则会被视为空
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                                if (found == null && fromAE) continue;
+                            }
+                        }
+
+                        if (!fromAE) {
+                            // check inventory
+                            var result = foundItem(player, candidates, item -> item instanceof BlockItem);
+                            found = result.getA();
+                            handler = result.getB();
+                            foundSlot = result.getC();
+                        }
 
                         if (found == null) continue;
 
@@ -251,7 +308,7 @@ public class AdvancedBlockPattern extends BlockPattern {
                         InteractionResult interactionResult = itemBlock.place(context);
                         if (interactionResult != InteractionResult.FAIL) {
                             placeBlockPos.add(pos);
-                            if (handler != null) handler.extractItem(foundSlot, 1, false);
+                            if (handler != null && !fromAE) handler.extractItem(foundSlot, 1, false);
                         }
                         if (world.getBlockEntity(pos) instanceof IMachineBlockEntity machineBlockEntity) {
                             blocks.put(pos, machineBlockEntity.getMetaMachine());
@@ -286,7 +343,7 @@ public class AdvancedBlockPattern extends BlockPattern {
         }));
     }
 
-    public void dismantleMultiblock(IMultiController controller, Player player, int repeatCountSetting, boolean isFlipped) {
+    public void dismantleMultiblock(IMultiController controller, Player player, int repeatCountSetting, boolean isFlipped, boolean aeMode, @Nullable GlobalPos boundAE) {
         var level = player.level();
         // 仅在服务端执行
         if (level.isClientSide()) return;
@@ -294,6 +351,9 @@ public class AdvancedBlockPattern extends BlockPattern {
         BlockPos centerPos = controller.self().getPos();
         Direction facing = controller.self().getFrontFacing();
         Direction upwardsFacing = controller.self().getUpwardsFacing();
+
+        IGrid grid = aeMode ? findBestGrid(level, centerPos, boundAE) : null;
+        IActionSource source = IActionSource.ofPlayer(player);
 
         // 获取多方块状态用于判定方块是否有效
         MultiblockState worldState = controller.getMultiblockState();
@@ -335,14 +395,29 @@ public class AdvancedBlockPattern extends BlockPattern {
                             if (level instanceof ServerLevel serverLevel) {
                                 // 1. 获取方块原本应掉落的物品列表
                                 List<ItemStack> drops = Block.getDrops(blockState, serverLevel, pos, serverLevel.getBlockEntity(pos), player, player.getMainHandItem());
-
                                 // 2. 直接移除方块
                                 level.removeBlock(pos, false);
-
+                                // 如果是流体，移除流体
+                                if (blockState.getBlock() instanceof LiquidBlock) {
+                                    level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
+                                }
                                 // 3. 将物品存入玩家物品栏（优先嵌套容器，其次原生背包，最后掉落）
                                 for (ItemStack drop : drops) {
+                                    ItemStack remainder = drop;
+                                    if (aeMode && grid != null) {
+                                        long inserted = grid.getStorageService().getInventory().insert(AEItemKey.of(remainder), remainder.getCount(), Actionable.MODULATE, source);
+                                        if (inserted == remainder.getCount()) {
+                                            remainder = ItemStack.EMPTY;
+                                        } else {
+                                            remainder.shrink((int) inserted);
+                                        }
+                                    }
+
+                                    if (remainder.isEmpty()) continue;
+
                                     // 3.1 尝试放入嵌套容器（如背包袋）
-                                    ItemStack remainder = insertIntoNestedItemHandler(player, drop);
+                                    remainder = insertIntoNestedItemHandler(player, remainder);
+
                                     // 3.2 尝试放入玩家原生背包
                                     if (!remainder.isEmpty()) {
                                         if (player.getInventory().add(remainder)) {
@@ -365,6 +440,51 @@ public class AdvancedBlockPattern extends BlockPattern {
         // 如果是工作中的多方块，调用卸载
         if (controller instanceof WorkableMultiblockMachine machine) {
             machine.onPartUnload();
+        }
+    }
+
+    private IGrid findBestGrid(Level level, BlockPos centerPos) {
+        return null; // Should not use this overload in this context really
+    }
+
+    private IGrid findBestGrid(Level level, BlockPos centerPos, @Nullable GlobalPos boundCoord) {
+        if (boundCoord != null) {
+            if (boundCoord.dimension().equals(level.dimension())) {
+                BlockEntity be = level.getBlockEntity(boundCoord.pos());
+                IGridNode node = getGridNode(be);
+                if (node != null && node.getGrid() != null) {
+                    return node.getGrid();
+                }
+            }
+        }
+        // 扫描周围是否有现成的AE网络，优先使用节点数最多的那个
+        IGrid bestGrid = null;
+        int maxNodes = -1;
+        for (BlockPos pos : BlockPos.betweenClosed(centerPos.offset(-8, -8, -8), centerPos.offset(8, 8, 8))) {
+            BlockEntity be = level.getBlockEntity(pos);
+            IGridNode node = getGridNode(be);
+            if (node == null) continue;
+            IGrid grid = node.getGrid();
+            if (grid == null) continue;
+            int size = 0;
+            for (IGridNode unused : grid.getNodes()) {
+                size++;
+            }
+            if (size > maxNodes) {
+                maxNodes = size;
+                bestGrid = grid;
+            }
+        }
+        return bestGrid;
+    }
+
+    public static IGridNode getGridNode(BlockEntity be) {
+        if (be == null) return null;
+        try {
+            Method m = be.getClass().getMethod("getGridNode", Direction.class);
+            return (IGridNode) m.invoke(be, Direction.UP);
+        } catch (Exception e) {
+            return null;
         }
     }
 
