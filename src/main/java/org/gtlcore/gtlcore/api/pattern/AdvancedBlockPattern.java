@@ -1,21 +1,5 @@
 package org.gtlcore.gtlcore.api.pattern;
 
-import appeng.api.config.Actionable;
-import appeng.api.networking.IGrid;
-import appeng.api.networking.IGridNode;
-import appeng.api.stacks.AEFluidKey;
-import appeng.api.stacks.AEItemKey;
-import appeng.api.networking.security.IActionSource;
-import net.minecraft.core.GlobalPos;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.*;
-import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.LiquidBlock;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import org.gtlcore.gtlcore.common.item.UltimateTerminalBehavior;
 
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
@@ -32,8 +16,18 @@ import com.lowdragmc.lowdraglib.utils.BlockInfo;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.GlobalPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.*;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.LiquidBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.Property;
@@ -44,6 +38,12 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.wrapper.PlayerInvWrapper;
 
+import appeng.api.config.Actionable;
+import appeng.api.networking.IGrid;
+import appeng.api.networking.IGridNode;
+import appeng.api.networking.security.IActionSource;
+import appeng.api.stacks.AEFluidKey;
+import appeng.api.stacks.AEItemKey;
 import it.unimi.dsi.fastutil.ints.IntObjectPair;
 import it.unimi.dsi.fastutil.objects.*;
 import org.apache.commons.lang3.ArrayUtils;
@@ -124,6 +124,15 @@ public class AdvancedBlockPattern extends BlockPattern {
         }
     }
 
+    private net.minecraft.world.level.material.Fluid getFluid(ItemStack stack) {
+        if (stack.getItem() instanceof BlockItem blockItem && blockItem.getBlock() instanceof LiquidBlock liquidBlock) {
+            return liquidBlock.getFluid();
+        } else if (stack.getItem() instanceof BucketItem bucketItem) {
+            return bucketItem.getFluid();
+        }
+        return null;
+    }
+
     public void autoBuild(Player player, MultiblockState worldState,
                           UltimateTerminalBehavior.AutoBuildSetting autoBuildSetting) {
         Level world = player.level();
@@ -138,6 +147,7 @@ public class AdvancedBlockPattern extends BlockPattern {
 
         GlobalPos boundCoord = autoBuildSetting.getBoundAE();
         IGrid grid = aeMode ? findBestGrid(world, centerPos, boundCoord) : null;
+        var aeInventory = grid != null ? grid.getStorageService().getInventory() : null;
 
         IActionSource source = IActionSource.ofPlayer(player);
 
@@ -157,7 +167,7 @@ public class AdvancedBlockPattern extends BlockPattern {
             } else repeat[h] = minH;
         }
 
-        for (int c = 0, z = minZ++, r; c < this.fingerLength; c++) {
+        for (int c = 0, z = minZ, r; c < this.fingerLength; c++) {
             for (r = 0; r < repeat[c]; r++) {
                 cacheLayer.clear();
                 for (int b = 0, y = -centerOffset[1]; b < this.thumbLength; b++, y++) {
@@ -231,58 +241,51 @@ public class AdvancedBlockPattern extends BlockPattern {
 
                         List<ItemStack> candidates = autoBuildSetting.apply(infos);
 
-                        if (autoBuildSetting.isReplaceMode() && itemStack != null &&
-                                ItemStack.isSameItem(candidates.get(0), itemStack))
-                            continue;
+                        if (autoBuildSetting.isReplaceMode() && itemStack != null) {
+                            ItemStack finalItemStack = itemStack;
+                            if (candidates.stream().anyMatch(cand -> ItemStack.isSameItem(cand, finalItemStack)))
+                                continue;
+                        }
 
                         ItemStack found = null;
-                        IItemHandler handler = null;
-                        int foundSlot = -1;
                         boolean fromAE = false;
+                        net.minecraft.world.level.material.Fluid fluidToPlace = null;
 
-                        if (aeMode && grid != null) {
+                        if (aeInventory != null) {
                             for (ItemStack candidate : candidates) {
-                                if (grid.getStorageService().getInventory().extract(AEItemKey.of(candidate), 1, Actionable.MODULATE, source) > 0) {
-                                    found = candidate.copy();
-                                    fromAE = true;
-                                    break;
-                                }
-                            }
-                            if (found == null) {
-                                for (ItemStack candidate : candidates) {
-                                    net.minecraft.world.level.material.Fluid fluid = null;
-                                    if (candidate.getItem() instanceof BlockItem blockItem && blockItem.getBlock() instanceof LiquidBlock liquidBlock) {
-                                        fluid = liquidBlock.getFluid();
-                                    } else if (candidate.getItem() instanceof BucketItem bucketItem) {
-                                        fluid = bucketItem.getFluid();
+                                net.minecraft.world.level.material.Fluid fluid = getFluid(candidate);
+                                if (fluid != null) {
+                                    if (aeInventory.extract(AEFluidKey.of(fluid), 1000, Actionable.MODULATE, source) >= 1000) {
+                                        fluidToPlace = fluid;
+                                        fromAE = true;
+                                        break;
                                     }
-
-                                    if (fluid != null) {
-                                        BlockState state = fluid.defaultFluidState().createLegacyBlock();
-                                        if (!state.isAir()) {
-                                            if (grid.getStorageService().getInventory().extract(AEFluidKey.of(fluid), 1000, Actionable.MODULATE, source) >= 1000) {
-                                                world.setBlock(pos, state, 3);
-                                                placeBlockPos.add(pos);
-                                                fromAE = true;
-                                                blocks.put(pos, state); // 必须在直接放置后手动添加到map，否则会被视为空
-                                                break;
-                                            }
-                                        }
+                                } else {
+                                    if (aeInventory.extract(AEItemKey.of(candidate), 1, Actionable.MODULATE, source) > 0) {
+                                        found = candidate.copy();
+                                        fromAE = true;
+                                        break;
                                     }
                                 }
-                                if (found == null && fromAE) continue;
                             }
                         }
+
+                        IItemHandler handler = null;
+                        int foundSlot = -1;
 
                         if (!fromAE) {
                             // check inventory
-                            var result = foundItem(player, candidates, item -> item instanceof BlockItem);
+                            var result = foundItem(player, candidates, item -> item instanceof BlockItem || item instanceof BucketItem);
                             found = result.getA();
                             handler = result.getB();
                             foundSlot = result.getC();
+
+                            if (found != null && found.getItem() instanceof BucketItem bucketItem) {
+                                fluidToPlace = bucketItem.getFluid();
+                            }
                         }
 
-                        if (found == null) continue;
+                        if (found == null && fluidToPlace == null) continue;
 
                         // check can get old coilBlock
                         IItemHandler holderHandler = null;
@@ -302,17 +305,33 @@ public class AdvancedBlockPattern extends BlockPattern {
                             if (holderHandler != null) holderHandler.insertItem(holderSlot, itemStack, false);
                         }
 
-                        BlockItem itemBlock = (BlockItem) found.getItem();
-                        BlockPlaceContext context = new BlockPlaceContext(world, player, InteractionHand.MAIN_HAND,
-                                found, BlockHitResult.miss(player.getEyePosition(0), Direction.UP, pos));
-                        InteractionResult interactionResult = itemBlock.place(context);
-                        if (interactionResult != InteractionResult.FAIL) {
-                            placeBlockPos.add(pos);
-                            if (handler != null && !fromAE) handler.extractItem(foundSlot, 1, false);
+                        if (fluidToPlace != null) {
+                            BlockState state = fluidToPlace.defaultFluidState().createLegacyBlock();
+                            if (!state.isAir()) {
+                                world.setBlock(pos, state, 3);
+                                placeBlockPos.add(pos);
+                                blocks.put(pos, state);
+
+                                if (!fromAE && handler != null) {
+                                    handler.extractItem(foundSlot, 1, false);
+                                    ItemStack emptyContainer = new ItemStack(Items.BUCKET);
+                                    if (!player.getInventory().add(emptyContainer)) {
+                                        player.drop(emptyContainer, false);
+                                    }
+                                }
+                            }
+                        } else if (found != null && found.getItem() instanceof BlockItem itemBlock) {
+                            BlockPlaceContext context = new BlockPlaceContext(world, player, InteractionHand.MAIN_HAND,
+                                    found, BlockHitResult.miss(player.getEyePosition(0), Direction.UP, pos));
+                            InteractionResult interactionResult = itemBlock.place(context);
+                            if (interactionResult != InteractionResult.FAIL) {
+                                placeBlockPos.add(pos);
+                                if (handler != null && !fromAE) handler.extractItem(foundSlot, 1, false);
+                            }
+                            if (world.getBlockEntity(pos) instanceof IMachineBlockEntity machineBlockEntity) {
+                                blocks.put(pos, machineBlockEntity.getMetaMachine());
+                            } else blocks.put(pos, world.getBlockState(pos));
                         }
-                        if (world.getBlockEntity(pos) instanceof IMachineBlockEntity machineBlockEntity) {
-                            blocks.put(pos, machineBlockEntity.getMetaMachine());
-                        } else blocks.put(pos, world.getBlockState(pos));
                     }
                 }
                 z++;
@@ -353,6 +372,7 @@ public class AdvancedBlockPattern extends BlockPattern {
         Direction upwardsFacing = controller.self().getUpwardsFacing();
 
         IGrid grid = aeMode ? findBestGrid(level, centerPos, boundAE) : null;
+        var aeInventory = grid != null ? grid.getStorageService().getInventory() : null;
         IActionSource source = IActionSource.ofPlayer(player);
 
         // 获取多方块状态用于判定方块是否有效
@@ -393,19 +413,23 @@ public class AdvancedBlockPattern extends BlockPattern {
                         BlockState blockState = level.getBlockState(pos);
                         if (!blockState.isAir()) {
                             if (level instanceof ServerLevel serverLevel) {
+                                if (blockState.getBlock() instanceof LiquidBlock liquidBlock) {
+                                    if (aeInventory != null) {
+                                        aeInventory.insert(AEFluidKey.of(liquidBlock.getFluid()), 1000, Actionable.MODULATE, source);
+                                    }
+                                    level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
+                                    continue;
+                                }
+
                                 // 1. 获取方块原本应掉落的物品列表
                                 List<ItemStack> drops = Block.getDrops(blockState, serverLevel, pos, serverLevel.getBlockEntity(pos), player, player.getMainHandItem());
                                 // 2. 直接移除方块
-                                level.removeBlock(pos, false);
-                                // 如果是流体，移除流体
-                                if (blockState.getBlock() instanceof LiquidBlock) {
-                                    level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
-                                }
+                                level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
                                 // 3. 将物品存入玩家物品栏（优先嵌套容器，其次原生背包，最后掉落）
                                 for (ItemStack drop : drops) {
                                     ItemStack remainder = drop;
-                                    if (aeMode && grid != null) {
-                                        long inserted = grid.getStorageService().getInventory().insert(AEItemKey.of(remainder), remainder.getCount(), Actionable.MODULATE, source);
+                                    if (aeInventory != null) {
+                                        long inserted = aeInventory.insert(AEItemKey.of(remainder), remainder.getCount(), Actionable.MODULATE, source);
                                         if (inserted == remainder.getCount()) {
                                             remainder = ItemStack.EMPTY;
                                         } else {
@@ -414,10 +438,8 @@ public class AdvancedBlockPattern extends BlockPattern {
                                     }
 
                                     if (remainder.isEmpty()) continue;
-
                                     // 3.1 尝试放入嵌套容器（如背包袋）
                                     remainder = insertIntoNestedItemHandler(player, remainder);
-
                                     // 3.2 尝试放入玩家原生背包
                                     if (!remainder.isEmpty()) {
                                         if (player.getInventory().add(remainder)) {
@@ -443,10 +465,6 @@ public class AdvancedBlockPattern extends BlockPattern {
         }
     }
 
-    private IGrid findBestGrid(Level level, BlockPos centerPos) {
-        return null; // Should not use this overload in this context really
-    }
-
     private IGrid findBestGrid(Level level, BlockPos centerPos, @Nullable GlobalPos boundCoord) {
         if (boundCoord != null) {
             if (boundCoord.dimension().equals(level.dimension())) {
@@ -457,25 +475,7 @@ public class AdvancedBlockPattern extends BlockPattern {
                 }
             }
         }
-        // 扫描周围是否有现成的AE网络，优先使用节点数最多的那个
-        IGrid bestGrid = null;
-        int maxNodes = -1;
-        for (BlockPos pos : BlockPos.betweenClosed(centerPos.offset(-8, -8, -8), centerPos.offset(8, 8, 8))) {
-            BlockEntity be = level.getBlockEntity(pos);
-            IGridNode node = getGridNode(be);
-            if (node == null) continue;
-            IGrid grid = node.getGrid();
-            if (grid == null) continue;
-            int size = 0;
-            for (IGridNode unused : grid.getNodes()) {
-                size++;
-            }
-            if (size > maxNodes) {
-                maxNodes = size;
-                bestGrid = grid;
-            }
-        }
-        return bestGrid;
+        return null;
     }
 
     public static IGridNode getGridNode(BlockEntity be) {
@@ -687,8 +687,8 @@ public class AdvancedBlockPattern extends BlockPattern {
                 if (rt != null) return rt;
             } else if (candidates.stream().anyMatch(candidate -> ItemStack.isSameItemSameTags(candidate, stack)) &&
                     !stack.isEmpty() && test.test(stack.getItem())) {
-                return IntObjectPair.of(i, handler);
-            }
+                        return IntObjectPair.of(i, handler);
+                    }
         }
         return null;
     }

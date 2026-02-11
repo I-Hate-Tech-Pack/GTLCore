@@ -1,11 +1,8 @@
 package org.gtlcore.gtlcore.common.item;
 
-import net.minecraft.core.GlobalPos;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import org.gtlcore.gtlcore.api.gui.BlockMapSelectorWidget;
 import org.gtlcore.gtlcore.api.gui.ExtendLabelWidget;
+import org.gtlcore.gtlcore.api.pattern.AdvancedBlockPattern;
 
 import com.gregtechceu.gtceu.api.block.MetaMachineBlock;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
@@ -25,32 +22,33 @@ import com.lowdragmc.lowdraglib.gui.texture.GuiTextureGroup;
 import com.lowdragmc.lowdraglib.gui.texture.TextTexture;
 import com.lowdragmc.lowdraglib.gui.widget.*;
 import com.lowdragmc.lowdraglib.utils.BlockInfo;
-import com.hepdd.gtmthings.api.gui.widget.TerminalInputWidget;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.GlobalPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.Block;
 
+import com.hepdd.gtmthings.api.gui.widget.TerminalInputWidget;
 import it.unimi.dsi.fastutil.objects.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.*;
+import java.util.List;
 
 import static net.minecraft.network.chat.Component.translatable;
 import static org.gtlcore.gtlcore.api.gui.BlockMapSelectorWidget.*;
 import static org.gtlcore.gtlcore.api.pattern.AdvancedBlockPattern.getAdvancedBlockPattern;
 import static org.gtlcore.gtlcore.common.block.BlockMap.*;
-
-import org.gtlcore.gtlcore.api.pattern.AdvancedBlockPattern;
-import net.minecraft.world.level.block.Block;
-import java.util.List;
-
 
 /**
  * 代码参考自gtmthings
@@ -72,10 +70,13 @@ public class UltimateTerminalBehavior implements IItemUIFactory {
                 if (AdvancedBlockPattern.getGridNode(level.getBlockEntity(blockPos)) != null) {
                     ItemStack handItem = context.getPlayer().getMainHandItem();
                     CompoundTag tag = handItem.getOrCreateTag();
-                    tag.putInt("BoundAEX", blockPos.getX());
-                    tag.putInt("BoundAEY", blockPos.getY());
-                    tag.putInt("BoundAEZ", blockPos.getZ());
-                    tag.putString("BoundAEDim", level.dimension().location().toString());
+                    // 用一个复合nbt来存储AE坐标
+                    CompoundTag AEPos = new CompoundTag();
+                    AEPos.putInt("X", blockPos.getX());
+                    AEPos.putInt("Y", blockPos.getY());
+                    AEPos.putInt("Z", blockPos.getZ());
+                    AEPos.putString("dim", level.dimension().location().toString());
+                    tag.put("BoundAE", AEPos);
                     handItem.setTag(tag);
                     context.getPlayer().sendSystemMessage(Component.translatable("gtlcore.terminal.ae_bound", blockPos.toShortString()));
                     return InteractionResult.SUCCESS;
@@ -86,9 +87,9 @@ public class UltimateTerminalBehavior implements IItemUIFactory {
             if (context.getPlayer() != null && !level.isClientSide() &&
                     metaMachine instanceof IMultiController controller) {
                 var autoBuildSetting = getAutoBuildSetting(context.getPlayer().getMainHandItem());
-                if(autoBuildSetting.isDismantleMode()){
+                if (autoBuildSetting.isDismantleMode()) {
                     dismantleMultiblock(controller, context.getPlayer());
-                }else{
+                } else {
                     if (!controller.isFormed()) {
                         getAdvancedBlockPattern(controller.getPattern()).autoBuild(context.getPlayer(), controller.getMultiblockState(), autoBuildSetting);
                     } else if (metaMachine instanceof WorkableMultiblockMachine machine && autoBuildSetting.isReplaceMode()) {
@@ -113,11 +114,13 @@ public class UltimateTerminalBehavior implements IItemUIFactory {
             autoBuildSetting.setFlipped(tag.getBoolean("IsFlipped"));
             autoBuildSetting.setDismantleMode(tag.getBoolean("DismantleMode"));
             autoBuildSetting.setAeMode(tag.getBoolean("AEMode"));
-            if (tag.contains("BoundAEX")) {
-                autoBuildSetting.setBoundAE(GlobalPos.of(
-                        ResourceKey.create(Registries.DIMENSION, new ResourceLocation(tag.getString("BoundAEDim"))),
-                        new BlockPos(tag.getInt("BoundAEX"), tag.getInt("BoundAEY"), tag.getInt("BoundAEZ"))
-                ));
+            if (tag.contains("BoundAE")) {
+                CompoundTag AEPos = tag.getCompound("BoundAE");
+                int x = AEPos.getInt("X");
+                int y = AEPos.getInt("Y");
+                int z = AEPos.getInt("Z");
+                ResourceKey<net.minecraft.world.level.Level> dimension = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(AEPos.getString("dim")));
+                autoBuildSetting.setBoundAE(GlobalPos.of(dimension, new BlockPos(x, y, z)));
             }
             String block = tag.getString("blocks");
             if (!block.isEmpty()) {
@@ -163,9 +166,9 @@ public class UltimateTerminalBehavior implements IItemUIFactory {
                         .setTexture(new GuiTextureGroup(GuiTextures.BUTTON, new TextTexture("OFF")),
                                 new GuiTextureGroup(GuiTextures.BUTTON, new TextTexture("ON"))))
                 // AE模式相关设置
-                .addWidget(new ExtendLabelWidget(14,126, translatable("gui.gtlcore.AE_mode")))
-                .addWidget(new SwitchWidget(140,123,36,14,
-                        (c,b) -> setAEMode(!getAEMode(handItem), handItem)).setPressed(getAEMode(handItem))
+                .addWidget(new ExtendLabelWidget(14, 126, translatable("gui.gtlcore.AE_mode")))
+                .addWidget(new SwitchWidget(140, 123, 36, 14,
+                        (c, b) -> setAEMode(!getAEMode(handItem), handItem)).setPressed(getAEMode(handItem))
                         .setTexture(new GuiTextureGroup(GuiTextures.BUTTON, new TextTexture("OFF")),
                                 new GuiTextureGroup(GuiTextures.BUTTON, new TextTexture("ON"))))
                 // 拆除模式相关设置
