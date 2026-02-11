@@ -27,8 +27,12 @@ public class TootipsModify {
         electric_blast_furnace.setTooltipBuilder(electric_blast_furnace.getTooltipBuilder().andThen(GTLMachines.GTL_MODIFY));
 
         MachineDefinition steamExportBus = GTMachines.STEAM_EXPORT_BUS;
+        steamExportBus.setTooltipBuilder(steamExportBus.getTooltipBuilder().andThen((itemStack, components) -> {
+            components.add(1, Component.translatable("gtceu.universal.tooltip.item_storage_capacity",16));}));
         steamExportBus.setTooltipBuilder(steamExportBus.getTooltipBuilder().andThen(GTLMachines.GTL_MODIFY));
         MachineDefinition steamImportBus = GTMachines.STEAM_IMPORT_BUS;
+        steamImportBus.setTooltipBuilder(steamImportBus.getTooltipBuilder().andThen((itemStack, components) -> {
+            components.add(1, Component.translatable("gtceu.universal.tooltip.item_storage_capacity",16));}));        
         steamImportBus.setTooltipBuilder(steamImportBus.getTooltipBuilder().andThen(GTLMachines.GTL_MODIFY));
 
         MachineDefinition steamOven = GTMachines.STEAM_OVEN;
