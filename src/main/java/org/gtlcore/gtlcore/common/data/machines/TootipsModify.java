@@ -32,11 +32,12 @@ public class TootipsModify {
             components.add(2, Component.translatable("gtceu.universal.tooltip.item_storage_capacity", 16));
         }));
         steamExportBus.setTooltipBuilder(steamExportBus.getTooltipBuilder().andThen(GTLMachines.GTL_MODIFY));
+
         MachineDefinition steamImportBus = GTMachines.STEAM_IMPORT_BUS;
         steamImportBus.setTooltipBuilder(steamImportBus.getTooltipBuilder().andThen((itemStack, components) -> {
             components.add(1, Component.translatable("gtceu.machine.item_bus.import.tooltip"));
             components.add(2, Component.translatable("gtceu.universal.tooltip.item_storage_capacity", 16));
-        }));        
+        }));
         steamImportBus.setTooltipBuilder(steamImportBus.getTooltipBuilder().andThen(GTLMachines.GTL_MODIFY));
 
         MachineDefinition steamOven = GTMachines.STEAM_OVEN;
