@@ -1,4 +1,4 @@
-name: gtlcore-1.2.2.8-fix2-preview
+name: gtlcore-test
 
 on:
   push:
