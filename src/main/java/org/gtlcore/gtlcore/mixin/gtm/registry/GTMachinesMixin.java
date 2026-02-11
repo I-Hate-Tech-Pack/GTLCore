@@ -187,7 +187,7 @@ public abstract class GTMachinesMixin {
                                 .abilities(PartAbility.IMPORT_ITEMS)
                                 .overlayTieredHullRenderer("dual_hatch.import")
                                 .tooltips(
-                                        Component.translatable("gtceu.machine.buffer.import.tooltip"),
+                                        Component.translatable("gtceu.machine.dual_hatch.import.tooltip"),
                                         Component.translatable(
                                                 "gtceu.universal.tooltip.item_storage_capacity",
                                                 (1 + tier) * (1 + tier)),
@@ -212,7 +212,7 @@ public abstract class GTMachinesMixin {
                                 .abilities(PartAbility.EXPORT_ITEMS)
                                 .overlayTieredHullRenderer("dual_hatch.export")
                                 .tooltips(
-                                        Component.translatable("gtceu.machine.buffer.export.tooltip"),
+                                        Component.translatable("gtceu.machine.dual_hatch.export.tooltip"),
                                         Component.translatable(
                                                 "gtceu.universal.tooltip.item_storage_capacity",
                                                 (1 + tier) * (1 + tier)),

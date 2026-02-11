@@ -1,0 +1,42 @@
+name: gtlcore-test
+
+on:
+  push:
+    branches: [ gtl-1431-skyblock-test ]
+  pull_request:
+    branches: [ gtl-1431-skyblock-test ]
+  release:
+    types: [created]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up JDK
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'  
+
+    - name: Validate Gradle wrapper
+      uses: gradle/wrapper-validation-action@v1
+
+    - name: Build with Gradle
+      run: ./gradlew build
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: Mod JARs
+        path: build/libs/*.jar
+        retention-days: 7
+
+    - name: Upload to Release 
+      if: github.event_name == 'release'
+      uses: softprops/action-gh-release@v1
+      with:
+        files: build/libs/*.jar
