@@ -34,7 +34,11 @@ import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.wrapper.PlayerInvWrapper;
 
@@ -146,7 +150,7 @@ public class AdvancedBlockPattern extends BlockPattern {
         boolean aeMode = autoBuildSetting.isAeMode();
 
         GlobalPos boundCoord = autoBuildSetting.getBoundAE();
-        IGrid grid = aeMode ? findBestGrid(world, centerPos, boundCoord) : null;
+        IGrid grid = aeMode ? findBestGrid(world, boundCoord) : null;
         var aeInventory = grid != null ? grid.getStorageService().getInventory() : null;
 
         IActionSource source = IActionSource.ofPlayer(player);
@@ -251,40 +255,47 @@ public class AdvancedBlockPattern extends BlockPattern {
                         }
 
                         ItemStack found = null;
-                        boolean fromAE = false;
                         net.minecraft.world.level.material.Fluid fluidToPlace = null;
-
-                        if (aeInventory != null) {
-                            for (ItemStack candidate : candidates) {
-                                net.minecraft.world.level.material.Fluid fluid = getFluid(candidate);
-                                if (fluid != null) {
+                        boolean fromAE = false;
+                        IItemHandler handler = null;
+                        int foundSlot = -1;
+                        for (ItemStack candidate : candidates) {
+                            net.minecraft.world.level.material.Fluid fluid = getFluid(candidate);
+                            if (fluid != null) {
+                                // 1. Try AE Fluid
+                                if (aeInventory != null) {
                                     if (aeInventory.extract(AEFluidKey.of(fluid), 1000, Actionable.MODULATE, source) >= 1000) {
                                         fluidToPlace = fluid;
                                         fromAE = true;
                                         break;
                                     }
-                                } else {
+                                }
+                                // 2. Try Player Inv Fluid (Recursive)
+                                if (fluidToPlace == null) {
+                                    if (extractFluidFromPlayerRecursively(player, fluid)) {
+                                        fluidToPlace = fluid;
+                                        break;
+                                    }
+                                }
+                            } else {
+                                // 1. Try AE Item
+                                if (aeInventory != null) {
                                     if (aeInventory.extract(AEItemKey.of(candidate), 1, Actionable.MODULATE, source) > 0) {
                                         found = candidate.copy();
                                         fromAE = true;
                                         break;
                                     }
                                 }
-                            }
-                        }
-
-                        IItemHandler handler = null;
-                        int foundSlot = -1;
-
-                        if (!fromAE) {
-                            // check inventory
-                            var result = foundItem(player, candidates, item -> item instanceof BlockItem || item instanceof BucketItem);
-                            found = result.getA();
-                            handler = result.getB();
-                            foundSlot = result.getC();
-
-                            if (found != null && found.getItem() instanceof BucketItem bucketItem) {
-                                fluidToPlace = bucketItem.getFluid();
+                                // 2. Try Player Inv Item
+                                if (found == null) {
+                                    var result = foundItem(player, List.of(candidate), item -> true);
+                                    if (result.getA() != null) {
+                                        found = result.getA();
+                                        handler = result.getB();
+                                        foundSlot = result.getC();
+                                        break;
+                                    }
+                                }
                             }
                         }
 
@@ -314,14 +325,6 @@ public class AdvancedBlockPattern extends BlockPattern {
                                 world.setBlock(pos, state, 3);
                                 placeBlockPos.add(pos);
                                 blocks.put(pos, state);
-
-                                if (!fromAE && handler != null) {
-                                    handler.extractItem(foundSlot, 1, false);
-                                    ItemStack emptyContainer = new ItemStack(Items.BUCKET);
-                                    if (!player.getInventory().add(emptyContainer)) {
-                                        player.drop(emptyContainer, false);
-                                    }
-                                }
                             }
                         } else if (found != null && found.getItem() instanceof BlockItem itemBlock) {
                             BlockPlaceContext context = new BlockPlaceContext(world, player, InteractionHand.MAIN_HAND,
@@ -374,7 +377,7 @@ public class AdvancedBlockPattern extends BlockPattern {
         Direction facing = controller.self().getFrontFacing();
         Direction upwardsFacing = controller.self().getUpwardsFacing();
 
-        IGrid grid = aeMode ? findBestGrid(level, centerPos, boundAE) : null;
+        IGrid grid = aeMode ? findBestGrid(level, boundAE) : null;
         var aeInventory = grid != null ? grid.getStorageService().getInventory() : null;
         IActionSource source = IActionSource.ofPlayer(player);
 
@@ -409,11 +412,11 @@ public class AdvancedBlockPattern extends BlockPattern {
                         // 避开控制器本身
                         if (pos.equals(centerPos)) continue;
 
-                        // 更新多方块状态并检查当前方块是否匹配模式要求
-                        updateWorldState(worldState, pos, predicate);
-                        if (!predicate.test(worldState)) continue;
-
                         BlockState blockState = level.getBlockState(pos);
+                        if (blockState.isAir()) continue;
+
+                        if (!isBlockValid(blockState, pos, predicate, worldState)) continue;
+
                         if (!blockState.isAir()) {
                             if (level instanceof ServerLevel serverLevel) {
                                 if (blockState.getBlock() instanceof LiquidBlock liquidBlock) {
@@ -439,7 +442,6 @@ public class AdvancedBlockPattern extends BlockPattern {
                                             remainder.shrink((int) inserted);
                                         }
                                     }
-
                                     if (remainder.isEmpty()) continue;
                                     // 3.1 尝试放入嵌套容器（如背包袋）
                                     remainder = insertIntoNestedItemHandler(player, remainder);
@@ -468,7 +470,72 @@ public class AdvancedBlockPattern extends BlockPattern {
         }
     }
 
-    private IGrid findBestGrid(Level level, BlockPos centerPos, @Nullable GlobalPos boundCoord) {
+    private boolean isBlockValid(BlockState current, BlockPos pos, TraceabilityPredicate predicate, MultiblockState tempState) {
+        // 合并 common 和 limited 谓词进行检查
+        List<SimplePredicate> allPreds = new ArrayList<>();
+        if (predicate.common != null) allPreds.addAll(predicate.common);
+        if (predicate.limited != null) allPreds.addAll(predicate.limited);
+
+        for (SimplePredicate p : allPreds) {
+            BlockInfo[] infos = p.candidates == null ? null : p.candidates.get();
+            if (infos != null && infos.length > 0) {
+                for (BlockInfo info : infos) {
+                    if (info.getBlockState().is(current.getBlock())) {
+                        return true;
+                    }
+                }
+            } else {
+                clearWorldState(tempState);
+                updateWorldState(tempState, pos, predicate);
+                if (p.test(tempState)) return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean extractFluidFromPlayerRecursively(Player player, net.minecraft.world.level.material.Fluid fluid) {
+        if (player.isCreative()) return true;
+        LazyOptional<IItemHandler> cap = player.getCapability(ForgeCapabilities.ITEM_HANDLER);
+        if (!cap.isPresent()) return false;
+
+        return extractFluidRecursive(cap.resolve().orElse(null), fluid);
+    }
+
+    private boolean extractFluidRecursive(IItemHandler handler, net.minecraft.world.level.material.Fluid fluid) {
+        if (handler == null) return false;
+
+        for (int i = 0; i < handler.getSlots(); i++) {
+            ItemStack stack = handler.getStackInSlot(i);
+            if (stack.isEmpty()) continue;
+
+            // 1. Check for Fluid Capability
+            LazyOptional<IFluidHandlerItem> fluidCap = stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM);
+            if (fluidCap.isPresent()) {
+                IFluidHandlerItem fluidHandler = fluidCap.resolve().orElse(null);
+                if (fluidHandler != null) {
+                    FluidStack simulated = fluidHandler.drain(new FluidStack(fluid, 1000), IFluidHandler.FluidAction.SIMULATE);
+                    if (simulated.getAmount() == 1000) {
+                        fluidHandler.drain(new FluidStack(fluid, 1000), IFluidHandler.FluidAction.EXECUTE);
+                        if (handler instanceof IItemHandlerModifiable modifiable) {
+                            modifiable.setStackInSlot(i, fluidHandler.getContainer());
+                        }
+                        return true;
+                    }
+                }
+            }
+
+            // 2. Recursive Check
+            LazyOptional<IItemHandler> subItemCap = stack.getCapability(ForgeCapabilities.ITEM_HANDLER);
+            if (subItemCap.isPresent()) {
+                if (extractFluidRecursive(subItemCap.resolve().orElse(null), fluid)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private IGrid findBestGrid(Level level, @Nullable GlobalPos boundCoord) {
         if (boundCoord != null) {
             if (boundCoord.dimension().equals(level.dimension())) {
                 BlockEntity be = level.getBlockEntity(boundCoord.pos());
