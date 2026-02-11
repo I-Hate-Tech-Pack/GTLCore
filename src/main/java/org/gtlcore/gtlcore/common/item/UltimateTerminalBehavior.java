@@ -91,9 +91,9 @@ public class UltimateTerminalBehavior implements IItemUIFactory {
                     dismantleMultiblock(controller, context.getPlayer());
                 } else {
                     if (!controller.isFormed()) {
-                        getAdvancedBlockPattern(controller.getPattern()).autoBuild(context.getPlayer(), controller.getMultiblockState(), autoBuildSetting);
+                        Objects.requireNonNull(getAdvancedBlockPattern(controller.getPattern())).autoBuild(context.getPlayer(), controller.getMultiblockState(), autoBuildSetting);
                     } else if (metaMachine instanceof WorkableMultiblockMachine machine && autoBuildSetting.isReplaceMode()) {
-                        getAdvancedBlockPattern(controller.getPattern()).autoBuild(context.getPlayer(), controller.getMultiblockState(), autoBuildSetting);
+                        Objects.requireNonNull(getAdvancedBlockPattern(controller.getPattern())).autoBuild(context.getPlayer(), controller.getMultiblockState(), autoBuildSetting);
                         machine.onPartUnload();
                     }
                 }
@@ -277,17 +277,6 @@ public class UltimateTerminalBehavior implements IItemUIFactory {
     private static void setIsFlip(boolean isFlip, ItemStack itemStack) {
         CompoundTag tag = itemStack.getOrCreateTag();
         tag.putBoolean("IsFlipped", isFlip);
-        itemStack.setTag(tag);
-    }
-
-    private static int getTier(ItemStack itemStack) {
-        CompoundTag tag = itemStack.getOrCreateTag();
-        return !tag.isEmpty() ? tag.getInt("Tier") : 0;
-    }
-
-    private static void setTier(int tier, ItemStack itemStack) {
-        CompoundTag tag = itemStack.getOrCreateTag();
-        tag.putInt("Tier", tier);
         itemStack.setTag(tag);
     }
 

@@ -192,33 +192,36 @@ public class AdvancedBlockPattern extends BlockPattern {
                         boolean find = false;
                         BlockInfo[] infos = new BlockInfo[0];
                         for (var limit : predicate.limited) {
-                            if (limit.minLayerCount > 0 && autoBuildSetting.isPlaceHatch(limit.candidates.get())) {
+                            if (limit.candidates != null && !autoBuildSetting.isPlaceHatch(limit.candidates.get())) continue;
+                            if (limit.minLayerCount > 0) {
                                 int curr = cacheLayer.getInt(limit);
                                 if (curr < limit.minLayerCount &&
                                         (limit.maxLayerCount == -1 || curr < limit.maxLayerCount)) {
                                     cacheLayer.addTo(limit, 1);
-                                } else continue;
-                            } else continue;
-                            infos = limit.candidates == null ? null : limit.candidates.get();
-                            find = true;
-                            break;
+                                    infos = limit.candidates == null ? null : limit.candidates.get();
+                                    find = true;
+                                    break;
+                                }
+                            }
                         }
                         if (!find) {
                             for (var limit : predicate.limited) {
-                                if (limit.minCount > 0 && autoBuildSetting.isPlaceHatch(limit.candidates.get())) {
+                                if (limit.candidates != null && !autoBuildSetting.isPlaceHatch(limit.candidates.get())) continue;
+                                if (limit.minCount > 0) {
                                     int curr = cacheGlobal.getInt(limit);
                                     if (curr < limit.minCount && (limit.maxCount == -1 || curr < limit.maxCount)) {
                                         cacheGlobal.addTo(limit, 1);
-                                    } else continue;
-                                } else continue;
-                                infos = limit.candidates == null ? null : limit.candidates.get();
-                                find = true;
-                                break;
+                                        infos = limit.candidates == null ? null : limit.candidates.get();
+                                        find = true;
+                                        break;
+                                    }
+                                }
                             }
                         }
                         if (!find) { // no limited
                             for (SimplePredicate limit : predicate.limited) {
-                                if (!autoBuildSetting.isPlaceHatch(limit.candidates.get())) continue;
+                                if (limit.candidates != null && !autoBuildSetting.isPlaceHatch(limit.candidates.get()))
+                                    continue;
                                 if (limit.maxLayerCount != -1 &&
                                         cacheLayer.getOrDefault(limit, Integer.MAX_VALUE) == limit.maxLayerCount) {
                                     continue;
