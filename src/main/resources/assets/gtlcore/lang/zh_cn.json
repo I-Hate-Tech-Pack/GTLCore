@@ -365,7 +365,7 @@
   "gtlcore.ae.craft.create_times": "合成轮数：%d",
   "gtlcore.ae.craft.used_percent": "库存使用：%s",
   "gtlcore.behaviour.soft_hammer.idle_after_cycle": "当前周期结束后暂停机器",
-  "gui.gtlcore.Dismantle_mode": "拆除模式",
-  "gui.gtlcore.AE_mode": "AE模式",
+  "gui.gtlcore.dismantle_mode": "拆除模式",
+  "gui.gtlcore.ae_mode": "AE模式",
   "gtlcore.terminal.ae_bound": "绑定终端到AE节点:%s"
 }

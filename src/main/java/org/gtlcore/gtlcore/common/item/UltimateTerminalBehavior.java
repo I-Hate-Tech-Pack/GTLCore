@@ -166,13 +166,13 @@ public class UltimateTerminalBehavior implements IItemUIFactory {
                         .setTexture(new GuiTextureGroup(GuiTextures.BUTTON, new TextTexture("OFF")),
                                 new GuiTextureGroup(GuiTextures.BUTTON, new TextTexture("ON"))))
                 // AE模式相关设置
-                .addWidget(new ExtendLabelWidget(14, 126, translatable("gui.gtlcore.AE_mode")))
+                .addWidget(new ExtendLabelWidget(14, 126, translatable("gui.gtlcore.ae_mode")))
                 .addWidget(new SwitchWidget(140, 123, 36, 14,
                         (c, b) -> setAEMode(!getAEMode(handItem), handItem)).setPressed(getAEMode(handItem))
                         .setTexture(new GuiTextureGroup(GuiTextures.BUTTON, new TextTexture("OFF")),
                                 new GuiTextureGroup(GuiTextures.BUTTON, new TextTexture("ON"))))
                 // 拆除模式相关设置
-                .addWidget(new ExtendLabelWidget(14, 146, translatable("gui.gtlcore.Dismantle_mode")))
+                .addWidget(new ExtendLabelWidget(14, 146, translatable("gui.gtlcore.dismantle_mode")))
                 .addWidget(new SwitchWidget(140, 143, 36, 14,
                         (c, b) -> setDismantleMode(!getDismantleMode(handItem), handItem)).setPressed(getDismantleMode(handItem))
                         .setTexture(new GuiTextureGroup(GuiTextures.BUTTON, new TextTexture("OFF")),
