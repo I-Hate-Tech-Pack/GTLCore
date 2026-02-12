@@ -50,15 +50,15 @@ public class TootipsModify {
         for (int i = 0; i < 15; i++) {
             final int index=i;
         hugeDualHatch[i].setTooltipBuilder(hugeDualHatch[i].getTooltipBuilder().andThen((itemStack,components) -> {
-            components.set(2, Component.translatable("gtceu.machine.item_bus.import.tooltip",2*index+1));
+            components.set(2, Component.translatable("gtceu.machine.item_bus.import.tooltip", 2 * index + 1));
         }));
 
         hugeItemImportBus[i].setTooltipBuilder(hugeItemImportBus[i].getTooltipBuilder().andThen((itemStack,components) -> {
-            components.set(2, Component.translatable("gtceu.machine.item_bus.import.tooltip",2*index+1));
+            components.set(2, Component.translatable("gtceu.machine.item_bus.import.tooltip", 2 * index + 1));
         }));
 
         hugeItemExportBus[i].setTooltipBuilder(hugeItemExportBus[i].getTooltipBuilder().andThen((itemStack,components) -> {
-            components.set(2, Component.translatable("gtceu.machine.item_bus.import.tooltip",2*index+1));
+            components.set(2, Component.translatable("gtceu.machine.item_bus.import.tooltip", 2 * index + 1));
         }));
         }
     }
