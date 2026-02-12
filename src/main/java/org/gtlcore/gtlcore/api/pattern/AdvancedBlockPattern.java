@@ -552,7 +552,11 @@ public class AdvancedBlockPattern extends BlockPattern {
         if (be == null) return null;
         try {
             Method m = be.getClass().getMethod("getGridNode", Direction.class);
-            return (IGridNode) m.invoke(be, Direction.UP);
+            for (Direction direction : Direction.values()) {
+                IGridNode node = (IGridNode) m.invoke(be, direction);
+                if (node != null) return node;
+            }
+            return null;
         } catch (Exception e) {
             return null;
         }
