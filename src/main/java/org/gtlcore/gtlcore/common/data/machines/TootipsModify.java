@@ -43,5 +43,16 @@ public class TootipsModify {
         MachineDefinition steamOven = GTMachines.STEAM_OVEN;
         steamOven.setTooltipBuilder(steamOven.getTooltipBuilder().andThen(GTLMachines.GTL_MODIFY));
 
+        MachineDefinition bronzeLargeBoiler = GTMachines.LARGE_BOILER_BRONZE;
+        bronzeLargeBoiler.setTooltipBuilder(bronzeLargeBoiler.getTooltipBuilder().andThen(GTLMachines.GTL_MODIFY));
+
+        MachineDefinition steelBoiler = GTMachines.LARGE_BOILER_STEEL;
+        steelBoiler.setTooltipBuilder(steelBoiler.getTooltipBuilder().andThen(GTLMachines.GTL_MODIFY));
+
+        MachineDefinition titaniumBoiler = GTMachines.LARGE_BOILER_TITANIUM;
+        titaniumBoiler.setTooltipBuilder(titaniumBoiler.getTooltipBuilder().andThen(GTLMachines.GTL_MODIFY));
+
+        MachineDefinition tungstensteelLargeBoiler = GTMachines.LARGE_BOILER_TUNGSTENSTEEL;
+        tungstensteelLargeBoiler.setTooltipBuilder(tungstensteelLargeBoiler.getTooltipBuilder().andThen(GTLMachines.GTL_MODIFY));
     }
 }
