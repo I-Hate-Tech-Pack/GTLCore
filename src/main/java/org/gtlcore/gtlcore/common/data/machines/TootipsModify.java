@@ -5,6 +5,7 @@ import org.gtlcore.gtlcore.common.data.GTLMachines;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.common.data.GTMachines;
 import com.gregtechceu.gtceu.common.data.machines.GTResearchMachines;
+import com.hepdd.gtmthings.data.CustomMachines;
 
 import net.minecraft.network.chat.Component;
 
@@ -42,5 +43,23 @@ public class TootipsModify {
 
         MachineDefinition steamOven = GTMachines.STEAM_OVEN;
         steamOven.setTooltipBuilder(steamOven.getTooltipBuilder().andThen(GTLMachines.GTL_MODIFY));
+
+        MachineDefinition[] hugeDualHatch = CustomMachines.HUGE_INPUT_DUAL_HATCH;
+        MachineDefinition[] hugeItemExportBus = CustomMachines.HUGE_ITEM_EXPORT_BUS;
+        MachineDefinition[] hugeItemImportBus = CustomMachines.HUGE_ITEM_IMPORT_BUS;
+        for (int i = 0; i < 15; i++) {
+            final int index=i;
+        hugeDualHatch[i].setTooltipBuilder(hugeDualHatch[i].getTooltipBuilder().andThen((itemStack,components) -> {
+            components.set(2, Component.translatable("gtceu.machine.item_bus.import.tooltip",2*index+1));
+        }));
+
+        hugeItemImportBus[i].setTooltipBuilder(hugeItemImportBus[i].getTooltipBuilder().andThen((itemStack,components) -> {
+            components.set(2, Component.translatable("gtceu.machine.item_bus.import.tooltip",2*index+1));
+        }));
+
+        hugeItemExportBus[i].setTooltipBuilder(hugeItemExportBus[i].getTooltipBuilder().andThen((itemStack,components) -> {
+            components.set(2, Component.translatable("gtceu.machine.item_bus.import.tooltip",2*index+1));
+        }));
+        }
     }
 }
