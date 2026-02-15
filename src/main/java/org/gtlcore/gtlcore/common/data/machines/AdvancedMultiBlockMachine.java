@@ -1615,6 +1615,7 @@ public class AdvancedMultiBlockMachine {
             .tooltips(Component.translatable("gtceu.machine.neutron_activator.tooltip.2"))
             .tooltips(Component.translatable("gtceu.machine.neutron_activator.tooltip.3"))
             .tooltips(Component.translatable("gtceu.machine.neutron_activator.tooltip.4"))
+            .tooltips(Component.translatable("gtceu.machine.neutron_activator.tooltip.5"))
             .tooltips(Component.translatable("gtceu.multiblock.parallelizable.tooltip"))
             .tooltips(Component.translatable("tooltip.gtlcore.structure.source", "GTNH"))
             .tooltips(Component.translatable("gtceu.machine.available_recipe_map_1.tooltip",

@@ -78,6 +78,11 @@ public class ConfigHolder {
     @Configurable
     @Configurable.Comment("编写多方块结构样板过滤的仓室")
     public String[] filterHatch = new String[] { "input_bus", "output_bus", "item_import_bus", "item_export_bus", "input_hatch", "output_hatch", "energy_input_hatch", "energy_output_hatch", "laser_target_hatch", "laser_source_hatch", "computation_transmitter_hatch", "computation_receiver_hatch", "data_transmitter_hatch", "data_receiver_hatch", "maintenance", "muffler", "rotor_holder" };
+    @Configurable
+    @Configurable.Comment({ "连锁挖掘（不连续模式）时，检查相邻方块的范围", "The range to check adjacent blocks during chain mining (non-continuous mode)" })
+    @Configurable.Range(min = 1, max = 20)
+    @Configurable.Synchronized
+    public int ftbUltimineRange = 4;
 
     @Configurable
     public String[] mobList1 = new String[] { "chicken", "rabbit", "sheep", "cow", "horse", "pig", "donkey", "skeleton_horse", "iron_golem", "wolf", "goat", "parrot", "camel", "cat", "fox", "llama", "panda", "polar_bear" };

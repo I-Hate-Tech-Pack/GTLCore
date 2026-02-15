@@ -27,11 +27,32 @@ public class TootipsModify {
         electric_blast_furnace.setTooltipBuilder(electric_blast_furnace.getTooltipBuilder().andThen(GTLMachines.GTL_MODIFY));
 
         MachineDefinition steamExportBus = GTMachines.STEAM_EXPORT_BUS;
+        steamExportBus.setTooltipBuilder(steamExportBus.getTooltipBuilder().andThen((itemStack, components) -> {
+            components.add(1, Component.translatable("gtceu.machine.item_bus.export.tooltip"));
+            components.add(2, Component.translatable("gtceu.universal.tooltip.item_storage_capacity", 16));
+        }));
         steamExportBus.setTooltipBuilder(steamExportBus.getTooltipBuilder().andThen(GTLMachines.GTL_MODIFY));
+
         MachineDefinition steamImportBus = GTMachines.STEAM_IMPORT_BUS;
+        steamImportBus.setTooltipBuilder(steamImportBus.getTooltipBuilder().andThen((itemStack, components) -> {
+            components.add(1, Component.translatable("gtceu.machine.item_bus.import.tooltip"));
+            components.add(2, Component.translatable("gtceu.universal.tooltip.item_storage_capacity", 16));
+        }));
         steamImportBus.setTooltipBuilder(steamImportBus.getTooltipBuilder().andThen(GTLMachines.GTL_MODIFY));
 
         MachineDefinition steamOven = GTMachines.STEAM_OVEN;
         steamOven.setTooltipBuilder(steamOven.getTooltipBuilder().andThen(GTLMachines.GTL_MODIFY));
+
+        MachineDefinition bronzeLargeBoiler = GTMachines.LARGE_BOILER_BRONZE;
+        bronzeLargeBoiler.setTooltipBuilder(bronzeLargeBoiler.getTooltipBuilder().andThen(GTLMachines.GTL_MODIFY));
+
+        MachineDefinition steelBoiler = GTMachines.LARGE_BOILER_STEEL;
+        steelBoiler.setTooltipBuilder(steelBoiler.getTooltipBuilder().andThen(GTLMachines.GTL_MODIFY));
+
+        MachineDefinition titaniumBoiler = GTMachines.LARGE_BOILER_TITANIUM;
+        titaniumBoiler.setTooltipBuilder(titaniumBoiler.getTooltipBuilder().andThen(GTLMachines.GTL_MODIFY));
+
+        MachineDefinition tungstensteelLargeBoiler = GTMachines.LARGE_BOILER_TUNGSTENSTEEL;
+        tungstensteelLargeBoiler.setTooltipBuilder(tungstensteelLargeBoiler.getTooltipBuilder().andThen(GTLMachines.GTL_MODIFY));
     }
 }

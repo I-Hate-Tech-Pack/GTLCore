@@ -1,5 +1,6 @@
 package org.gtlcore.gtlcore.common.machine.trait;
 
+import org.gtlcore.gtlcore.api.machine.ISuspendableMachine;
 import org.gtlcore.gtlcore.api.machine.multiblock.ParallelMachine;
 import org.gtlcore.gtlcore.api.machine.trait.ILockRecipe;
 import org.gtlcore.gtlcore.api.machine.trait.IRecipeCapabilityMachine;
@@ -154,14 +155,19 @@ public class MultipleRecipesLogic extends RecipeLogic implements ILockRecipe, IR
         if (lastRecipe != null) {
             handleRecipeOutput(this.machine, lastRecipe);
         }
-        var match = getRecipe();
-        if (match != null) {
-            if (matchRecipeOutput(machine, match)) {
-                setupRecipe(match);
-                return;
+        if (this.machine instanceof ISuspendableMachine suspendableMachine && suspendableMachine.gtlcore$isSuspendAfterFinish()) {
+            this.setStatus(RecipeLogic.Status.SUSPEND);
+            suspendableMachine.gtlcore$setSuspendAfterFinish(false);
+        } else {
+            var match = getRecipe();
+            if (match != null) {
+                if (matchRecipeOutput(machine, match)) {
+                    setupRecipe(match);
+                    return;
+                }
             }
+            setStatus(Status.IDLE);
         }
-        setStatus(Status.IDLE);
         progress = 0;
         duration = 0;
     }

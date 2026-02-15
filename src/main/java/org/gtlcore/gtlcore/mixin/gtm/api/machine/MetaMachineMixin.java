@@ -1,9 +1,11 @@
 package org.gtlcore.gtlcore.mixin.gtm.api.machine;
 
 import org.gtlcore.gtlcore.api.machine.IPerformanceDisplayMachine;
+import org.gtlcore.gtlcore.api.machine.ISuspendableMachine;
 import org.gtlcore.gtlcore.api.machine.PerformanceMonitorMachine;
 
 import com.gregtechceu.gtceu.api.block.BlockProperties;
+import com.gregtechceu.gtceu.api.capability.GTCapabilityHelper;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
@@ -21,6 +23,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
 
 import com.mojang.datafixers.util.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -41,7 +44,7 @@ import java.util.Set;
  */
 
 @Mixin(MetaMachine.class)
-public abstract class MetaMachineMixin implements IPerformanceDisplayMachine {
+public abstract class MetaMachineMixin implements IPerformanceDisplayMachine, ISuspendableMachine {
 
     @Unique
     private long gtlcore$lastExecutionTime;
@@ -54,6 +57,9 @@ public abstract class MetaMachineMixin implements IPerformanceDisplayMachine {
 
     @Unique
     private boolean gtlcore$observe;
+
+    @Unique
+    private boolean gtlcore$suspendAfterFinish;
 
     @Shadow(remap = false)
     public abstract boolean isRemote();
@@ -87,6 +93,9 @@ public abstract class MetaMachineMixin implements IPerformanceDisplayMachine {
 
     @Shadow(remap = false)
     public abstract boolean isInValid();
+
+    @Shadow(remap = false)
+    public abstract void onChanged();
 
     @Override
     public int gtlcore$getTickTime() {
@@ -165,5 +174,40 @@ public abstract class MetaMachineMixin implements IPerformanceDisplayMachine {
             holder.self().getPersistentData().putBoolean("isAllFacing", true);
         }
         return InteractionResult.CONSUME;
+    }
+
+    @Inject(method = "onSoftMalletClick", at = @At(value = "HEAD"), cancellable = true, remap = false)
+    public void onSoftMalletClick(Player playerIn, InteractionHand hand, Direction gridSide, BlockHitResult hitResult, CallbackInfoReturnable<InteractionResult> cir) {
+        if (isRemote()) return;
+        if (!playerIn.isShiftKeyDown()) {
+            gtlcore$setSuspendAfterFinish(false);
+            return;
+        }
+        var controllable = GTCapabilityHelper.getControllable(getLevel(), getPos(), gridSide);
+        if (controllable == null) return;
+        if (!controllable.isWorkingEnabled() || gtlcore$isSuspendAfterFinish()) {
+            cir.cancel();
+            cir.setReturnValue(InteractionResult.FAIL);
+            return;
+        }
+        gtlcore$setSuspendAfterFinish(true);
+        playerIn.sendSystemMessage(Component.translatable("gtlcore.behaviour.soft_hammer.idle_after_cycle"));
+        playerIn.swing(hand);
+        cir.cancel();
+        cir.setReturnValue(InteractionResult.CONSUME);
+    }
+
+    @Override
+    @Unique
+    public boolean gtlcore$isSuspendAfterFinish() {
+        return gtlcore$suspendAfterFinish;
+    }
+
+    @Override
+    @Unique
+    public void gtlcore$setSuspendAfterFinish(boolean suspendAfterFinish) {
+        gtlcore$suspendAfterFinish = suspendAfterFinish;
+        if (isRemote()) return;
+        onChanged();
     }
 }
