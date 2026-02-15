@@ -363,7 +363,7 @@
   "gtlcore.behaviour.soft_hammer.idle_after_cycle": "当前周期结束后暂停机器",
   "gui.gtlcore.dismantle_mode": "拆除模式",
   "gui.gtlcore.ae_mode": "AE模式",
-  "gtlcore.terminal.ae_bound": "绑定终端到AE节点:%s"
+  "gtlcore.terminal.ae_bound": "绑定终端到AE节点:%s",
   "gtlcore.source_tooltip.default.shift": "§按 [§7Shift§8] 查看§7来源",
   "gtlcore.source_tooltip.default.control": "§8按 [§7Ctrl§8] 查看§7来源",
   "gtlcore.source_tooltip.default.alt": "§8按 [§7Alt§8] 查看§7来源",
