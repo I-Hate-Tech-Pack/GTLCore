@@ -24,6 +24,7 @@ public class SpecialComponent {
 
     public static final Component component_recommended = Component.translatable("gtlcore.source_tooltip.recommended");
     public static final Component component_early_stage = Component.translatable("gtlcore.source_tooltip.early_stage");
+    public static final Component component_space = Component.literal(" ");
 
     public static Component component_default$custom(String key, String desc) {
         return Component.translatable("gtlcore.source_tooltip.default.custom", Component.literal(key).withStyle(ChatFormatting.GRAY), desc);

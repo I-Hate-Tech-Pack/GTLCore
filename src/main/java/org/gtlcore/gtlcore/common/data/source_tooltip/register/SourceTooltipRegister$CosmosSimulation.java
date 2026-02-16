@@ -5,7 +5,10 @@ import org.gtlcore.gtlcore.common.data.source_tooltip.SpecialComponent;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
+@OnlyIn(Dist.CLIENT)
 public class SourceTooltipRegister$CosmosSimulation {
 
     private static final Component component_cosmos_simulation = SpecialComponent.create(Component.translatable("gtceu.cosmos_simulation").withStyle(SpecialComponent.color_recipe_type), Component.literal(" OpV").withStyle(ChatFormatting.BLUE, ChatFormatting.BOLD));

@@ -20,8 +20,10 @@ public class ModClientEventListener {
         SourceTooltipRegister$FragmentWorldCollection.register(event);
         SourceTooltipRegister$SpaceElevator.register(event);
         SourceTooltipRegister$EarlyStage.register(event);
+        SourceTooltipRegister$OreProcessing.register(event);
         SourceTooltipRegister$AlloySmelter.register(event);
         SourceTooltipRegister$VacuumFreezer.register(event);
+        SourceTooltipRegister$SuperParticleCollider.register(event);
         SourceTooltipRegister$FusionReactor.register(event);
         SourceTooltipRegister$ElementCopying.register(event);
         SourceTooltipRegister$CosmosSimulation.register(event);
