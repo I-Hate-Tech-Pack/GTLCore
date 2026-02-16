@@ -2,7 +2,8 @@ package org.gtlcore.gtlcore.client;
 
 import org.gtlcore.gtlcore.GTLCore;
 import org.gtlcore.gtlcore.api.event.SourceTooltipRegistrationEvent;
-import org.gtlcore.gtlcore.common.data.GTLSourceTooltips;
+import org.gtlcore.gtlcore.common.data.source_tooltip.SourceTooltip;
+import org.gtlcore.gtlcore.common.data.source_tooltip.register.*;
 
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -15,6 +16,15 @@ public class ModClientEventListener {
 
     @SubscribeEvent
     public static void onSourceTooltipRegistration(SourceTooltipRegistrationEvent event) {
-        GTLSourceTooltips.init(event);
+        var time = System.currentTimeMillis();
+        SourceTooltipRegister$FragmentWorldCollection.register(event);
+        SourceTooltipRegister$SpaceElevator.register(event);
+        SourceTooltipRegister$EarlyStage.register(event);
+        SourceTooltipRegister$AlloySmelter.register(event);
+        SourceTooltipRegister$VacuumFreezer.register(event);
+        SourceTooltipRegister$FusionReactor.register(event);
+        SourceTooltipRegister$ElementCopying.register(event);
+        SourceTooltipRegister$CosmosSimulation.register(event);
+        SourceTooltip.register_time = System.currentTimeMillis() - time;
     }
 }
