@@ -201,9 +201,9 @@ public abstract class OreRecipeHandlerMixin {
 
             // 4 研磨-洗矿-筛选-离心
             if (material.hasProperty(PropertyKey.GEM)) {
-                ItemStack exquisiteStack = ChemicalHelper.get(gemExquisite, material);
-                ItemStack flawlessStack = ChemicalHelper.get(gemFlawless, material);
-                ItemStack gemStack = ChemicalHelper.get(gem, material);
+                ItemStack exquisiteStack = ChemicalHelper.get(gemExquisite, material, crushedAmount);
+                ItemStack flawlessStack = ChemicalHelper.get(gemFlawless, material, crushedAmount);
+                ItemStack gemStack = ChemicalHelper.get(gem, material, crushedAmount);
                 if (material.hasFlag(HIGH_SIFTER_OUTPUT)) {
                     GTRecipeBuilder opBuilder4 = INTEGRATED_ORE_PROCESSOR
                             .recipeBuilder("integrated_ore_processor_4_" + material.getName())
@@ -308,9 +308,9 @@ public abstract class OreRecipeHandlerMixin {
 
                 // 7 研磨-浸洗-筛选-离心
                 if (material.hasProperty(PropertyKey.GEM)) {
-                    ItemStack exquisiteStack = ChemicalHelper.get(gemExquisite, material);
-                    ItemStack flawlessStack = ChemicalHelper.get(gemFlawless, material);
-                    ItemStack gemStack = ChemicalHelper.get(gem, material);
+                    ItemStack exquisiteStack = ChemicalHelper.get(gemExquisite, material, crushedAmount);
+                    ItemStack flawlessStack = ChemicalHelper.get(gemFlawless, material, crushedAmount);
+                    ItemStack gemStack = ChemicalHelper.get(gem, material, crushedAmount);
                     if (material.hasFlag(HIGH_SIFTER_OUTPUT)) {
                         GTRecipeBuilder opBuilder7 = INTEGRATED_ORE_PROCESSOR
                                 .recipeBuilder("integrated_ore_processor_7_" + material.getName())
@@ -503,9 +503,9 @@ public abstract class OreRecipeHandlerMixin {
 
             // 4 研磨-洗矿-筛选-离心
             if (material.hasProperty(PropertyKey.GEM)) {
-                ItemStack exquisiteStack = ChemicalHelper.get(gemExquisite, material);
-                ItemStack flawlessStack = ChemicalHelper.get(gemFlawless, material);
-                ItemStack gemStack = ChemicalHelper.get(gem, material);
+                ItemStack exquisiteStack = ChemicalHelper.get(gemExquisite, material, crushedAmount);
+                ItemStack flawlessStack = ChemicalHelper.get(gemFlawless, material, crushedAmount);
+                ItemStack gemStack = ChemicalHelper.get(gem, material, crushedAmount);
                 if (material.hasFlag(HIGH_SIFTER_OUTPUT)) {
                     GTRecipeBuilder opBuilder4 = INTEGRATED_ORE_PROCESSOR
                             .recipeBuilder("raw_integrated_ore_processor_4_" + material.getName())
@@ -586,9 +586,9 @@ public abstract class OreRecipeHandlerMixin {
 
                 // 7 研磨-浸洗-筛选-离心
                 if (material.hasProperty(PropertyKey.GEM)) {
-                    ItemStack exquisiteStack = ChemicalHelper.get(gemExquisite, material);
-                    ItemStack flawlessStack = ChemicalHelper.get(gemFlawless, material);
-                    ItemStack gemStack = ChemicalHelper.get(gem, material);
+                    ItemStack exquisiteStack = ChemicalHelper.get(gemExquisite, material, crushedAmount);
+                    ItemStack flawlessStack = ChemicalHelper.get(gemFlawless, material, crushedAmount);
+                    ItemStack gemStack = ChemicalHelper.get(gem, material, crushedAmount);
                     if (material.hasFlag(HIGH_SIFTER_OUTPUT)) {
                         GTRecipeBuilder opBuilder7 = INTEGRATED_ORE_PROCESSOR
                                 .recipeBuilder("raw_integrated_ore_processor_7_" + material.getName())
