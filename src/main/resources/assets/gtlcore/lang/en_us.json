@@ -235,7 +235,7 @@
   "item.gtlcore.structure_detect.error.3": "(Mirrored Mode)",
   "item.gtlcore.structure_detect.error.4": "(Normal Mode)",
   "item.gtlcore.structure_detect.tooltip.0": "Right-click multiblock main block",
-  "item.gtlcore.structure_detect.tooltip.1": "Shift right-click to switch detection mode",
+  "item.gtlcore.structure_detect.tooltip.1": "Right-click on any block other than air or multiblock main block will toggle between normal and mirror detection modes",
   "item.gtlcore.super_glue": "Super Glue",
   "item.gtlcore.super_portable_fluid_storage_cell": "Super Portable Fluid Storage Cell",
   "item.gtlcore.super_portable_item_storage_cell": "Super Portable Item Storage Cell",

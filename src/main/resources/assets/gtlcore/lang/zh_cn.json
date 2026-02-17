@@ -235,7 +235,7 @@
   "item.gtlcore.structure_detect.error.3": "镜像模式",
   "item.gtlcore.structure_detect.error.4": "正常模式",
   "item.gtlcore.structure_detect.tooltip.0": "右键多方块结构主方块即可",
-  "item.gtlcore.structure_detect.tooltip.1": "Shift右键切换检测模式",
+  "item.gtlcore.structure_detect.tooltip.1": "对任意除空气和多方块结构主方块以外的方块右键，可在正常和镜像检测模式之间切换",
   "item.gtlcore.super_glue": "强力胶",
   "item.gtlcore.super_portable_fluid_storage_cell": "超级便携流体存储元件",
   "item.gtlcore.super_portable_item_storage_cell": "超级便携物品存储元件",
