@@ -5,10 +5,13 @@ import org.gtlcore.gtlcore.common.data.source_tooltip.SpecialComponent;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
+@OnlyIn(Dist.CLIENT)
 public class SourceTooltipRegister$ElementCopying {
 
-    private static final Component component_element_copying = SpecialComponent.create(Component.translatable("gtceu.element_copying").withStyle(SpecialComponent.color_recipe_type), Component.literal(" UxV").withStyle(ChatFormatting.YELLOW, ChatFormatting.BOLD));
+    private static final Component component_element_copying = SpecialComponent.create(Component.translatable("gtceu.element_copying").withStyle(SpecialComponent.color_recipe_type), Component.literal(" UXV").withStyle(ChatFormatting.YELLOW, ChatFormatting.BOLD));
 
     public static void register(SourceTooltipRegistrationEvent event) {
         String[] items = {

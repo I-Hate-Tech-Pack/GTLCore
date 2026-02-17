@@ -10,9 +10,12 @@ import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.fluids.store.FluidStorageKeys;
 
 import net.minecraft.network.chat.Component;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.awt.*;
 
+@OnlyIn(Dist.CLIENT)
 public class SourceTooltipRegister$VacuumFreezer {
 
     private static final Component component_vacuum_freezer = Component.translatable("gtceu.vacuum_freezer").withStyle(SpecialComponent.color_recipe_type);

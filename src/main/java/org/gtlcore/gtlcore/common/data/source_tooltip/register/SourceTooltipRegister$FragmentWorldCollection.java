@@ -166,7 +166,7 @@ public class SourceTooltipRegister$FragmentWorldCollection {
         of_fwc(event.register$fluid("gtceu:chlorine"), as_fwc(11, " [ 4 ]"));
         of_fwc(event.register$fluid("gtceu:coal_gas"), as_fwc(8, " [ 5 ]"));
         of_fwc(event.register$fluid("gtceu:deuterium"), as_fwc(5, " [ 3 ]"));
-        of_fwc(event.register$fluid("gtceu:fluorine"), as_fwc(11, " [ 5 ]"), as_fwc(12, " [ 7 ]"));
+        of_fwc(event.register$fluid("gtceu:fluorine"), as_fwc(11, " [ 5 ]"));
         of_fwc(event.register$fluid("gtceu:helium_3"), as_fwc(2, " [ 5 ]"));
         of_fwc(event.register$fluid("gtceu:helium"), as_fwc(2, " [ 6 ]"));
         of_fwc(event.register$fluid("gtceu:hydrochloric_acid"), as_fwc(9, " [ 6 ]"));
@@ -277,6 +277,5 @@ public class SourceTooltipRegister$FragmentWorldCollection {
             }
             to_fwc(event.register$item(String.format("gtlcore:world_fragments_%s", worlds[i])), components);
         }
-        Component.translatable("gtceu.electric_furnace");
     }
 }

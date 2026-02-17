@@ -382,5 +382,6 @@
   "gtlcore.source_tooltip.series.space_drone": "Space Drone MK%s+",
   "gtlcore.source_tooltip.series.fusion_reactor": "Fusion Reactor MK%s+",
   "gtlcore.source_tooltip.series.platinum_group_precess": "Platinum Group Precess",
+  "gtlcore.source_tooltip.series.ore_processing": "§dOre Processing §8[The ore may be in the later stage]",
   "gtlcore.source_tooltip.productionline.nuclear_waste": "Centrifuge nuclear waste, pack tiny dust"
 }

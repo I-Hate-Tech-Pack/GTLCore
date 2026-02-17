@@ -4,7 +4,10 @@ import org.gtlcore.gtlcore.api.event.SourceTooltipRegistrationEvent;
 import org.gtlcore.gtlcore.common.data.source_tooltip.SpecialComponent;
 
 import net.minecraft.network.chat.Component;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
+@OnlyIn(Dist.CLIENT)
 public class SourceTooltipRegister$AlloySmelter {
 
     private static final Component component_alloy_smelter = SpecialComponent.create(Component.translatable("gtceu.alloy_smelter").withStyle(SpecialComponent.color_recipe_type));
