@@ -383,5 +383,6 @@
   "gtlcore.source_tooltip.series.fusion_reactor": "核聚变反应堆 MK%s+",
   "gtlcore.source_tooltip.series.platinum_group_precess": "铂系处理",
   "gtlcore.source_tooltip.series.ore_processing": "§d矿石处理 §8[矿石可能在后期]",
-  "gtlcore.source_tooltip.productionline.nuclear_waste": "离心核废料, 打包小撮粉"
+  "gtlcore.source_tooltip.productionline.nuclear_waste": "离心核废料, 打包小撮粉",
+  "gtlcore.message.structure_update_notice": "[GTL] 以下结构有修改，请注意检查："
 }

@@ -383,5 +383,6 @@
   "gtlcore.source_tooltip.series.fusion_reactor": "Fusion Reactor MK%s+",
   "gtlcore.source_tooltip.series.platinum_group_precess": "Platinum Group Precess",
   "gtlcore.source_tooltip.series.ore_processing": "§dOre Processing §8[The ore may be in the later stage]",
-  "gtlcore.source_tooltip.productionline.nuclear_waste": "Centrifuge nuclear waste, pack tiny dust"
+  "gtlcore.source_tooltip.productionline.nuclear_waste": "Centrifuge nuclear waste, pack tiny dust",
+  "gtlcore.message.structure_update_notice": "[GTL] The following structures have been modified, please check:"
 }
