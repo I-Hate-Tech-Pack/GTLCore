@@ -70,11 +70,12 @@ public class ForgeCommonEventListener {
 
     @SubscribeEvent
     public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
-        if (event.getEntity() instanceof ServerPlayer player) {
+        if (ConfigHolder.INSTANCE.sendUpdateMessages && event.getEntity() instanceof ServerPlayer player) {
             player.displayClientMessage(Component.translatable("gtlcore.message.structure_update_notice"), false);
             player.displayClientMessage(Component.translatable("block.gtceu.create_aggregation"), false);
             player.displayClientMessage(Component.translatable("block.gtceu.bedrock_drilling_rig"), false);
             player.displayClientMessage(Component.translatable("block.gtceu.dimensional_focus_engraving_array"), false);
+            player.displayClientMessage(Component.translatable("gtlcore.message.close_update_notice"), false);
         }
     }
 

@@ -108,6 +108,7 @@
   "config.gtlcore.option.spacetimePip": "Spacetime Pipe Flow Rate",
   "config.gtlcore.option.travelStaffCD": "Travel Staff Cooldown",
   "config.gtlcore.option.ftbUltimineRange": "Chain Mining Range",
+  "config.gtlcore.option.sendUpdateMessages": "Enable Update Notifications",
   "config.jade.plugin_gtlcore.tick_time_provider": "[GTLCore] Tick Time",
   "config.jade.plugin_gtlcore.wireless_data_hatch_provider": "Wireless Data Hatch",
   "gtlcore.condition.gravity": "Requires High Gravity Environment",
@@ -384,5 +385,6 @@
   "gtlcore.source_tooltip.series.platinum_group_precess": "Platinum Group Precess",
   "gtlcore.source_tooltip.series.ore_processing": "§dOre Processing §8[The ore may be in the later stage]",
   "gtlcore.source_tooltip.productionline.nuclear_waste": "Centrifuge nuclear waste, pack tiny dust",
-  "gtlcore.message.structure_update_notice": "[GTL] The following structures have been modified, please check:"
+  "gtlcore.message.structure_update_notice": "[GTL] The following structures have been modified, please check:",
+  "gtlcore.message.close_update_notice": "If you wish to stop seeing these messages, navigate to the gtlcore configuration file and disable message display"
 }

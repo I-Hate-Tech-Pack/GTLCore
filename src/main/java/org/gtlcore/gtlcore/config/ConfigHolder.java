@@ -83,6 +83,8 @@ public class ConfigHolder {
     @Configurable.Range(min = 1, max = 20)
     @Configurable.Synchronized
     public int ftbUltimineRange = 4;
+    @Configurable
+    public boolean sendUpdateMessages = true;
 
     @Configurable
     public String[] mobList1 = new String[] { "chicken", "rabbit", "sheep", "cow", "horse", "pig", "donkey", "skeleton_horse", "iron_golem", "wolf", "goat", "parrot", "camel", "cat", "fox", "llama", "panda", "polar_bear" };
