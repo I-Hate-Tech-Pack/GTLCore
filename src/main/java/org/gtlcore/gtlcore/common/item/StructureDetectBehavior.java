@@ -3,6 +3,8 @@ package org.gtlcore.gtlcore.common.item;
 import org.gtlcore.gtlcore.network.GTLNetworkHandler;
 import org.gtlcore.gtlcore.network.packet.SStructureDetectHighlight;
 
+import com.gregtechceu.gtceu.api.block.MetaMachineBlock;
+import com.gregtechceu.gtceu.api.data.RotationState;
 import com.gregtechceu.gtceu.api.item.component.IInteractionItem;
 import com.gregtechceu.gtceu.api.item.tool.behavior.IToolBehavior;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
@@ -97,6 +99,9 @@ public class StructureDetectBehavior extends TooltipBehavior implements IToolBeh
         var frontFacing = controller.self().getFrontFacing();
         var facings = controller.hasFrontFacing() ? new Direction[] { frontFacing } :
                 new Direction[] { Direction.SOUTH, Direction.NORTH, Direction.EAST, Direction.WEST };
+        if (controller.self().getBlockState().getBlock() instanceof MetaMachineBlock machineBlock) {
+            if (machineBlock.rotationState == RotationState.NONE) facings = new Direction[] { frontFacing };
+        }
         var upwardsFacing = controller.self().getUpwardsFacing();
         var worldState = new MultiblockState(controller.self().getLevel(), controller.self().getPos());
         for (var direction : facings) {
