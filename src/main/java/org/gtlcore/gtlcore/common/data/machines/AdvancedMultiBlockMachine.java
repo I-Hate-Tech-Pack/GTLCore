@@ -2180,7 +2180,7 @@ public class AdvancedMultiBlockMachine {
             .tooltips(Component.translatable("gtceu.machine.advanced_infinite_driller.drilled_fluid.tooltip.0"))
             .tooltips(Component.translatable("gtceu.multiblock.laser.tooltip"))
             .tooltipBuilder((item, list) -> {
-                for (int i = 1; i <= 11; i++) {
+                for (int i = 1; i <= 18; i++) {
                     list.add(Component.translatable("gtceu.machine.advanced_infinite_driller.drilled_fluid.tooltip." + i));
                 }
             })
