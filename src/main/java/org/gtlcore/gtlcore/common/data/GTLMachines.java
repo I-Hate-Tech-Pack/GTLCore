@@ -604,7 +604,8 @@ public class GTLMachines {
             .renderer(() -> new OverlayTieredMachineRenderer(LuV, GTCEu.id("block/machine/part/me_pattern_buffer")))
             .tooltips(
                     Component.translatable("gtceu.machine.dual_hatch.import.tooltip"),
-                    Component.translatable("gtceu.machine.me.item_import.tooltip"),
+                    Component.translatable("gtlcore.machine.me.dual_import.tooltip"),
+                    Component.translatable("gtceu.machine.me.copy_paste.tooltip"),
                     Component.translatable("gtceu.universal.enabled"))
             .compassNode("dual_hatch")
             .register();
