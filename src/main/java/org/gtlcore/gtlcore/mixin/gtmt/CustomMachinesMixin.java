@@ -4,6 +4,7 @@ import com.gregtechceu.gtceu.api.data.RotationState;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.machine.multiblock.PartAbility;
 import com.gregtechceu.gtceu.api.registry.registrate.MachineBuilder;
+import com.gregtechceu.gtceu.common.data.GTMachines;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 
 import net.minecraft.network.chat.Component;
@@ -59,9 +60,7 @@ public class CustomMachinesMixin {
             case "huge_dual_hatch" -> {
                 BiFunction<Integer, MachineBuilder<MachineDefinition>, MachineDefinition> b = (tier, builder) -> builder.langValue(VNF[tier] + " Huge Input Dual Hatch")
                         .rotationState(RotationState.ALL)
-                        .abilities(
-                                tier == 0 ? new PartAbility[] { PartAbility.IMPORT_ITEMS, PartAbility.STEAM_IMPORT_ITEMS } :
-                                        new PartAbility[] { PartAbility.IMPORT_ITEMS })
+                        .abilities(GTMachines.DUAL_INPUT_HATCH_ABILITIES)
                         .overlayTieredHullRenderer("huge_dual_hatch.import")
                         .tooltips(Component.translatable("gtceu.machine.dual_hatch.import.tooltip"),
                                 Component.translatable("gtceu.universal.tooltip.item_storage_capacity",
