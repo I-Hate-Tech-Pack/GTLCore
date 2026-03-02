@@ -139,6 +139,7 @@
   "gtlcore.registry.add": "由GregTech Leisure添加",
   "gtlcore.registry.modify": "由GregTech Leisure修改",
   "gtlcore.tooltip.current_recipe_type_circuit": " 电路：",
+  "gtlcore.machine.me.dual_import.tooltip": "自动从ME网络获取物品和流体",
   "gui.gtlcore.circuit_format": " 电路%s",
   "gui.gtlcore.coil": "线圈",
   "gui.gtlcore.component_assembly_casing": "部件装配外壳",

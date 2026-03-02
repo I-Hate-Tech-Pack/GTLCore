@@ -180,6 +180,7 @@
     "gtmt.CreativeEnergyHatchPartMachineMixin",
     "gtmt.CreativeLaserHatchPartMachineMixin",
     "gtmt.GTMTRecipeMixin",
+    "gtmt.CustomMachinesMixin",
     "gtmt.HugeBusPartMachineMixin",
     "gtmt.MEOutputPartMachineMixin",
     "gtmt.MEOutputPartMachineMixin$InaccessibleInfiniteHandlerMixin",

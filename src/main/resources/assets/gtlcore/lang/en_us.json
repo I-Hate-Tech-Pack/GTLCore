@@ -139,6 +139,7 @@
   "gtlcore.registry.add": "Added by GregTech Leisure",
   "gtlcore.registry.modify": "Modified by GregTech Leisure",
   "gtlcore.tooltip.current_recipe_type_circuit": " Circuit: ",
+  "gtlcore.machine.me.dual_import.tooltip": "Fetches items and liquids from an ME network automatically",
   "gui.gtlcore.circuit_format": " Circuit %s",
   "gui.gtlcore.coil": "Coil",
   "gui.gtlcore.component_assembly_casing": "Component Assembly Casing",
