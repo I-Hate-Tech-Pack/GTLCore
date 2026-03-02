@@ -14,7 +14,7 @@ public class SourceTooltipRegister$FusionReactor {
                 { "gtceu:helium_plasma", "gtceu:plutonium", "gtceu:uranium", "gtceu:uranium_235", "gtceu:europium", "gtceu:chromium", "gtceu:duranium", "gtceu:osmium", "gtceu:lutetium" },
                 { "gtceu:radon", "gtceu:oxygen_plasma", "gtceu:argon_plasma", "gtceu:nitrogen_plasma", "gtceu:tritanium", "gtceu:plutonium_241", "gtceu:indium", "gtceu:americium", "gtceu:darmstadtium" },
                 { "gtceu:orichalcum_plasma", "gtceu:neutronium", "gtceu:naquadria", "gtceu:mithril_plasma", "gtceu:iron_plasma", "gtceu:silver_plasma", "gtceu:nickel_plasma" },
-                { "gtceu:metastable_hassium_plasma", "gtceu:taranium_rich_liquid_helium_4_plasma", "gtceu:moscovium", "gtceu:tennessine", "gtceu:livermorium", "gtceu:dubnium", "gtceu:seaborgium", "gtceu:hot_oganesson", "gtceu:plutonium_241_plasma" },
+                { "gtceu:metastable_hassium_plasma", "gtceu:taranium_rich_liquid_helium_4_plasma", "gtceu:moscovium", "gtceu:tennessine", "gtceu:livermorium", "gtceu:dubnium", "gtceu:seaborgium", "gtceu:hot_oganesson" },
                 { "gtceu:vibranium_plasma", "gtceu:infinity", "gtceu:draconiumawakened_plasma" }
         };
         for (int i = 0; i < fluids_array.length; i++) {
