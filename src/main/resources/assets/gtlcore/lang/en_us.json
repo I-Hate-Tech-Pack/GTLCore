@@ -172,6 +172,7 @@
   "gui.gtlcore.voltage_colon": "Voltage: %s (%s)",
   "gui.gtlcore.voltage_format": "Voltage: %s (%s)",
   "gui.gtlcore.wildcard_info": "Supports wildcards * and ?",
+  "gui.gtlcore.rename.desc": "Rename Molecular Assembler Io",
   "item.gtlcore.bifidobacteriumm_petri_dish": "Bifidobacterium Petri Dish",
   "item.gtlcore.brevibacterium_petri_dish": "Brevibacterium Petri Dish",
   "item.gtlcore.cell_component_16m": "16M Storage Component",

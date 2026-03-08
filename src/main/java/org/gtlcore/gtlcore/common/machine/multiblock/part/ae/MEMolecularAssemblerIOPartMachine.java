@@ -367,7 +367,7 @@ public class MEMolecularAssemblerIOPartMachine extends MEIOPartMachine implement
         group.addWidget(new AETextInputButtonWidget(18 * colSize + 8 - 70, 2, 70, 10)
                 .setText(customName)
                 .setOnConfirm(this::setCustomName)
-                .setButtonTooltips(Component.translatable("gui.gtceu.rename.desc")));
+                .setButtonTooltips(Component.translatable("gui.gtlcore.rename.desc")));
 
         group.addWidget(paginationUIManager.createPaginationUI(null));
 
