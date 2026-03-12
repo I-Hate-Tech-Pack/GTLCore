@@ -54,5 +54,8 @@ public class TootipsModify {
 
         MachineDefinition tungstensteelLargeBoiler = GTMachines.LARGE_BOILER_TUNGSTENSTEEL;
         tungstensteelLargeBoiler.setTooltipBuilder(tungstensteelLargeBoiler.getTooltipBuilder().andThen(GTLMachines.GTL_MODIFY));
+
+        MachineDefinition largeChemicalReactor = GTMachines.LARGE_CHEMICAL_REACTOR;
+        largeChemicalReactor.setTooltipBuilder(largeChemicalReactor.getTooltipBuilder().andThen((itemStack, components) -> components.add(1, Component.translatable("gtceu.machine.perfect_oc"))));
     }
 }
