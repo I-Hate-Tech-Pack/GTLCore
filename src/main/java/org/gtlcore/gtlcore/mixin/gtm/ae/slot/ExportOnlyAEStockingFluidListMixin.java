@@ -37,7 +37,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
-import java.util.Objects;
 
 @SuppressWarnings("DuplicatedCode")
 @Mixin(targets = "com.gregtechceu.gtceu.integration.ae2.machine.MEStockingHatchPartMachine$ExportOnlyAEStockingFluidList", remap = false)
@@ -156,12 +155,16 @@ public abstract class ExportOnlyAEStockingFluidListMixin extends ExportOnlyAEFlu
         if (ENABLE_ULTIMATE_ME_STOCKING || getChanged()) {
             setChanged(false);
             fluidList.clear();
-            final MEStorage aeNetwork = Objects.requireNonNull(this$0.getMainNode().getGrid()).getStorageService().getInventory();
-            final IActionSource actionSource = ((MEHatchPartMachineAccessor) this$0).getActionSource();
-            for (var key : gTLCore$configList) {
-                long extracted = aeNetwork.extract(key, Long.MAX_VALUE, Actionable.SIMULATE, actionSource);
-                if (extracted > 0) {
-                    fluidList.add(FluidStack.create(key.getFluid(), extracted));
+            IGrid grid = this$0.getMainNode().getGrid();
+            final MEStorage aeNetwork;
+            if (grid != null) {
+                aeNetwork = grid.getStorageService().getInventory();
+                final IActionSource actionSource = ((MEHatchPartMachineAccessor) this$0).getActionSource();
+                for (var key : gTLCore$configList) {
+                    long extracted = aeNetwork.extract(key, Long.MAX_VALUE, Actionable.SIMULATE, actionSource);
+                    if (extracted > 0) {
+                        fluidList.add(FluidStack.create(key.getFluid(), extracted));
+                    }
                 }
             }
         }
