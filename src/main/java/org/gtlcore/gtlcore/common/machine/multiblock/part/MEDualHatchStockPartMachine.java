@@ -57,7 +57,6 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.objects.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -517,7 +516,9 @@ public class MEDualHatchStockPartMachine extends MEBusPartMachine implements IDa
                     // Extract the items from the real net to either validate (simulate)
                     // or extract (modulate) when this is called
                     if (!isOnline()) return ItemStack.EMPTY;
-                    MEStorage aeNetwork = getMainNode().getGrid().getStorageService().getInventory();
+                    IGrid grid = getMainNode().getGrid();
+                    if (grid == null) return ItemStack.EMPTY;
+                    MEStorage aeNetwork = grid.getStorageService().getInventory();
                     Actionable action = simulate ? Actionable.SIMULATE : Actionable.MODULATE;
                     var key = config.what();
                     long extracted = aeNetwork.extract(key, amount, action, actionSource);
@@ -646,16 +647,19 @@ public class MEDualHatchStockPartMachine extends MEBusPartMachine implements IDa
         }
 
         @Override
-        public @NotNull List<FluidStack> getMEFluidList() {
+        public List<FluidStack> getMEFluidList() {
             if (ENABLE_ULTIMATE_ME_STOCKING || getChanged()) {
                 setChanged(false);
                 final var fluidList = getFluidList();
                 fluidList.clear();
-                final MEStorage aeNetwork = Objects.requireNonNull(getMainNode().getGrid()).getStorageService().getInventory();
-                for (var key : configList) {
-                    long extracted = aeNetwork.extract(key, Long.MAX_VALUE, Actionable.SIMULATE, getActionSource());
-                    if (extracted > 0) {
-                        fluidList.add(FluidStack.create(key.getFluid(), extracted));
+                IGrid grid = getMainNode().getGrid();
+                if (grid != null) {
+                    final MEStorage aeNetwork = grid.getStorageService().getInventory();
+                    for (var key : configList) {
+                        long extracted = aeNetwork.extract(key, Long.MAX_VALUE, Actionable.SIMULATE, getActionSource());
+                        if (extracted > 0) {
+                            fluidList.add(FluidStack.create(key.getFluid(), extracted));
+                        }
                     }
                 }
             }
@@ -684,7 +688,9 @@ public class MEDualHatchStockPartMachine extends MEBusPartMachine implements IDa
                 // Extract the items from the real net to either validate (simulate)
                 // or extract (modulate) when this is called
                 if (!isOnline()) return FluidStack.empty();
-                MEStorage aeNetwork = getMainNode().getGrid().getStorageService().getInventory();
+                IGrid grid = getMainNode().getGrid();
+                if (grid == null) return FluidStack.empty();
+                MEStorage aeNetwork = grid.getStorageService().getInventory();
                 Actionable action = simulate ? Actionable.SIMULATE : Actionable.MODULATE;
                 var key = config.what();
                 long extracted = aeNetwork.extract(key, maxDrain, action, actionSource);
