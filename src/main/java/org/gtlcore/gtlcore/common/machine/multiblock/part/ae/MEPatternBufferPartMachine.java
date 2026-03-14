@@ -94,6 +94,15 @@ public class MEPatternBufferPartMachine extends MEIOPartMachine implements IInte
     protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(
             MEPatternBufferPartMachine.class, MEIOPartMachine.MANAGED_FIELD_HOLDER);
 
+    @DescSynced
+    @Persisted
+    public boolean isVisibleTerminal = true;
+
+    @Override
+    public boolean isVisibleInTerminal() {
+        return !isVisibleTerminal;
+    }
+
     private final InternalInventory internalPatternInventory = new InternalInventory() {
 
         @Override
@@ -791,6 +800,14 @@ public class MEPatternBufferPartMachine extends MEIOPartMachine implements IInte
                 })
                 .setTooltipsSupplier(pressed -> List.of(Component.translatable("tooltip.gtlcore.disable_by_product").setStyle(Style.EMPTY.withColor(ChatFormatting.YELLOW))
                         .append(Component.translatable(pressed ? "gtceu.multiblock.universal.distinct.yes" : "gtceu.multiblock.universal.distinct.no")))));
+
+        // Visibility in ME Pattern Access Terminal
+        configuratorPanel.attachConfigurators(new IFancyConfiguratorButton.Toggle(
+                org.gtlcore.gtlcore.api.gui.GuiTextures.BUTTON_VISIBLE.getSubTexture(0, 0, 1, 0.5),
+                org.gtlcore.gtlcore.api.gui.GuiTextures.BUTTON_VISIBLE.getSubTexture(0, 0.5, 1, 0.5),
+                () -> this.isVisibleTerminal, (clickData, pressed) -> this.isVisibleTerminal = pressed)
+                .setTooltipsSupplier(pressed -> List.of(
+                        Component.translatable(pressed ? "gui.gtlcore.hidden_in_terminal" : "gui.gtlcore.visible_in_terminal"))));
     }
 
     @Override
