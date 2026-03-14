@@ -106,11 +106,11 @@ public class MEMolecularAssemblerIOPartMachine extends MEIOPartMachine implement
     };
     @DescSynced
     @Persisted
-    public boolean isVisibleTerminal = true;
+    public boolean isHiddenTerminal = false;
 
     @Override
     public boolean isVisibleInTerminal() {
-        return !isVisibleTerminal;
+        return !isHiddenTerminal;
     }
     // ========================================
     // Status
@@ -396,7 +396,7 @@ public class MEMolecularAssemblerIOPartMachine extends MEIOPartMachine implement
         configuratorPanel.attachConfigurators(new IFancyConfiguratorButton.Toggle(
                 GuiTextures.BUTTON_VISIBLE.getSubTexture(0, 0, 1, 0.5),
                 GuiTextures.BUTTON_VISIBLE.getSubTexture(0, 0.5, 1, 0.5),
-                () -> this.isVisibleTerminal, (clickData, pressed) -> this.isVisibleTerminal = pressed)
+                () -> this.isHiddenTerminal, (clickData, pressed) -> this.isHiddenTerminal = pressed)
                 .setTooltipsSupplier(pressed -> List.of(
                         Component.translatable(pressed ? "gui.gtlcore.hidden_in_terminal" : "gui.gtlcore.visible_in_terminal"))));
     }
