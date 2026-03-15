@@ -1,5 +1,6 @@
 package org.gtlcore.gtlcore.common.machine.multiblock.part.ae;
 
+import org.gtlcore.gtlcore.api.gui.GuiTextures;
 import org.gtlcore.gtlcore.api.machine.trait.AECraft.IMECraftIOPart;
 import org.gtlcore.gtlcore.api.machine.trait.AECraft.IMECraftPatternContainer;
 import org.gtlcore.gtlcore.common.data.GTLMachines;
@@ -9,6 +10,7 @@ import org.gtlcore.gtlcore.integration.lowdragmc.misc.MutableItemTransferList;
 
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.gui.fancy.ConfiguratorPanel;
+import com.gregtechceu.gtceu.api.gui.fancy.IFancyConfiguratorButton;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
@@ -102,7 +104,14 @@ public class MEMolecularAssemblerIOPartMachine extends MEIOPartMachine implement
             return slot <= mutableItemTransferList.getSlots() && AEUtils.molecularFilter(stack, getLevel());
         }
     };
+    @DescSynced
+    @Persisted
+    public boolean isHiddenTerminal = false;
 
+    @Override
+    public boolean isVisibleInTerminal() {
+        return !isHiddenTerminal;
+    }
     // ========================================
     // Status
     // ========================================
@@ -382,6 +391,14 @@ public class MEMolecularAssemblerIOPartMachine extends MEIOPartMachine implement
                 .setTooltips(List.of(
                         Component.translatable("gui.gtceu.share_inventory.desc.0"),
                         Component.translatable("gui.gtceu.share_inventory.desc.1"))));
+
+        // Visibility in ME Pattern Access Terminal
+        configuratorPanel.attachConfigurators(new IFancyConfiguratorButton.Toggle(
+                GuiTextures.BUTTON_VISIBLE.getSubTexture(0, 0, 1, 0.5),
+                GuiTextures.BUTTON_VISIBLE.getSubTexture(0, 0.5, 1, 0.5),
+                () -> this.isHiddenTerminal, (clickData, pressed) -> this.isHiddenTerminal = pressed)
+                .setTooltipsSupplier(pressed -> List.of(
+                        Component.translatable(pressed ? "gui.gtlcore.hidden_in_terminal" : "gui.gtlcore.visible_in_terminal"))));
     }
 
     @Override
