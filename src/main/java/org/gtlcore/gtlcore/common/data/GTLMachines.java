@@ -781,7 +781,8 @@ public class GTLMachines {
                 .overlayTieredHullRenderer("me_extended_export_buffer")
                 .langValue("ME Extended Export Buffer")
                 .tooltips(Component.translatable("gtmthings.machine.me_export_buffer.tooltip"),
-                        Component.translatable("gtceu.machine.me_extended_export_buffer.tooltip.0"))
+                        Component.translatable("gtceu.machine.me_extended_export_buffer.tooltip.0"),
+                        Component.translatable("gtceu.machine.me.copy_paste.tooltip"))
                 .tooltipBuilder(GTL_ADD)
                 .register();
 
@@ -794,7 +795,8 @@ public class GTLMachines {
                 .langValue("ME Extended Async Export Buffer")
                 .tooltips(Component.translatable("gtmthings.machine.me_export_buffer.tooltip"),
                         Component.translatable("gtceu.machine.me_extended_async_export_buffer.tooltip.0"),
-                        Component.translatable("gtceu.machine.me_extended_async_export_buffer.tooltip.1"))
+                        Component.translatable("gtceu.machine.me_extended_async_export_buffer.tooltip.1"),
+                        Component.translatable("gtceu.machine.me.copy_paste.tooltip"))
                 .tooltipBuilder(GTL_ADD)
                 .register();
         public static final MachineDefinition ME_CRAFT_SPEED_CORE = REGISTRATE
