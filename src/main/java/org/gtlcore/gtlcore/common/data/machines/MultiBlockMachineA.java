@@ -853,6 +853,7 @@ public class MultiBlockMachineA {
             .recipeModifiers(GTLRecipeModifiers.GCYM_REDUCTION, GTRecipeModifiers.PARALLEL_HATCH, GTRecipeModifiers::ebfOverclock)
             .appearanceBlock(GCyMBlocks.CASING_HIGH_TEMPERATURE_SMELTING)
             .recipeType(GCyMRecipeTypes.ALLOY_BLAST_RECIPES)
+            .recipeType(GTRecipeTypes.ALLOY_SMELTER_RECIPES)
             .tooltips(Component.translatable("gtceu.machine.eut_multiplier.tooltip", 0.8))
             .tooltips(Component.translatable("gtceu.machine.duration_multiplier.tooltip", 0.6))
             .tooltips(Component.translatable("gtceu.machine.electric_blast_furnace.tooltip.a"))
@@ -861,8 +862,8 @@ public class MultiBlockMachineA {
             .tooltips(Component.translatable("gtceu.machine.electric_blast_furnace.tooltip.2"))
             .tooltips(Component.translatable("gtceu.multiblock.parallelizable.tooltip"))
             .tooltips(Component.translatable("tooltip.gtlcore.structure.source", "GT++"))
-            .tooltips(Component.translatable("gtceu.machine.available_recipe_map_1.tooltip",
-                    Component.translatable("gtceu.alloy_blast_smelter")))
+            .tooltips(Component.translatable("gtceu.machine.available_recipe_map_2.tooltip",
+                    Component.translatable("gtceu.alloy_blast_smelter"), Component.translatable("gtceu.alloy_smelter")))
             .tooltipBuilder(GTLMachines.GTL_ADD)
             .pattern(definition -> FactoryBlockPattern.start()
                     .aisle("   eeeee   ", "   cbbbc   ", "   cbbbc   ", "   cbbbc   ", "   eeeee   ", "   bbbbb   ", "           ", "           ", "           ", "           ", "           ", "           ", "           ", "           ", "           ", "           ", "           ", "           ")
@@ -1509,11 +1510,12 @@ public class MultiBlockMachineA {
             .recipeType(GTRecipeTypes.ELECTROMAGNETIC_SEPARATOR_RECIPES)
             .recipeType(GTRecipeTypes.ELECTROLYZER_RECIPES)
             .recipeType(GTLRecipeTypes.LIGHTNING_PROCESSOR_RECIPES)
+            .recipeType(GTRecipeTypes.ARC_FURNACE_RECIPES)
             .tooltips(Component.translatable("gtceu.multiblock.laser.tooltip"))
             .tooltips(Component.translatable("gtceu.machine.perfect_oc"))
             .tooltips(Component.translatable("gtceu.multiblock.parallelizable.tooltip"))
-            .tooltips(Component.translatable("gtceu.machine.available_recipe_map_4.tooltip",
-                    Component.translatable("gtceu.polarizer"), Component.translatable("gtceu.electromagnetic_separator"), Component.translatable("gtceu.electrolyzer"), Component.translatable("gtceu.lightning_processor")))
+            .tooltips(Component.translatable("gtceu.machine.available_recipe_map_5.tooltip",
+                    Component.translatable("gtceu.polarizer"), Component.translatable("gtceu.electromagnetic_separator"), Component.translatable("gtceu.electrolyzer"), Component.translatable("gtceu.lightning_processor"), Component.translatable("gtceu.arc_furnace")))
             .tooltipBuilder(GTLMachines.GTL_ADD)
             .recipeModifiers(GTRecipeModifiers.PARALLEL_HATCH, GTRecipeModifiers.ELECTRIC_OVERCLOCK.apply(OverclockingLogic.PERFECT_OVERCLOCK_SUBTICK))
             .appearanceBlock(GTLBlocks.LAFIUM_MECHANICAL_CASING)
@@ -1555,12 +1557,13 @@ public class MultiBlockMachineA {
             .allowExtendedFacing(false)
             .recipeType(GTRecipeTypes.AUTOCLAVE_RECIPES)
             .recipeType(GTRecipeTypes.CHEMICAL_BATH_RECIPES)
+            .recipeType(GTRecipeTypes.ORE_WASHER_RECIPES)
             .tooltips(Component.translatable("gtceu.multiblock.laser.tooltip"))
             .tooltips(Component.translatable("gtceu.machine.perfect_oc"))
             .tooltips(Component.translatable("gtceu.multiblock.parallelizable.tooltip"))
             .tooltips(Component.translatable("tooltip.gtlcore.structure.source", "TST"))
-            .tooltips(Component.translatable("gtceu.machine.available_recipe_map_2.tooltip",
-                    Component.translatable("gtceu.autoclave"), Component.translatable("gtceu.chemical_bath")))
+            .tooltips(Component.translatable("gtceu.machine.available_recipe_map_3.tooltip",
+                    Component.translatable("gtceu.autoclave"), Component.translatable("gtceu.chemical_bath"), Component.translatable("gtceu.ore_washer")))
             .tooltipBuilder(GTLMachines.GTL_ADD)
             .recipeModifiers(GTRecipeModifiers.PARALLEL_HATCH, GTRecipeModifiers.ELECTRIC_OVERCLOCK.apply(OverclockingLogic.PERFECT_OVERCLOCK_SUBTICK))
             .appearanceBlock(GTLBlocks.EXTREME_STRENGTH_TRITANIUM_CASING)

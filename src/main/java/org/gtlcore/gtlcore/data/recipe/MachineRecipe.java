@@ -719,6 +719,8 @@ public class MachineRecipe {
         ASSEMBLY_LINE_RECIPES.recipeBuilder("huge_incubator")
                 .inputItems(CIRCUIT.getIngredient(UIV), 32)
                 .inputItems(MultiBlockMachineA.LARGE_INCUBATOR, 4)
+                .inputItems(GTMachines.BREWERY[UIV], 4)
+                .inputItems(GTMachines.FERMENTER[UIV], 4)
                 .inputItems(GTLItems.STERILIZED_PETRI_DISH, 16)
                 .inputItems(ChemicalHelper.get(gear, Neutronium), 64)
                 .inputItems(ROBOT_ARM_UIV, 16)

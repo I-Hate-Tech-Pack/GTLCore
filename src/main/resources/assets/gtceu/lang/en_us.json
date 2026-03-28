@@ -670,7 +670,7 @@
   "gtceu.machine.block_conversion_room.tooltip.1": "Each voltage tier above MV adds +4 blocks per conversion without repetition",
   "gtceu.machine.chemical_distort.tooltip.0": "Each 100K coil temperature above recipe temperature adds 4 parallel",
   "gtceu.machine.chemical_distort.tooltip.1": "Higher voltage does not provide additional temperature",
-  "gtceu.machine.chemical_plant.tooltip.0": "Each coil tier above Cupronickel reduces power consumption and increases speed by 5%",
+  "gtceu.machine.chemical_plant.tooltip.0": "Each coil tier above Cupronickel energy consumption and processing time are reduced by 5%.",
   "gtceu.machine.circuit_assembly_line.tooltip.0": "Placing robots matching the recipe in the controller provides 2x parallel for corresponding quantity",
   "gtceu.machine.cold_ice_freezer.tooltip.0": "Requires §b10x voltage tier^2§rmb of §bLiquid Ice§r per second",
   "gtceu.machine.create_computation.tooltip.0": "Input Voltage: §4§lMAX§r",
