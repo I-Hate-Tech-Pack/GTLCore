@@ -186,11 +186,11 @@ public class SourceTooltipRegister$FragmentWorldCollection {
         of_fwc(event.register$fluid("gtceu:unknowwater"), as_fwc(15, " [ 8 ]"));
         of_fwc(event.register$fluid("gtceu:xenon"), as_fwc(7, " [ 8 ]"));
         of_fwc(event.register$fluid("gtceu:barnarda_air"), as_fwc(15, " [ 0 ]"));
-        of_fwc(event.register$fluid("minecraft:lava"), as_fwc(6, " [ 0, 13 ]"));
+        of_fwc(event.register$fluid("minecraft:lava"), as_fwc(0, " [ 0 ]"), as_fwc(6, " [ 0, 13 ]"));
 
         String[] worlds = { "overworld", "reactor", "moon", "mars", "venus", "mercury", "nether", "ceres", "io", "ganymede", "pluto", "enceladus", "titan", "end", "glacio", "barnarda" };
         String[][] keys_fluid = {
-                { "material.gtceu.salt_water", "material.gtceu.oil_heavy", "material.gtceu.oil_medium", "material.gtceu.oil_heavy", "material.gtceu.oil_light", "material.gtceu.natural_gas" },
+                { "material.gtceu.salt_water", "material.gtceu.oil_heavy", "material.gtceu.oil_medium", "material.gtceu.oil_heavy", "material.gtceu.oil_light", "material.gtceu.natural_gas", "material.gtceu.lava" },
                 {},
                 { "material.gtceu.helium_3", "material.gtceu.helium" },
                 { "material.gtceu.radon" },
@@ -226,7 +226,7 @@ public class SourceTooltipRegister$FragmentWorldCollection {
                 { "block.kubejs.barnarda_log", "block.kubejs.barnarda_leaves" }
         };
         int[][] cs_fluid = {
-                { 24, 25, 26, 27, 28, 29 },
+                { 24, 25, 26, 27, 28, 29, 0 },
                 {},
                 { 5, 6 },
                 { 4 },
