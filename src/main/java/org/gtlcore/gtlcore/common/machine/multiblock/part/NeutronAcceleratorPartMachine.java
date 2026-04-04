@@ -42,6 +42,10 @@ public class NeutronAcceleratorPartMachine extends EnergyHatchPartMachine {
         }
     }
 
+    public boolean isProducing() {
+        return this.isWorkingEnabled() && this.energyContainer.getEnergyStored() > 0;
+    }
+
     @Override
     public boolean shouldOpenUI(Player player, InteractionHand hand, BlockHitResult hit) {
         return true;

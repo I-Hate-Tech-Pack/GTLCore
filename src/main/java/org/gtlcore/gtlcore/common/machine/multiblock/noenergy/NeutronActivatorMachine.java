@@ -177,10 +177,14 @@ public class NeutronActivatorMachine extends NoEnergyMultiblockMachine {
     }
 
     protected void moderateUpdate() {
-        if (getOffsetTimer() % 20 == 0) {
-            this.eV = Math.max(eV - 72 * 1000, 0);
+        boolean anyAcceleratorProducing = acceleratorMachines != null &&
+                acceleratorMachines.stream().anyMatch(NeutronAcceleratorPartMachine::isProducing);
+        if (!anyAcceleratorProducing) {
+            if (getOffsetTimer() % 20 == 0) {
+                this.eV = Math.max(eV - 72 * 1000, 0);
+            }
+            if (this.eV < 0) this.eV = 0;
         }
-        if (this.eV < 0) this.eV = 0;
         if (!isFormed() || sensorMachines == null) return;
         sensorMachines.forEach(sensor -> sensor.update(eV));
     }
