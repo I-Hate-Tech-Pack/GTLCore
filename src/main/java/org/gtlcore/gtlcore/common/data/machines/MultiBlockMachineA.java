@@ -1195,6 +1195,7 @@ public class MultiBlockMachineA {
             .rotationState(RotationState.ALL)
             .recipeType(GTRecipeTypes.CRACKING_RECIPES)
             .tooltips(Component.translatable("gtceu.multiblock.parallelizable.tooltip"))
+            .tooltips(Component.translatable("gtceu.machine.cracker.tooltip.1"))
             .tooltips(Component.translatable("tooltip.gtlcore.structure.source", "GTNH"))
             .tooltips(Component.translatable("gtceu.machine.available_recipe_map_1.tooltip",
                     Component.translatable("gtceu.cracker")))
@@ -2230,6 +2231,7 @@ public class MultiBlockMachineA {
             .allowExtendedFacing(false)
             .recipeType(GTLRecipeTypes.PETROCHEMICAL_PLANT_RECIPES)
             .tooltips(Component.translatable("gtceu.multiblock.parallelizable.tooltip"))
+            .tooltips(Component.translatable("gtceu.machine.cracker.tooltip.1"))
             .tooltips(Component.translatable("gtceu.machine.available_recipe_map_1.tooltip",
                     Component.translatable("gtceu.petrochemical_plant")))
             .tooltipBuilder(GTLMachines.GTL_ADD)
@@ -2275,6 +2277,7 @@ public class MultiBlockMachineA {
             .rotationState(RotationState.ALL)
             .recipeType(GTRecipeTypes.PYROLYSE_RECIPES)
             .tooltips(Component.translatable("gtceu.multiblock.parallelizable.tooltip"))
+            .tooltips(Component.translatable("gtceu.machine.pyrolyse_oven.tooltip.1"))
             .tooltips(Component.translatable("gtceu.machine.available_recipe_map_1.tooltip",
                     Component.translatable("gtceu.pyrolyse_oven")))
             .tooltipBuilder(GTLMachines.GTL_ADD)
