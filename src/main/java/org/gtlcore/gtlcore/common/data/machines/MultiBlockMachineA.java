@@ -850,8 +850,19 @@ public class MultiBlockMachineA {
     public final static MultiblockMachineDefinition MEGA_ALLOY_BLAST_SMELTER = REGISTRATE.multiblock("mega_alloy_blast_smelter", CoilWorkableElectricMultiblockMachine::new)
             .rotationState(RotationState.NON_Y_AXIS)
             .allowExtendedFacing(false)
-            .recipeModifiers(GTLRecipeModifiers.GCYM_REDUCTION, GTRecipeModifiers.PARALLEL_HATCH, GTRecipeModifiers::ebfOverclock)
             .appearanceBlock(GCyMBlocks.CASING_HIGH_TEMPERATURE_SMELTING)
+            .recipeModifiers(GTLRecipeModifiers.GCYM_REDUCTION, GTRecipeModifiers.PARALLEL_HATCH, (machine, recipe, params, result) -> {
+                if (machine instanceof CoilWorkableElectricMultiblockMachine coilMachine && coilMachine.getRecipeType() == GCyMRecipeTypes.ALLOY_BLAST_RECIPES) {
+                    int requiredTemp = recipe.data.getInt("ebf_temp");
+                    int currentTemp = coilMachine.getCoilType().getCoilTemperature() + 100 * Math.max(0, coilMachine.getTier() - GTValues.MV);
+                    if (currentTemp >= requiredTemp) {
+                        return GTRecipeModifiers.ebfOverclock(machine, recipe, params, result);
+                    } else {
+                        return null;
+                    }
+                }
+                return recipe;
+            })
             .recipeType(GCyMRecipeTypes.ALLOY_BLAST_RECIPES)
             .recipeType(GTRecipeTypes.ALLOY_SMELTER_RECIPES)
             .tooltips(Component.translatable("gtceu.machine.eut_multiplier.tooltip", 0.8))
