@@ -672,7 +672,7 @@
   "gtceu.machine.chemical_distort.tooltip.1": "更高的电压不会提供额外温度",
   "gtceu.machine.chemical_plant.tooltip.0": "线圈等级每高出白铜一级耗能与耗时降低5%",
   "gtceu.machine.circuit_assembly_line.tooltip.0": "在主机中放入同配方的机器人可以获得对应数量x2的并行",
-  "gtceu.machine.cold_ice_freezer.tooltip.0": "需每秒提供§b10x电压等级^2§rmb的§b液态冰§r",
+  "gtceu.machine.cold_ice_freezer.tooltip.0": "需每秒提供§b10x2^(电压等级-2)§rmB的§b液态冰§r",
   "gtceu.machine.create_computation.tooltip.0": "输入电压：§4§lMAX§r",
   "gtceu.machine.dimensionally_transcendent_dirt_forge.tooltip.0": "拥有524288的最大并行，且直接完成配方",
   "gtceu.machine.dimensionally_transcendent_mixer.tooltip.0": "运行搅拌机配方时耗时倍数为0.2",
