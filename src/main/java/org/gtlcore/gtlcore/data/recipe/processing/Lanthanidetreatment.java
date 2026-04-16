@@ -177,7 +177,7 @@ public class Lanthanidetreatment {
 
         CHEMICAL_RECIPES.recipeBuilder("cerium_chloride_powder19")
                 .inputItems(dust, CeriumRichMixturePowder, 15)
-                .inputFluids(HydrofluoricAcid.getFluid(750))
+                .inputFluids(HydrochloricAcid.getFluid(750))
                 .outputItems(dust, CeriumChloridePowder, 1)
                 .outputItems(dust, Monazite, 1)
                 .outputFluids(Water.getFluid(750))
